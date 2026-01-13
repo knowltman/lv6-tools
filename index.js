@@ -9,21 +9,13 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// API
-app.use("/api", backend);
-
-// Fix MIME type for Vite ES modules (xcloud issue)
-app.use((req, res, next) => {
-  if (req.path.endsWith(".js")) {
-    res.type("application/javascript");
-  }
-  next();
-});
-
-// Serve Vite build
+// Serve static frontend files from dist
 app.use(express.static(path.join(__dirname, "dist")));
 
-// SPA fallback LAST
+// API routes
+app.use("/api", backend);
+
+// SPA fallback: serve index.html for all other routes (after static & API)
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
