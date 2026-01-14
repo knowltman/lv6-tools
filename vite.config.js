@@ -17,7 +17,7 @@ export default defineConfig({
     //   },
     // },
     proxy: {
-      "/api": "https://lv6.rhinogfx.com:5001",
+      "/api": "https://localhost:5001",
     },
   },
 });
