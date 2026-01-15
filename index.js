@@ -9,11 +9,11 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Serve static frontend files from dist
-app.use(express.static(path.join(__dirname, "dist")));
-
 // API routes
 app.use("/api", backend);
+
+// Serve static frontend files from dist
+app.use(express.static(path.join(__dirname, "dist")));
 
 // SPA fallback: serve index.html for all other routes (after static & API)
 app.get("*", (req, res) => {
