@@ -99,7 +99,7 @@ function App() {
       getAllHymns();
 
       const [sundaysSpeakersResponse] = await Promise.all([
-        axios.get(`/api/sunday-history`),
+        axios.get(`/sunday-history`),
       ]);
 
       const sundaySpeakersHistory = sundaysSpeakersResponse.data;
@@ -119,7 +119,7 @@ function App() {
   const handleSaveProgram = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post(`/api/programs`, {
+      const response = await axios.post(`/programs`, {
         date,
         formValues: formValues2,
         user,
