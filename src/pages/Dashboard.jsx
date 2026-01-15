@@ -65,13 +65,15 @@ const Dashboard = (props) => {
       setIsLoading(true);
 
       const speakerSuggestionsResponse = await axios.get(
-        `/speaker-suggestions`
+        `/api/speaker-suggestions`
       );
 
       const youthSpeakerSuggestionsResponse = await axios.get(
-        `/youth-speaker-suggestions`
+        `/api/youth-speaker-suggestions`
       );
-      const prayerSuggestionsResponse = await axios.get(`/prayer-suggestions`);
+      const prayerSuggestionsResponse = await axios.get(
+        `/api/prayer-suggestions`
+      );
 
       setSpeakerSuggestions(speakerSuggestionsResponse.data);
       setYouthSpeakerSuggestions(youthSpeakerSuggestionsResponse.data);

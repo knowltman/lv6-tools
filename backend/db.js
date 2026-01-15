@@ -50,4 +50,14 @@ db.query("SELECT 1", (err) => {
   else console.log("DATABASE: connected 👍 \n***************************");
 });
 
+db.query("SELECT * FROM hymns", (err, results) => {
+  if (err) {
+    console.error("DB ERROR:", err);
+  } else {
+    console.log("DATABASE: connected 👍");
+    console.log(`Hymns found: ${results.length}`);
+    console.log("***************************");
+  }
+});
+
 export default db;
