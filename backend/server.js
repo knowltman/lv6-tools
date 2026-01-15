@@ -764,7 +764,7 @@ app.post("/api/sunday", async (req, res) => {
   }
 });
 
-app.get("/api/sunday-history", (req, res) => {
+app.get("/sunday-history", (req, res) => {
   db.query(
     `SELECT DATE_FORMAT(date, '%Y-%m-%d') AS date, type, description FROM sunday_dates;`,
     [],
