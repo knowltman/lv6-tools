@@ -94,8 +94,6 @@ const Speakers = () => {
     }
   }, [currentMonth, isLoading]);
 
-  const apiURL = import.meta.env.VITE_API_URL;
-
   const activeItem = activeId
     ? items.find((item) => item.id === activeId)
     : null;
@@ -151,7 +149,7 @@ const Speakers = () => {
   const saveUpdatedDate = async (updatedItems) => {
     try {
       const updatePromises = updatedItems.map((item) =>
-        axios.patch(`${apiURL}/api/speaker/${item.id}`, {
+        axios.patch(`/api/speaker/${item.id}`, {
           date: item.date,
           order: item.order,
         })
@@ -183,7 +181,7 @@ const Speakers = () => {
       setScheduledSpeaker(updatedState);
 
       try {
-        await axios.post(`${apiURL}/api/speaker`, {
+        await axios.post(`/api/speaker`, {
           newDates: [updatedState.date],
           speakerId: updatedState.speaker_id,
           order: updatedState.order,
@@ -238,7 +236,7 @@ const Speakers = () => {
       ];
       setSpecialSundays(updatedState);
       try {
-        await axios.post(`${apiURL}/api/sunday`, {
+        await axios.post(`/api/sunday`, {
           date: specialSunday.date,
           type: specialSunday.type,
           description: specialSunday.description,

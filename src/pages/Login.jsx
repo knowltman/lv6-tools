@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { OutlinedInput, Button } from "@mui/material";
 import { membersStore } from "../stores/members";
 
-const apiURL = import.meta.env.VITE_API_URL;
-
 const Login = (props) => {
   const { setIsLoggedIn } = props;
   const [username, setUsername] = useState("");
@@ -25,7 +23,7 @@ const Login = (props) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${apiURL}/api/login`, {
+      const response = await axios.post(`/api/login`, {
         username,
         password,
       });

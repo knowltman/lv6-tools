@@ -194,7 +194,7 @@ export default function Speakers() {
       setScheduledSpeaker(updatedState);
 
       try {
-        await axios.post(`${apiURL}/api/speaker`, {
+        await axios.post(`/api/speaker`, {
           newDates: [updatedState.date],
           speakerId: updatedState.speaker_id,
           order: updatedState.order,
@@ -223,7 +223,7 @@ export default function Speakers() {
       ];
       setSpecialSundays(updatedState);
       try {
-        await axios.post(`${apiURL}/api/sunday`, {
+        await axios.post(`/api/sunday`, {
           date: specialSunday.date,
           type: specialSunday.type,
           description: specialSunday.description,
@@ -246,7 +246,7 @@ export default function Speakers() {
     };
 
     try {
-      await axios.post(`${apiURL}/api/speaker`, {
+      await axios.post(`/api/speaker`, {
         newDates: [updatedState.date],
         speakerId: updatedState.speaker_id,
         order: updatedState.order,
@@ -273,7 +273,7 @@ export default function Speakers() {
 
   const handleDeleteSpeaker = async (speaker) => {
     try {
-      await axios.delete(`${apiURL}/api/delete-speaker/${speaker.id}`);
+      await axios.delete(`/api/delete-speaker/${speaker.id}`);
       getSpeakerHistory2();
     } catch (error) {}
   };
@@ -397,7 +397,7 @@ export default function Speakers() {
   const saveUpdatedDate = async (updatedItems) => {
     try {
       const updatePromises = updatedItems.map((item) =>
-        axios.patch(`${apiURL}/api/speaker/${item.id}`, {
+        axios.patch(`/api/speaker/${item.id}`, {
           date: item.date,
           order: item.order,
         })

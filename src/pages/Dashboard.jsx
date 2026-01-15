@@ -29,8 +29,6 @@ import { formStore } from "../stores/formValues";
 import axios from "axios";
 import { getImageName } from "../app.logic";
 
-const apiURL = import.meta.env.VITE_API_URL;
-
 const Dashboard = (props) => {
   const { setIsLoading } = props;
   const isMobile = useMediaQuery("(max-width: 768px)");
@@ -67,14 +65,14 @@ const Dashboard = (props) => {
       setIsLoading(true);
 
       const speakerSuggestionsResponse = await axios.get(
-        `${apiURL}/api/speaker-suggestions`
+        `/api/speaker-suggestions`
       );
 
       const youthSpeakerSuggestionsResponse = await axios.get(
-        `${apiURL}/api/youth-speaker-suggestions`
+        `/api/youth-speaker-suggestions`
       );
       const prayerSuggestionsResponse = await axios.get(
-        `${apiURL}/api/prayer-suggestions`
+        `/api/prayer-suggestions`
       );
 
       setSpeakerSuggestions(speakerSuggestionsResponse.data);

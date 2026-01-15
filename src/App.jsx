@@ -59,7 +59,6 @@ function App() {
     // },
   });
 
-  const apiURL = import.meta.env.VITE_API_URL;
   const { getAllHymns, hymns } = dataStore();
   const { setSpecialSundays, getProgramData, programsList, getProgramsList } =
     programStore();
@@ -100,7 +99,7 @@ function App() {
       getAllHymns();
 
       const [sundaysSpeakersResponse] = await Promise.all([
-        axios.get(`${apiURL}/api/sunday-history`),
+        axios.get(`/api/sunday-history`),
       ]);
 
       const sundaySpeakersHistory = sundaysSpeakersResponse.data;
@@ -115,12 +114,12 @@ function App() {
 
   useEffect(() => {
     fetchAllData();
-  }, [apiURL, date]);
+  }, [date]);
 
   const handleSaveProgram = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post(`${apiURL}/api/programs`, {
+      const response = await axios.post(`/api/programs`, {
         date,
         formValues: formValues2,
         user,

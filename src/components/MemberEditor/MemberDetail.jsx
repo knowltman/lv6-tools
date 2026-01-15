@@ -45,7 +45,7 @@ const MemberDetail = () => {
     const speakerId = memberData?.id;
 
     try {
-      const response = await axios.post(`${apiURL}/api/speaker`, {
+      const response = await axios.post(`/api/speaker`, {
         newDates: convertedDates,
         speakerId,
       });
@@ -59,7 +59,7 @@ const MemberDetail = () => {
     const speakerId = memberData?.id;
 
     try {
-      const response = await axios.post(`${apiURL}/api/prayer`, {
+      const response = await axios.post(`/api/prayer`, {
         newDates,
         speakerId,
       });
@@ -185,7 +185,7 @@ const MemberDetail = () => {
     const speakerId = memberData?.id;
 
     try {
-      const response = await axios.delete(`${apiURL}/api/prayer`, {
+      const response = await axios.delete(`/api/prayer`, {
         params: {
           speakerId,
           date,

@@ -23,7 +23,6 @@ export const EditSpeakerPopup = (props) => {
   } = props;
 
   const subjectRef = useRef();
-  const apiURL = import.meta.env.VITE_API_URL;
   const { getSpeakerHistory2 } = speakersStore();
 
   useEffect(() => {
@@ -46,7 +45,7 @@ export const EditSpeakerPopup = (props) => {
     const currentSubject = subjectRef.current.value;
     try {
       const response = await axios.patch(
-        `${apiURL}/api/speaker-update/${scheduledSpeaker.id}`,
+        `/api/speaker-update/${scheduledSpeaker.id}`,
         {
           subject: currentSubject,
         }

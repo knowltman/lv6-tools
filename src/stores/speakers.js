@@ -3,7 +3,6 @@ import axios from "axios";
 import { formStore } from "./formValues";
 import { getNextSundaySpeakers } from "../pages/Dashboard.logic";
 import { programStore } from "./program";
-const apiURL = import.meta.env.VITE_API_URL;
 
 export const speakersStore = create((set) => {
   return {
@@ -15,7 +14,7 @@ export const speakersStore = create((set) => {
 
     getSpeakerHistory2: async () => {
       try {
-        const response = await axios.get(`${apiURL}/api/speaker-history`);
+        const response = await axios.get(`/api/speaker-history`);
         set(() => ({
           speakerHistory2: response.data,
         }));

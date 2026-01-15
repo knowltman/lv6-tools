@@ -27,12 +27,27 @@ import mysql from "mysql2";
 //   port: 3306,
 // });
 
+// const db = mysql.createPool({
+//   host: "https://tall-atoll-189291.1wp.site/", // or your MySQL host
+//   port: 3306,
+//   database: "s189291_tall_ato", // your MySQL database name
+//   user: "u189291_tall_ato", // your MySQL username
+//   password: "Ms9Amxz9q3Usrz4U", // your MySQL password
+// });
+
 const db = mysql.createPool({
-  host: "localhost", // or your MySQL host
-  user: "u189291_tall_ato", // your MySQL username
-  password: "Ms9Amxz9q3Usrz4U", // your MySQL password
-  database: "s189291_tall_ato", // your MySQL database name
+  host: process.env.DB_HOST,
   port: 3306,
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+});
+
+console.log("USER:", process.env.DB_USER);
+
+db.query("SELECT 1", (err) => {
+  if (err) console.error(err);
+  else console.log("DATABASE: connected 👍 \n***************************");
 });
 
 export default db;

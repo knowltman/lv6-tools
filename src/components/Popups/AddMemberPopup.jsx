@@ -34,8 +34,6 @@ const AddMemberPopup = ({
   const [formValues, setFormValues] = useState(defaultValues);
   const { fetchAllMembers } = membersStore();
 
-  const apiURL = import.meta.env.VITE_API_URL;
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({
@@ -53,7 +51,7 @@ const AddMemberPopup = ({
 
   const handleSave = async () => {
     try {
-      const response = await axios.post(`${apiURL}/api/add-member`, {
+      const response = await axios.post(`/api/add-member`, {
         first_name: outsideCreate?.firstName || formValues.first_name,
         last_name: outsideCreate?.lastName || formValues.last_name,
         sex: formValues.sex,

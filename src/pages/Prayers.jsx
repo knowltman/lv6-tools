@@ -21,8 +21,6 @@ const excludedTypes = [
   "Ward Conference",
 ];
 
-const apiURL = import.meta.env.VITE_API_URL;
-
 const Prayers = (props) => {
   const { prayerHistory2, getPrayerHistory2, addPrayer } = prayersStore();
   const members = membersStore((state) => state.members);
@@ -169,12 +167,9 @@ const Prayers = (props) => {
   // Function to save the updated date to the backend
   const saveUpdatedDate = async (updatedItem, oldIndex, prevItems) => {
     try {
-      const response = await axios.put(
-        `${apiURL}/api/prayer/${updatedItem.id}`,
-        {
-          date: updatedItem.date,
-        }
-      );
+      const response = await axios.put(`/api/prayer/${updatedItem.id}`, {
+        date: updatedItem.date,
+      });
 
       if (response.status === 200) {
         setSundaysJson((prev) => {

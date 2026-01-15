@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import axios from "axios";
-const apiURL = import.meta.env.VITE_API_URL;
 
 const currentUser = localStorage.getItem("user");
 
@@ -10,7 +9,7 @@ export const membersStore = create((set) => ({
   members: [],
   fetchAllMembers: async () => {
     try {
-      const response = await axios.get(`${apiURL}/api/members`);
+      const response = await axios.get(`/api/members`);
       const sortedData = response.data.sort((a, b) =>
         a.last_name.localeCompare(b.last_name)
       );
@@ -28,7 +27,7 @@ export const membersStore = create((set) => ({
   setMemberData: (newMemberData) => set({ memberData: newMemberData }),
   fetchMemberData: async (id) => {
     try {
-      const response = await axios.get(`${apiURL}/api/members/${id}`);
+      const response = await axios.get(`/api/members/${id}`);
       set({ memberData: response.data[0] });
     } catch (error) {
       console.error("Error fetching member data:", error);
@@ -38,7 +37,7 @@ export const membersStore = create((set) => ({
     set((state) => ({ members: [...state.members, member] })),
   removeMember: async (id) => {
     try {
-      await axios.delete(`${apiURL}/api/delete-member/${id}`);
+      await axios.delete(`/api/delete-member/${id}`);
       set((state) => ({
         members: state.members.filter((member) => member.id !== id),
       }));
@@ -58,7 +57,7 @@ export const membersStore = create((set) => ({
 
     try {
       // Send PATCH request to update the server
-      await axios.patch(`${apiURL}/api/update-member/${memberId}`, {
+      await axios.patch(`/api/update-member/${memberId}`, {
         [field]: value,
       });
 

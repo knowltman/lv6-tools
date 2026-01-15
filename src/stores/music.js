@@ -3,7 +3,6 @@ import axios from "axios";
 import { formStore } from "./formValues";
 import { getSundayAdmin, getSundayMusic } from "../pages/Dashboard.logic";
 import { membersStore } from "./members";
-const apiURL = import.meta.env.VITE_API_URL;
 
 export const musicStore = create((set) => {
   return {
@@ -17,8 +16,8 @@ export const musicStore = create((set) => {
 
     getMusicHistory2: async (date) => {
       try {
-        const response = await axios.get(`${apiURL}/api/music-history`);
-        const musicAdminResponse = await axios.get(`${apiURL}/api/music-admin`);
+        const response = await axios.get(`/api/music-history`);
+        const musicAdminResponse = await axios.get(`/api/music-admin`);
 
         // const musicHistory = response.data;
         // const musicAdmin = musicAdminResponse.data;

@@ -3,8 +3,6 @@ import axios from "axios";
 import { getSundayPrayers } from "../pages/Dashboard.logic";
 import { formStore } from "./formValues";
 
-const apiURL = import.meta.env.VITE_API_URL;
-
 export const prayersStore = create((set, get) => {
   return {
     scheduledPrayer: [],
@@ -44,7 +42,7 @@ export const prayersStore = create((set, get) => {
 
     addPrayer: async (updatedState, type) => {
       try {
-        const response = await axios.post(`${apiURL}/api/prayer`, {
+        const response = await axios.post(`/api/prayer`, {
           newDates: [updatedState.date],
           speakerId: updatedState.speaker_id,
           speakerName: updatedState.speaker_name,
@@ -64,7 +62,7 @@ export const prayersStore = create((set, get) => {
 
     deletePrayer: async (id, date) => {
       try {
-        await axios.delete(`${apiURL}/api/delete-prayer`, { params: { id } });
+        await axios.delete(`/api/delete-prayer`, { params: { id } });
 
         set((state) => ({
           prayerHistory2: state.prayerHistory2.filter(
@@ -99,7 +97,7 @@ export const prayersStore = create((set, get) => {
 
     getPrayerHistory2: async (date) => {
       try {
-        const response = await axios.get(`${apiURL}/api/prayer-history`);
+        const response = await axios.get(`/api/prayer-history`);
         const prayerHistory = response.data;
 
         //console.log("Fetched prayer history:", prayerHistory);
@@ -149,7 +147,7 @@ export const prayersStore = create((set, get) => {
 
 //     deletePrayer: async (id) => {
 //       try {
-//         await axios.delete(`${apiURL}/api/delete-prayer`, {
+//         await axios.delete(`/api/delete-prayer`, {
 //           params: { id },
 //         });
 
@@ -165,7 +163,7 @@ export const prayersStore = create((set, get) => {
 
 //     getPrayerHistory2: async (date) => {
 //       try {
-//         const response = await axios.get(`${apiURL}/api/prayer-history`);
+//         const response = await axios.get(`/api/prayer-history`);
 //         const prayerHistory = response.data;
 
 //         set({ prayerHistory2: response.data });

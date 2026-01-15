@@ -176,7 +176,7 @@ const Music = (props) => {
   const saveUpdatedDate = async (updatedItems) => {
     try {
       const updatePromises = updatedItems.map((item) =>
-        axios.patch(`${apiURL}/api/music/${item.id}`, {
+        axios.patch(`/api/music/${item.id}`, {
           date: item.date,
           order: item.order,
         })
@@ -190,7 +190,7 @@ const Music = (props) => {
 
   const handleDeleteMusic = async (musicId) => {
     try {
-      const response = await axios.delete(`${apiURL}/api/music`, {
+      const response = await axios.delete(`/api/music`, {
         params: {
           musicId: musicId.id,
         },
@@ -263,7 +263,7 @@ const Music = (props) => {
     }
 
     try {
-      const response = await axios.post(`${apiURL}/api/music`, formData);
+      const response = await axios.post(`/api/music`, formData);
 
       const finalData = {
         ...formData,
@@ -308,7 +308,7 @@ const Music = (props) => {
     console.log(formData);
 
     try {
-      const response = await axios.post(`${apiURL}/api/music-admin`, formData);
+      const response = await axios.post(`/api/music-admin`, formData);
 
       // musicStore.setState((state) => ({
       //   musicHistory2: [...(state.musicHistory2 || []), finalData],

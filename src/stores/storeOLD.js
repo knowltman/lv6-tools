@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { defaultFormValues } from "../app.logic";
 import axios from "axios";
-const apiURL = import.meta.env.VITE_API_URL;
 
 const currentUser = localStorage.getItem("user");
 
@@ -11,7 +10,7 @@ export const useStore = create((set) => ({
   members: [],
   fetchAllMembers: async () => {
     try {
-      const response = await axios.get(`${apiURL}/api/members`);
+      const response = await axios.get(`/api/members`);
       const sortedData = response.data.sort((a, b) =>
         a.last_name.localeCompare(b.last_name)
       );
@@ -62,7 +61,7 @@ export const useStore = create((set) => ({
   setMemberData: (newMemberData) => set({ memberData: newMemberData }),
   fetchMemberData: async (id) => {
     try {
-      const response = await axios.get(`${apiURL}/api/members/${id}`);
+      const response = await axios.get(`/api/members/${id}`);
       set({ memberData: response.data[0] });
     } catch (error) {
       console.error("Error fetching member data:", error);

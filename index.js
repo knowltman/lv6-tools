@@ -22,5 +22,11 @@ app.get("*", (req, res) => {
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`***************************\nBACKEND: ${PORT} 🙌`);
+  console.log("\nDB Config at startup:");
+  console.log("HOST:", process.env.DB_HOST);
+  console.log("PORT:", process.env.DB_PORT || 3306);
+  console.log("USER:", process.env.DB_USER);
+  console.log("PASSWORD:", process.env.DB_PASS ? "****" : null);
+  console.log("DATABASE:", process.env.DB_NAME);
 });

@@ -2,14 +2,13 @@ import { create } from "zustand";
 import { dataStore } from "./data";
 import axios from "axios";
 import { formStore } from "./formValues";
-const apiURL = import.meta.env.VITE_API_URL;
 
 export const programStore = create((set) => ({
   programData: [],
   programsList: [],
   selectedProgramDate: "",
   getProgramsList: async () => {
-    const response = await axios.get(`${apiURL}/api/all-programs`);
+    const response = await axios.get(`/api/all-programs`);
     set({ programsList: response.data.reverse() });
   },
   getProgramData: async (date) => {
@@ -17,7 +16,7 @@ export const programStore = create((set) => ({
     set({ selectedProgramDate: date });
     let finalData = {};
     try {
-      const response = await axios.get(`${apiURL}/api/programs/${date}`);
+      const response = await axios.get(`/api/programs/${date}`);
       const programDataString = response.data?.[0]?.program_data;
 
       if (programDataString) {
