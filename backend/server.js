@@ -36,7 +36,7 @@ app.get("/", (req, res) => {
   res.send("Welcome to the LV6 Tools API!");
 });
 
-app.post("/api/login", async (req, res) => {
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   db.query(
@@ -67,7 +67,7 @@ app.post("/api/login", async (req, res) => {
 });
 
 // Route to get data from SQLite
-app.get("/api/hymns", (req, res) => {
+app.get("/hymns", (req, res) => {
   db.query("SELECT * FROM hymns", [], (err, rows) => {
     if (err) {
       res.status(400).send(err.message);
@@ -77,7 +77,7 @@ app.get("/api/hymns", (req, res) => {
   });
 });
 
-app.get("/api/members", (req, res) => {
+app.get("/members", (req, res) => {
   db.query("SELECT * FROM ward_members ", [], (err, rows) => {
     if (err) {
       res.status(400).send(err.message);
@@ -88,7 +88,7 @@ app.get("/api/members", (req, res) => {
 });
 
 //get a ward member by the id
-app.get("/api/members/:id", (req, res) => {
+app.get("/members/:id", (req, res) => {
   const memberId = req.params.id;
 
   db.query(
@@ -119,7 +119,7 @@ app.get("/api/members/:id", (req, res) => {
   );
 });
 
-app.get("/api/all-programs", (req, res) => {
+app.get("/all-programs", (req, res) => {
   db.query(
     "SELECT id, created_by, DATE_FORMAT(date, '%Y-%m-%d') AS date, program_data FROM programs",
     [],
@@ -133,7 +133,7 @@ app.get("/api/all-programs", (req, res) => {
   );
 });
 
-app.post("/api/programs", (req, res) => {
+app.post("/programs", (req, res) => {
   const { date, formValues, user } = req.body;
 
   const programData = JSON.stringify(formValues);
@@ -176,7 +176,7 @@ app.post("/api/programs", (req, res) => {
   });
 });
 
-app.get("/api/programs/:date", (req, res) => {
+app.get("/programs/:date", (req, res) => {
   const { date } = req.params;
 
   // Ensure the date is in the correct format
@@ -197,7 +197,7 @@ app.get("/api/programs/:date", (req, res) => {
   });
 });
 
-app.post("/api/speaker", async (req, res) => {
+app.post("/speaker", async (req, res) => {
   const { newDates, speakerId, subject } = req.body;
 
   if (!newDates || !speakerId) {
@@ -224,7 +224,7 @@ app.post("/api/speaker", async (req, res) => {
   }
 });
 
-app.patch("/api/speaker/:id", async (req, res) => {
+app.patch("/speaker/:id", async (req, res) => {
   const id = Number(req.params.id);
   const { date, order } = req.body;
 
@@ -250,7 +250,7 @@ app.patch("/api/speaker/:id", async (req, res) => {
   }
 });
 
-app.patch("/api/speaker-update/:id", async (req, res) => {
+app.patch("/speaker-update/:id", async (req, res) => {
   const id = Number(req.params.id);
   const { subject } = req.body;
 
@@ -276,7 +276,7 @@ app.patch("/api/speaker-update/:id", async (req, res) => {
   }
 });
 
-app.delete("/api/delete-speaker/:id", async (req, res) => {
+app.delete("/delete-speaker/:id", async (req, res) => {
   const speakerDateId = req.params.id;
 
   try {
@@ -295,7 +295,7 @@ app.delete("/api/delete-speaker/:id", async (req, res) => {
   }
 });
 
-app.post("/api/add-member", async (req, res) => {
+app.post("/add-member", async (req, res) => {
   const { first_name, last_name, sex, isYouth, can_ask } = req.body;
 
   if (!first_name || !last_name) {
@@ -317,7 +317,7 @@ app.post("/api/add-member", async (req, res) => {
   }
 });
 
-app.patch("/api/update-member/:id", async (req, res) => {
+app.patch("/update-member/:id", async (req, res) => {
   const { id } = req.params;
   const updateFields = req.body;
 
@@ -346,7 +346,7 @@ app.patch("/api/update-member/:id", async (req, res) => {
   }
 });
 
-app.delete("/api/delete-member/:id", async (req, res) => {
+app.delete("/delete-member/:id", async (req, res) => {
   const memberId = req.params.id;
 
   try {
@@ -366,7 +366,7 @@ app.delete("/api/delete-member/:id", async (req, res) => {
 });
 
 //Prayers
-app.post("/api/prayer", async (req, res) => {
+app.post("/prayer", async (req, res) => {
   const { newDates, speakerId, type = null } = req.body;
 
   if (!newDates || !speakerId) {
@@ -396,7 +396,7 @@ app.post("/api/prayer", async (req, res) => {
   }
 });
 
-app.put("/api/prayer/:id", async (req, res) => {
+app.put("/prayer/:id", async (req, res) => {
   const { id } = req.params;
   const { date } = req.body;
 
@@ -412,7 +412,7 @@ app.put("/api/prayer/:id", async (req, res) => {
   }
 });
 
-app.delete("/api/prayer", async (req, res) => {
+app.delete("/prayer", async (req, res) => {
   const { speakerId, date } = req.query; // Extract speakerId and date from query parameters
 
   try {
@@ -429,7 +429,7 @@ app.delete("/api/prayer", async (req, res) => {
   }
 });
 
-app.delete("/api/delete-prayer", async (req, res) => {
+app.delete("/delete-prayer", async (req, res) => {
   const { id } = req.query; // Extract speakerId and date from query parameters
 
   try {
@@ -441,7 +441,7 @@ app.delete("/api/delete-prayer", async (req, res) => {
   }
 });
 
-app.get("/api/prayer-suggestions", (req, res) => {
+app.get("/prayer-suggestions", (req, res) => {
   db.query(
     `SELECT 
     wm.id AS speaker_id, 
@@ -477,7 +477,7 @@ LIMIT 10;
   );
 });
 
-app.get("/api/prayer-history", (req, res) => {
+app.get("/prayer-history", (req, res) => {
   db.query(
     `SELECT pd.id, DATE_FORMAT(pd.date, '%Y-%m-%d') AS date, pd.type, wm.first_name, wm.last_name 
 FROM prayer_dates pd 
@@ -494,7 +494,7 @@ ORDER BY pd.date desc;`,
   );
 });
 //Speakers
-app.get("/api/speaker-history", (req, res) => {
+app.get("/speaker-history", (req, res) => {
   db.query(
     `SELECT sd.id, DATE_FORMAT(sd.date, '%Y-%m-%d') AS date, sd.subject, wm.first_name, wm.last_name, sd.order, sd.speaker_id 
       FROM speaker_dates sd 
@@ -511,7 +511,7 @@ app.get("/api/speaker-history", (req, res) => {
   );
 });
 
-app.get("/api/speaker-suggestions", (req, res) => {
+app.get("/speaker-suggestions", (req, res) => {
   db.query(
     `SELECT 
     sd.speaker_id, 
@@ -545,7 +545,7 @@ LIMIT 10;`,
 });
 
 //Music
-app.get("/api/music-admin", (req, res) => {
+app.get("/music-admin", (req, res) => {
   db.query(
     `SELECT id, name, number, DATE_FORMAT(date, '%Y-%m-%d') AS date FROM music_admin_dates ORDER BY date DESC;`,
     [],
@@ -559,7 +559,7 @@ app.get("/api/music-admin", (req, res) => {
   );
 });
 
-app.post("/api/music", async (req, res) => {
+app.post("/music", async (req, res) => {
   const {
     date,
     hymn_number = null,
@@ -594,7 +594,7 @@ app.post("/api/music", async (req, res) => {
   }
 });
 
-app.post("/api/music-admin", async (req, res) => {
+app.post("/music-admin", async (req, res) => {
   const { date, chorister_id, organist_id } = req.body;
 
   if (!date) {
@@ -641,7 +641,7 @@ app.post("/api/music-admin", async (req, res) => {
   }
 });
 
-app.get("/api/music-history", (req, res) => {
+app.get("/music-history", (req, res) => {
   db.query(
     `SELECT md.id, md.hymn_number, h.name, md.performer, md.song_title, DATE_FORMAT(md.date, '%Y-%m-%d') AS date, md.type, md.chorister, md.organist
 FROM music_dates md 
@@ -658,7 +658,7 @@ ORDER BY md.date DESC;`,
   );
 });
 
-app.patch("/api/music/:id", async (req, res) => {
+app.patch("/music/:id", async (req, res) => {
   const id = Number(req.params.id);
   const { date } = req.body;
 
@@ -684,7 +684,7 @@ app.patch("/api/music/:id", async (req, res) => {
   }
 });
 
-app.patch("/api/music-admin/:id", async (req, res) => {
+app.patch("/music-admin/:id", async (req, res) => {
   const id = Number(req.params.id);
   const { chorister_id, organist_id } = req.body;
 
@@ -727,7 +727,7 @@ app.patch("/api/music-admin/:id", async (req, res) => {
   }
 });
 
-app.delete("/api/music", async (req, res) => {
+app.delete("/music", async (req, res) => {
   const { musicId } = req.query; // Extract speakerId and date from query parameters
 
   try {
@@ -740,7 +740,7 @@ app.delete("/api/music", async (req, res) => {
 });
 
 //Sundays
-app.post("/api/sunday", async (req, res) => {
+app.post("/sunday", async (req, res) => {
   const { date, type, description = null } = req.body;
 
   if (!date || !type) {
