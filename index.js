@@ -17,6 +17,11 @@ app.use(express.json());
 // API routes FIRST
 app.use("/api", backend);
 
+// Explicit API 404 to prevent SPA fallback for unknown API paths
+app.use("/api", (req, res) => {
+  res.status(404).json({ error: "API route not found" });
+});
+
 // Serve static frontend files from dist
 app.use(express.static(path.join(__dirname, "dist")));
 
@@ -26,7 +31,9 @@ app.get("*", (req, res) => {
 });
 
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
+const HOST = "0.0.0.0"; // bind all interfaces for cloud hosts
+
+app.listen(PORT, HOST, () => {
   console.log(`***************************\nBACKEND: ${PORT} 🙌`);
   console.log("\nDB Config at startup:");
   console.log("HOST:", process.env.DB_HOST);

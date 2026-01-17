@@ -9,15 +9,8 @@ export default defineConfig({
     include: ["@emotion/styled"],
   },
   server: {
-    // proxy: {
-    //   "/data": {
-    //     target: "http://localhost:5001",
-    //     changeOrigin: true,
-    //     secure: false,
-    //   },
-    // },
     proxy: {
-      "/api": "https://lv6.rhinogfx.com:5001",
+      "/api": "http://localhost:5001",
     },
   },
 });
