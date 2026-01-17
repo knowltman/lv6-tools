@@ -15,6 +15,10 @@ app.use(cors());
 app.use(express.json());
 
 // API routes FIRST
+app.use((req, _res, next) => {
+  console.log(`[REQ] ${req.method} ${req.originalUrl}`);
+  next();
+});
 app.use("/api", backend);
 
 // Explicit API 404 to prevent SPA fallback for unknown API paths
