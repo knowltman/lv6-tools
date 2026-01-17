@@ -8,10 +8,6 @@ import db from "./db.js"; // note the .js at the end
 
 const router = express.Router();
 
-router.use(cors());
-router.use(express.json());
-router.use(bodyParser.json());
-
 const secretKey = process.env.JWT_SECRET;
 
 const hashPassword = async (password) => {
