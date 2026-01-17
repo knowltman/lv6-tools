@@ -1,11 +1,4 @@
-// Optionally load .env for local dev; ignore if dotenv is missing in prod
-try {
-  await import("dotenv/config");
-} catch (err) {
-  if (process.env.NODE_ENV !== "production") {
-    console.warn("dotenv not available; relying on existing env vars");
-  }
-}
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import path from "path";
