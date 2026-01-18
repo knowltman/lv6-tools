@@ -541,7 +541,7 @@ LIMIT 10;`,
   );
 });
 
-router.get("/api/youth-speaker-suggestions", (req, res) => {
+router.get("/youth-speaker-suggestions", (req, res) => {
   db.query(
     `SELECT 
     sd.speaker_id, 
