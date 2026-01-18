@@ -541,10 +541,43 @@ LIMIT 10;`,
   );
 });
 
+router.get("/api/youth-speaker-suggestions", (req, res) => {
+  db.query(
+    `SELECT 
+    sd.speaker_id, 
+    wm.first_name, 
+    wm.last_name, 
+    MAX(sd.date) AS newest_date 
+FROM 
+    speaker_dates sd 
+JOIN 
+    ward_members wm ON sd.speaker_id = wm.id 
+WHERE 
+    wm.can_ask = 1 AND wm.active = 1 AND wm.isYouth is true
+GROUP BY 
+    sd.speaker_id, 
+    wm.first_name, 
+    wm.last_name 
+HAVING 
+    newest_date < DATE_SUB(CURDATE(), INTERVAL 6 MONTH) 
+ORDER BY 
+    newest_date ASC 
+LIMIT 10;`,
+    [],
+    (err, rows) => {
+      if (err) {
+        res.status(400).send(err.message);
+        return;
+      }
+      res.json(rows);
+    }
+  );
+});
+
 //Music
 router.get("/music-admin", (req, res) => {
   db.query(
-    `SELECT id, number, DATE_FORMAT(date, '%Y-%m-%d') AS date FROM music_admin_dates ORDER BY date DESC;`,
+    `SELECT id, chorister_id, organist_id, DATE_FORMAT(date, '%Y-%m-%d') AS date FROM music_admin_dates ORDER BY date DESC;`,
     [],
     (err, rows) => {
       if (err) {
