@@ -544,7 +544,7 @@ LIMIT 10;`,
 //Music
 router.get("/music-admin", (req, res) => {
   db.query(
-    `SELECT id, name, number, DATE_FORMAT(date, '%Y-%m-%d') AS date FROM music_admin_dates ORDER BY date DESC;`,
+    `SELECT id, number, DATE_FORMAT(date, '%Y-%m-%d') AS date FROM music_admin_dates ORDER BY date DESC;`,
     [],
     (err, rows) => {
       if (err) {
