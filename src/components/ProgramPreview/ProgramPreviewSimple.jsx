@@ -141,7 +141,7 @@ const ProgramPreviewSimple = (props) => {
 
     const speakers = [];
 
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 1; i <= 10; i++) {
       const speaker = programData[`speaker_${i}`];
       if (speaker?.first_name) speakers.push(speaker);
     }

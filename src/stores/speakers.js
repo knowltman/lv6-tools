@@ -59,7 +59,7 @@ export const speakersStore = create((set) => {
           if (sortedSpeakers[0]?.first_name && sortedSpeakers[0]?.last_name) {
             speakersToSet.speaker_1 = sortedSpeakers[0];
             // For subsequent speakers, only add if the previous one is valid
-            for (let i = 1; i < sortedSpeakers.length && i < 6; i++) {
+            for (let i = 1; i < sortedSpeakers.length && i < 10; i++) {
               if (
                 sortedSpeakers[i]?.first_name?.length > 1 &&
                 sortedSpeakers[i]?.last_name?.length > 1

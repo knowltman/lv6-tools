@@ -28,9 +28,15 @@ export const programStore = create((set) => ({
       }
       set({ programData: finalData });
 
-      formStore.setState((state) => ({
+      // Clear old speaker fields from formValues2 before updating
+      const clearedState = { ...formStore.getState().formValues2 };
+      for (let i = 1; i <= 20; i++) {
+        delete clearedState[`speaker_${i}`];
+      }
+
+      formStore.setState(() => ({
         formValues2: {
-          ...state.formValues2,
+          ...clearedState,
           ...finalData,
         },
       }));

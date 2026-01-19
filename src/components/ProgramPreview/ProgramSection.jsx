@@ -69,9 +69,18 @@ const ProgramSection = ({
   }
 
   const speakers = [];
-  for (let i = 1; i <= 6; i++) {
+  // Check for all possible speakers
+  let consecutiveEmpty = 0;
+  for (let i = 1; i <= 20; i++) {
     const speaker = programData[`speaker_${i}`];
-    if (speaker?.first_name) speakers.push(speaker);
+    if (speaker?.first_name) {
+      speakers.push(speaker);
+      consecutiveEmpty = 0; // Reset counter when we find a speaker
+    } else {
+      consecutiveEmpty++;
+      // Stop if we've seen 3 consecutive empty slots
+      if (consecutiveEmpty >= 3) break;
+    }
   }
 
   if (speakers.length === 0) {

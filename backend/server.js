@@ -228,6 +228,11 @@ router.get("/programs/:date", (req, res) => {
             }
           }
 
+          // Clear all existing speaker fields to avoid stale data
+          for (let i = 1; i <= 20; i++) {
+            delete programData[`speaker_${i}`];
+          }
+
           // Add live speakers if they exist
           if (speakerRows && speakerRows.length > 0) {
             speakerRows.forEach((speaker, index) => {
@@ -255,6 +260,10 @@ router.get("/programs/:date", (req, res) => {
                 };
               }
             });
+          } else {
+            // No prayers scheduled - explicitly set to empty objects
+            programData.invocation = {};
+            programData.benediction = {};
           }
 
           program.program_data = JSON.stringify(programData);
@@ -290,6 +299,10 @@ router.get("/programs/:date", (req, res) => {
                 };
               }
             });
+          } else {
+            // No prayers scheduled - explicitly set to empty objects
+            programData.invocation = {};
+            programData.benediction = {};
           }
 
           // Return a virtual program with live data
