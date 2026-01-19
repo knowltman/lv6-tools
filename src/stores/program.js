@@ -43,7 +43,7 @@ export const programStore = create((set) => ({
       //set the checkboxes for the program
       set(() => ({
         haveNewMembers: Array.isArray(finalData.new_members)
-          ? finalData.new_members.length > 0
+          ? finalData.new_members.some((item) => item && item.trim() !== "")
           : false,
       }));
 
