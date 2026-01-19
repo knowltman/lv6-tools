@@ -1,16 +1,18 @@
 import InfoBlock from "./InfoBlock";
 import BusinessItem from "./BusinessItem";
 import SectionSeparator from "./SectionSeparator";
+import ProgramSection from "./ProgramSection";
 import {
   checkForSpecialSundays,
   getNextSunday,
 } from "../../pages/Dashboard.logic";
 import { programStore } from "../../stores/program";
+import { settingsStore } from "../../stores/settings";
+import { formStore } from "../../stores/formValues";
 import { format, parseISO } from "date-fns";
+import { useEffect } from "react";
 
 const BasicStrings = {
-  opening:
-    "Good afternoon and thank you for joining us for the Lakeview 6th Ward Sacrament Meeting....",
   beginText: "We will begin our Sacrament meeting today by singing...",
   musicThanks: "We would like to thank",
   forLeading: "for leading our music today, and",
@@ -73,6 +75,25 @@ const ProgramPreviewSimple = (props) => {
     selectedProgramDate,
   } = programStore();
 
+  const { meetingTime, morningGreetings, afternoonGreetings, fetchSettings } =
+    settingsStore();
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
+  // Determine greeting based on meeting time
+  const getGreeting = () => {
+    const greetings =
+      meetingTime === "9:00 AM" || meetingTime === "10:30 AM"
+        ? morningGreetings
+        : afternoonGreetings;
+
+    // Select random greeting
+    const randomIndex = Math.floor(Math.random() * greetings.length);
+    return greetings[randomIndex];
+  };
+
   //const { programData } = programStore();
   const hasIntermediateHymn = `♫ <b>#${programData.intermediate_hymn?.number} ${programData.intermediate_hymn?.name}</b><br>`;
   const hasIntermediateHymnWardChoir = `♫ <b>${programData.intermediate_hymn?.name}</b> – by <i>The Ward Choir</i><br>`;
@@ -96,7 +117,7 @@ const ProgramPreviewSimple = (props) => {
 
   const isSpecialSunday = checkForSpecialSundays(
     selectedProgramDate,
-    specialSundays
+    specialSundays,
   );
 
   //console.log(programData);
@@ -130,23 +151,48 @@ const ProgramPreviewSimple = (props) => {
     const speakerLines = [];
     const includeIntermediate = programData.intermediate_hymn?.name?.length > 0;
 
-    // midpoint logic
-    let midpoint = -1;
-    if (includeIntermediate) {
+    // Use stored position or calculate default midpoint
+    let hymnPosition = programData.intermediate_hymn_position;
+    if (hymnPosition === null || hymnPosition === undefined) {
+      // Default midpoint logic if no position is saved
       if (speakers.length === 2) {
-        midpoint = 1; // between the two
+        hymnPosition = 1; // between the two
       } else if (speakers.length === 3) {
-        midpoint = 2; // after the first two
+        hymnPosition = 2; // after the first two
       } else {
-        midpoint = Math.floor(speakers.length / 2);
+        hymnPosition = Math.floor(speakers.length / 2);
       }
     }
+
+    // Clamp position to valid range
+    hymnPosition = Math.max(0, Math.min(speakers.length, hymnPosition));
+
+    const canMoveUp = hymnPosition > 0;
+    const canMoveDown = hymnPosition < speakers.length;
+
+    const moveHymnUp = () => {
+      if (canMoveUp) {
+        formStore
+          .getState()
+          .updateFormValue("intermediate_hymn_position", hymnPosition - 1);
+      }
+    };
+
+    const moveHymnDown = () => {
+      if (canMoveDown) {
+        formStore
+          .getState()
+          .updateFormValue("intermediate_hymn_position", hymnPosition + 1);
+      }
+    };
 
     speakerLines.push(`<p>${BasicStrings.wonderfulProgram || ""}`);
 
     speakers.forEach((speaker, index) => {
-      if (includeIntermediate && index === midpoint) {
-        speakerLines.push(getIntermediate());
+      if (includeIntermediate && index === hymnPosition) {
+        speakerLines.push(
+          `<div style="display: flex; align-items: center; gap: 0.5rem;">${getIntermediate()}</div>`,
+        );
       }
 
       const fullName = `${speaker.first_name} ${speaker.last_name}`;
@@ -156,6 +202,13 @@ const ProgramPreviewSimple = (props) => {
 
       speakerLines.push(`<b>${nameOrBlessing}</b><br>`);
     });
+
+    // If hymn position is at the end (after all speakers)
+    if (includeIntermediate && hymnPosition === speakers.length) {
+      speakerLines.push(
+        `<div style="display: flex; align-items: center; gap: 0.5rem;">${getIntermediate()}</div>`,
+      );
+    }
 
     return speakerLines.join("");
   };
@@ -170,11 +223,7 @@ const ProgramPreviewSimple = (props) => {
         </div>
         <div>{format(parseISO(selectedProgramDate), "MMMM, d, yyyy")}</div>
       </div>
-      <InfoBlock
-        title="Welcome"
-        isLoading={isLoading}
-        value={`${BasicStrings.opening}`}
-      />
+      <InfoBlock title="Welcome" isLoading={isLoading} value={getGreeting()} />
       <InfoBlock
         title="Presiding"
         isLoading={isLoading}
@@ -196,26 +245,26 @@ const ProgramPreviewSimple = (props) => {
           //The organist and chorister thanks go here //
           `${BasicStrings.musicThanks}
         <b class=${programData.chorister?.first_name ? "" : "error-text"}>${
-            programData.chorister?.first_name
-              ? programData.chorister?.first_name
-              : "Select a Chorister"
-          } ${programData.chorister?.last_name}</b> ${BasicStrings.forLeading}
+          programData.chorister?.first_name
+            ? programData.chorister?.first_name
+            : "Select a Chorister"
+        } ${programData.chorister?.last_name}</b> ${BasicStrings.forLeading}
         <b class=${programData.organist?.first_name ? "" : "error-text"}>${
-            programData.organist?.first_name
-              ? programData.organist?.first_name
-              : "Select an Organist"
-          } ${programData.organist?.last_name}</b>
+          programData.organist?.first_name
+            ? programData.organist?.first_name
+            : "Select an Organist"
+        } ${programData.organist?.last_name}</b>
         ${BasicStrings.accompanying}. ${BasicStrings.broadcast}.</p>
         <p style='margin-top: .5rem'>${BasicStrings.beginText}</p><p><b class=${
-            programData.opening_hymn.name ? "" : "error-text"
-          }></p><p>${
-            programData.opening_hymn.name
-              ? "#" +
-                programData.opening_hymn.number +
-                " " +
-                programData.opening_hymn.name
-              : "Select a hymn"
-          } 
+          programData.opening_hymn.name ? "" : "error-text"
+        }></p><p>${
+          programData.opening_hymn.name
+            ? "#" +
+              programData.opening_hymn.number +
+              " " +
+              programData.opening_hymn.name
+            : "Select a hymn"
+        } 
         </b></p>`
         }
       />
@@ -319,10 +368,11 @@ const ProgramPreviewSimple = (props) => {
         </b><p>${BasicStrings.afterWhich}</p>`}
       />
       <SectionSeparator title="" />
-      <InfoBlock
-        title="Program"
+      <ProgramSection
+        programData={programData}
         isLoading={isLoading}
-        value={`${BasicStrings.thanksForReverence}${getProgram()}`}
+        selectedProgramDate={selectedProgramDate}
+        specialSundays={specialSundays}
       />
       <SectionSeparator title="" />
       <InfoBlock

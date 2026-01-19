@@ -28,6 +28,7 @@ const Prayers = lazy(() => import("./pages/Prayers"));
 const Speakers = lazy(() => import("./pages/Speakers"));
 const Music = lazy(() => import("./pages/Music"));
 const Members = lazy(() => import("./pages/Members"));
+const Settings = lazy(() => import("./pages/Settings"));
 //const Bulletin = lazy(() => import("./pages/Bulletin"));
 
 import { getNextSunday } from "./pages/Dashboard.logic";
@@ -48,7 +49,9 @@ function App() {
   // const [musicAdmin, setMusicAdmin] = useState([]);
 
   const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("token") && localStorage.getItem("user") ? true : false
+    localStorage.getItem("token") && localStorage.getItem("user")
+      ? true
+      : false,
   );
   const [isLoading, setIsLoading] = useState(false);
   // const [programsList, setProgramsList] = useState([]);
@@ -204,6 +207,10 @@ function App() {
             element={
               isLoggedIn ? <Music date={date} /> : <Navigate to="/login" />
             }
+          />
+          <Route
+            path="/settings"
+            element={isLoggedIn ? <Settings /> : <Navigate to="/login" />}
           />
           {/* <Route
             path="/bulletin"

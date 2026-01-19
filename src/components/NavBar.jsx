@@ -45,6 +45,11 @@ const NavBar = (props) => {
     handleClose();
   };
 
+  const handleSettingsNavigate = (event) => {
+    navigate("/settings");
+    handleClose();
+  };
+
   const menuItems = [
     {
       label: "Home",
@@ -70,7 +75,7 @@ const NavBar = (props) => {
         padding: ".5rem",
         width: "calc(100vw - 1rem)",
         position: "fixed",
-        zIndex: 1,
+        zIndex: 1200,
         backdropFilter: "blur(16px) saturate(180%)",
         WebkitBackdropFilter: "blur(16px) saturate(180%)",
         backgroundColor: "rgba(255, 255, 255, 0.83)",
@@ -118,7 +123,7 @@ const NavBar = (props) => {
                 >
                   {item.label}
                 </div>
-              )
+              ),
             )}
           </div>
         )}
@@ -196,7 +201,7 @@ const NavBar = (props) => {
             </ListItemIcon>{" "}
             Members
           </MenuItem>
-          <MenuItem onClick={handleClose}>
+          <MenuItem onClick={handleSettingsNavigate}>
             <ListItemIcon>
               <Settings fontSize="small" />
             </ListItemIcon>

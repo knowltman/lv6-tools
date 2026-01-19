@@ -50,6 +50,23 @@ db.query("SELECT 1", (err) => {
   else console.log("DATABASE: connected 👍 \n***************************");
 });
 
+// Create settings table if it doesn't exist
+db.query(
+  `CREATE TABLE IF NOT EXISTS settings (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    setting_key VARCHAR(255) UNIQUE NOT NULL,
+    setting_value TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  )`,
+  (err) => {
+    if (err) {
+      console.error("Error creating settings table:", err);
+    } else {
+      console.log("Settings table ready");
+    }
+  },
+);
+
 db.query("SELECT * FROM hymns", (err, results) => {
   if (err) {
     console.error("DB ERROR:", err);

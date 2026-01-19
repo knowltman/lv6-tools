@@ -6,7 +6,7 @@ import {
   InputLabel,
   Divider,
 } from "@mui/material";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, addWeeks } from "date-fns";
 import { getNextSunday } from "../../pages/Dashboard.logic";
 import { programStore } from "../../stores/program";
 import { musicStore } from "../../stores/music";
@@ -18,11 +18,16 @@ const ProgramDateSelect = () => {
   const { getSundayPrayers, prayerHistory2, sundayPrayers } = prayersStore();
 
   const nextSunday = format(getNextSunday(), "yyyy-MM-dd");
+  const followingSunday = format(
+    addWeeks(parseISO(nextSunday), 1),
+    "yyyy-MM-dd",
+  );
+
   const hasAnEntry = programsList.some(
-    (program) => program.date === nextSunday
+    (program) => program.date === nextSunday,
   );
   const [selectedProgram, setSelectedProgram] = useState(
-    hasAnEntry ? nextSunday : nextSunday
+    hasAnEntry ? nextSunday : nextSunday,
   );
 
   const handleChange = (event) => {
@@ -32,6 +37,18 @@ const ProgramDateSelect = () => {
     getMusicHistory2(selectedValue);
     getSundayPrayers(selectedValue);
   };
+
+  // Create a combined list with next Sunday and following Sunday at the top
+  const futurePrograms = [
+    { date: nextSunday, isFuture: true },
+    { date: followingSunday, isFuture: true },
+  ];
+
+  // Filter out any existing programs that match the future dates
+  const pastPrograms = programsList.filter(
+    (program) =>
+      program.date !== nextSunday && program.date !== followingSunday,
+  );
 
   return (
     <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
@@ -44,9 +61,15 @@ const ProgramDateSelect = () => {
         label="Program Date"
         defaultChecked={selectedProgram}
       >
-        {programsList.map((program) => (
+        {futurePrograms.map((program) => (
+          <MenuItem key={program.date} value={program.date}>
+            {format(parseISO(program.date), "MMMM d, yyyy")}
+          </MenuItem>
+        ))}
+        {pastPrograms.length > 0 && <Divider />}
+        {pastPrograms.map((program) => (
           <MenuItem key={program.id} value={program.date}>
-            {format(parseISO(program.date), "MMMM, d, yyyy")}
+            {format(parseISO(program.date), "MMMM d, yyyy")}
           </MenuItem>
         ))}
       </Select>

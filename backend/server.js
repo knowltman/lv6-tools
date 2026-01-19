@@ -59,7 +59,7 @@ router.post("/login", async (req, res) => {
       } else {
         return res.status(401).json({ message: "Invalid credentials" });
       }
-    }
+    },
   );
 });
 
@@ -112,7 +112,7 @@ router.get("/members/:id", (req, res) => {
         return;
       }
       res.json(row);
-    }
+    },
   );
 });
 
@@ -126,7 +126,7 @@ router.get("/all-programs", (req, res) => {
         return;
       }
       res.json(rows);
-    }
+    },
   );
 });
 
@@ -167,7 +167,7 @@ router.post("/programs", (req, res) => {
             message: "Program saved successfully",
             id: result.insertId,
           });
-        }
+        },
       );
     }
   });
@@ -180,17 +180,130 @@ router.get("/programs/:date", (req, res) => {
   const formattedDate = date.split("T")[0]; // Keep it in 'YYYY-MM-DD' format
 
   // Query the database for the program with this date
-  const query = `SELECT id, program_data, DATE_FORMAT(date, '%Y-%m-%d') AS date, created_by FROM programs WHERE date = ?`;
+  const programQuery = `SELECT id, program_data, DATE_FORMAT(date, '%Y-%m-%d') AS date, created_by FROM programs WHERE date = ?`;
 
-  db.query(query, [formattedDate], (err, row) => {
+  // Also fetch speakers for this date
+  const speakersQuery = `
+    SELECT sd.id, sd.subject, sd.order, wm.first_name, wm.last_name, sd.speaker_id
+    FROM speaker_dates sd
+    JOIN ward_members wm ON wm.id = sd.speaker_id
+    WHERE DATE_FORMAT(sd.date, '%Y-%m-%d') = ?
+    ORDER BY sd.order ASC
+  `;
+
+  // And fetch prayers for this date
+  const prayersQuery = `
+    SELECT pd.id, pd.type, wm.first_name, wm.last_name
+    FROM prayer_dates pd
+    JOIN ward_members wm ON wm.id = pd.speaker_id
+    WHERE DATE_FORMAT(pd.date, '%Y-%m-%d') = ?
+  `;
+
+  db.query(programQuery, [formattedDate], (err, programRows) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
-    if (row) {
-      res.json(row);
-    } else {
-      res.status(404).json({ message: "Program not found" });
-    }
+
+    // Fetch speakers and prayers regardless of whether program exists
+    db.query(speakersQuery, [formattedDate], (err, speakerRows) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      db.query(prayersQuery, [formattedDate], (err, prayerRows) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+
+        // If program exists, parse and enhance it with live speaker/prayer data
+        if (programRows && programRows.length > 0) {
+          const program = programRows[0];
+          let programData = {};
+
+          if (program.program_data) {
+            try {
+              programData = JSON.parse(program.program_data);
+            } catch (parseError) {
+              console.error("Error parsing program_data:", parseError);
+            }
+          }
+
+          // Add live speakers if they exist
+          if (speakerRows && speakerRows.length > 0) {
+            speakerRows.forEach((speaker, index) => {
+              programData[`speaker_${index + 1}`] = {
+                first_name: speaker.first_name,
+                last_name: speaker.last_name,
+                subject: speaker.subject,
+                speaker_id: speaker.speaker_id,
+              };
+            });
+          }
+
+          // Add live prayers if they exist
+          if (prayerRows && prayerRows.length > 0) {
+            prayerRows.forEach((prayer) => {
+              if (prayer.type === "invocation") {
+                programData.invocation = {
+                  first_name: prayer.first_name,
+                  last_name: prayer.last_name,
+                };
+              } else if (prayer.type === "benediction") {
+                programData.benediction = {
+                  first_name: prayer.first_name,
+                  last_name: prayer.last_name,
+                };
+              }
+            });
+          }
+
+          program.program_data = JSON.stringify(programData);
+          res.json(programRows);
+        } else {
+          // No saved program, but create one from live data
+          const programData = {};
+
+          // Add speakers
+          if (speakerRows && speakerRows.length > 0) {
+            speakerRows.forEach((speaker, index) => {
+              programData[`speaker_${index + 1}`] = {
+                first_name: speaker.first_name,
+                last_name: speaker.last_name,
+                subject: speaker.subject,
+                speaker_id: speaker.speaker_id,
+              };
+            });
+          }
+
+          // Add prayers
+          if (prayerRows && prayerRows.length > 0) {
+            prayerRows.forEach((prayer) => {
+              if (prayer.type === "invocation") {
+                programData.invocation = {
+                  first_name: prayer.first_name,
+                  last_name: prayer.last_name,
+                };
+              } else if (prayer.type === "benediction") {
+                programData.benediction = {
+                  first_name: prayer.first_name,
+                  last_name: prayer.last_name,
+                };
+              }
+            });
+          }
+
+          // Return a virtual program with live data
+          res.json([
+            {
+              id: null,
+              date: formattedDate,
+              program_data: JSON.stringify(programData),
+              created_by: null,
+            },
+          ]);
+        }
+      });
+    });
   });
 });
 
@@ -207,8 +320,8 @@ router.post("/speaker", async (req, res) => {
         .promise()
         .query(
           "INSERT INTO speaker_dates (speaker_id, date, subject) VALUES (?, ?, ?)",
-          [speakerId, date, subject]
-        )
+          [speakerId, date, subject],
+        ),
     );
 
     // Wait for all insert queries to complete
@@ -304,7 +417,7 @@ router.post("/add-member", async (req, res) => {
       .promise()
       .query(
         "INSERT INTO ward_members (first_name, last_name, sex, active, isYouth, can_ask) VALUES (?, ?, ?, ?, ?, ?)",
-        [first_name, last_name, sex, 1, isYouth, can_ask]
+        [first_name, last_name, sex, 1, isYouth, can_ask],
       );
 
     res.status(200).json({ message: "Ward member saved successfully!" });
@@ -376,7 +489,7 @@ router.post("/prayer", async (req, res) => {
         .promise()
         .query(
           "INSERT INTO prayer_dates (speaker_id, date, type) VALUES (?, ?, ?)",
-          [speakerId, date, type]
+          [speakerId, date, type],
         );
     });
 
@@ -470,7 +583,7 @@ LIMIT 10;
         return;
       }
       res.json(rows);
-    }
+    },
   );
 });
 
@@ -487,7 +600,7 @@ ORDER BY pd.date desc;`,
         return;
       }
       res.json(rows);
-    }
+    },
   );
 });
 //Speakers
@@ -504,7 +617,7 @@ router.get("/speaker-history", (req, res) => {
         return;
       }
       res.json(rows);
-    }
+    },
   );
 });
 
@@ -537,7 +650,7 @@ LIMIT 10;`,
         return;
       }
       res.json(rows);
-    }
+    },
   );
 });
 
@@ -570,7 +683,7 @@ LIMIT 10;`,
         return;
       }
       res.json(rows);
-    }
+    },
   );
 });
 
@@ -585,7 +698,7 @@ router.get("/music-admin", (req, res) => {
         return;
       }
       res.json(rows);
-    }
+    },
   );
 });
 
@@ -608,7 +721,7 @@ router.post("/music", async (req, res) => {
       .promise()
       .query(
         "INSERT INTO music_dates (date, hymn_number, song_title, performer, type) VALUES (?, ?, ?, ?, ?)",
-        [date, hymn_number, song_title, performer, type]
+        [date, hymn_number, song_title, performer, type],
       );
 
     // Get the inserted record ID
@@ -652,7 +765,7 @@ router.post("/music-admin", async (req, res) => {
     }
 
     const query = `INSERT INTO music_admin_dates (${fields.join(
-      ", "
+      ", ",
     )}) VALUES (${placeholders.join(", ")})`;
 
     // Run the query
@@ -684,7 +797,7 @@ ORDER BY md.date DESC;`,
         return;
       }
       res.json(rows);
-    }
+    },
   );
 });
 
@@ -740,7 +853,7 @@ router.patch("/music-admin/:id", async (req, res) => {
     values.push(id); // Add the id at the end for the WHERE clause
 
     const query = `UPDATE music_admin_dates SET ${fields.join(
-      ", "
+      ", ",
     )} WHERE id = ?`;
 
     // Use db.promise().query to return a promise
@@ -782,7 +895,7 @@ router.post("/sunday", async (req, res) => {
       .promise()
       .query(
         "INSERT INTO sunday_dates (date, type, description) VALUES (?, ?, ?)",
-        [date, type, description]
+        [date, type, description],
       );
 
     const id = result.insertId;
@@ -805,8 +918,45 @@ router.get("/sunday-history", (req, res) => {
         return;
       }
       res.json(rows);
-    }
+    },
   );
+});
+
+// Get settings
+router.get("/settings", (req, res) => {
+  db.query("SELECT setting_key, setting_value FROM settings", (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    // Convert rows to key-value object
+    const settings = {};
+    rows.forEach((row) => {
+      settings[row.setting_key] = row.setting_value;
+    });
+    res.json(settings);
+  });
+});
+
+// Save or update a setting
+router.post("/settings", (req, res) => {
+  const { setting_key, setting_value } = req.body;
+
+  if (!setting_key) {
+    return res.status(400).json({ error: "setting_key is required" });
+  }
+
+  const query = `
+    INSERT INTO settings (setting_key, setting_value) 
+    VALUES (?, ?) 
+    ON DUPLICATE KEY UPDATE setting_value = ?, updated_at = CURRENT_TIMESTAMP
+  `;
+
+  db.query(query, [setting_key, setting_value, setting_value], (err) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ message: "Setting saved successfully" });
+  });
 });
 
 export default router;

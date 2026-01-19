@@ -64,12 +64,9 @@ export const programStore = create((set) => ({
       }));
 
       set(() => ({
-        haveStakeBusiness: !(
-          finalData.stakeBusiness?.length === 0 ||
-          (finalData.stakeBusiness?.length === 1 &&
-            finalData.stakeBusiness[0] === "") ||
-          finalData.stakeBusiness === undefined
-        ),
+        haveStakeBusiness: Array.isArray(finalData.stake_business)
+          ? finalData.stake_business.some((item) => item.trim() !== "")
+          : false,
       }));
 
       set(() => ({

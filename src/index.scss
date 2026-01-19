@@ -745,6 +745,47 @@ button:hover {
   @page {
     margin: 1.5rem;
   }
+
+  .info-block {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    overflow: visible !important;
+  }
+
+  .info-block__value,
+  .info-block-inline__value {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    overflow: visible !important;
+  }
+
+  .announcement-textarea {
+    display: none !important;
+  }
+
+  .print-text {
+    display: block !important;
+    font-weight: bold;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-bottom: 0.3rem;
+  }
+
+  div[style*="position: relative"] {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .printable {
+    min-height: 9in;
+  }
+
+  .sacrament-prayers {
+    margin-top: 2rem;
+    page-break-before: auto !important;
+  }
 }
 
 @keyframes fadeIn {

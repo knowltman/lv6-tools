@@ -65,14 +65,14 @@ const Dashboard = (props) => {
       setIsLoading(true);
 
       const speakerSuggestionsResponse = await axios.get(
-        `/api/speaker-suggestions`
+        `/api/speaker-suggestions`,
       );
 
       const youthSpeakerSuggestionsResponse = await axios.get(
-        `/api/youth-speaker-suggestions`
+        `/api/youth-speaker-suggestions`,
       );
       const prayerSuggestionsResponse = await axios.get(
-        `/api/prayer-suggestions`
+        `/api/prayer-suggestions`,
       );
 
       setSpeakerSuggestions(speakerSuggestionsResponse.data);
@@ -92,7 +92,7 @@ const Dashboard = (props) => {
       isSpeakersComplete,
       isMusicComplete,
       specialSundays,
-      isFirstSunday
+      isFirstSunday,
     );
     fetchSuggestions();
     setProgressValue(newProgress);
@@ -159,7 +159,7 @@ const Dashboard = (props) => {
               <Grid2
                 size={{ xs: 12, md: 4 }}
                 justifyContent={!isMobile && "flex-end"}
-                paddingTop={isMobile && 0}
+                paddingTop={isMobile ? 0 : undefined}
               >
                 <Grid2 container spacing={2} alignItems={"center"}>
                   <Grid2 size={6}>

@@ -76,6 +76,7 @@ const DynamicListInline = ({
           >
             <TextareaAutosize
               autoFocus
+              className="announcement-textarea"
               style={{
                 backgroundColor: "white",
                 fontFamily: "inherit",
@@ -101,6 +102,9 @@ const DynamicListInline = ({
               onChange={(e) => handleValueChange(index, e.target.value)}
               placeholder={`${fieldName} ${index + 1}`}
             />
+            <div className="print-text" style={{ display: "none" }}>
+              {val}
+            </div>
             {showDelete && (
               <IconButton
                 onClick={() => handleRemoveField(index)}

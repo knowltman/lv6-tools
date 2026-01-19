@@ -51,7 +51,7 @@ export const speakersStore = create((set) => {
 
           // Sort speakers by order if available, or just use the array order
           const sortedSpeakers = hasSpeakers.sort(
-            (a, b) => (a.order || 0) - (b.order || 0)
+            (a, b) => (a.order || 0) - (b.order || 0),
           );
 
           const speakersToSet = {};
@@ -81,9 +81,11 @@ export const speakersStore = create((set) => {
           };
 
           //console.log(speakersToSet);
+          // Reset all speakers first, then apply the new ones
           formStore.setState((state) => ({
             formValues2: {
               ...state.formValues2,
+              ...sundaySpeakers,
               ...speakersToSet,
             },
           }));

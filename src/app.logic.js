@@ -6,7 +6,7 @@ export async function findSongsByDate(dataArray, targetDate) {
 
   // Filter data for the target date
   const filteredData = dataArray.filter(
-    (item) => item.date.startsWith(targetDate) // Check if the date starts with the targetDate
+    (item) => item.date.startsWith(targetDate), // Check if the date starts with the targetDate
   );
 
   // Define the song types
@@ -86,6 +86,7 @@ export const defaultFormValues = {
   opening_hymn: { number: "", name: "" },
   sacrament_hymn: { number: "", name: "" },
   intermediate_hymn: { number: "", name: "", performer: "" },
+  intermediate_hymn_position: null,
   closing_hymn: { number: "", name: "" },
   invocation: { first_name: "", last_name: "" },
   chorister: {

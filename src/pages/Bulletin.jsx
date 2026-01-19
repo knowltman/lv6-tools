@@ -27,7 +27,7 @@ const Bulletin = (props) => {
   const programRef = useRef();
 
   const handlePrint = useReactToPrint({
-    content: () => programRef.current,
+    contentRef: programRef,
   });
 
   return (

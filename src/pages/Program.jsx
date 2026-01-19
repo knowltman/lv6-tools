@@ -23,13 +23,13 @@ const Program = (props) => {
   } = programStore((state) => state);
 
   const [isMobile, setIsMobile] = useState(
-    useMediaQuery("(max-width: 1366px)")
+    useMediaQuery("(max-width: 1366px)"),
   );
 
   const programRef = useRef();
 
   const handlePrint = useReactToPrint({
-    content: () => programRef.current,
+    contentRef: programRef,
   });
 
   // const handleProgramOpen = (programDate) => {
@@ -93,7 +93,7 @@ const Program = (props) => {
             specialSundays={specialSundays}
           />
         )}
-        <div className="print-only" style={{ pageBreakBefore: "always" }}>
+        <div className="print-only sacrament-prayers">
           <h2>Blessing on the Bread</h2>
           <p>
             O God, the Eternal Father, we ask thee in the name of thy Son, Jesus
