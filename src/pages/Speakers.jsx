@@ -60,7 +60,7 @@ function mergeSundaysByDate(sundays) {
   sundays.forEach(({ date, speakers }) => {
     if (!merged[date]) merged[date] = { date, speakers: [] };
     merged[date].speakers = merged[date].speakers.concat(
-      (speakers || []).filter(Boolean)
+      (speakers || []).filter(Boolean),
     );
   });
   return Object.values(merged);
@@ -264,7 +264,7 @@ export default function Speakers() {
 
   const handleOpenEdit = (speaker) => {
     let editingMember = members.find(
-      (member) => member.id === speaker.speaker_id
+      (member) => member.id === speaker.speaker_id,
     );
     setSelectedMember({ member: editingMember });
     setScheduledSpeaker(speaker);
@@ -306,11 +306,11 @@ export default function Speakers() {
   // 1. Map and merge speaker data as before
   const sundaysWithSpeakers = useMemo(
     () => mapSpeakerHistoryToSundays(speakerHistory2),
-    [speakerHistory2]
+    [speakerHistory2],
   );
   const mergedSundays = useMemo(
     () => mergeSundaysByDate(sundaysWithSpeakers),
-    [sundaysWithSpeakers]
+    [sundaysWithSpeakers],
   );
 
   // 2. Find min/max year/month in your data
@@ -324,13 +324,13 @@ export default function Speakers() {
       }
       return min;
     },
-    { year: today.getFullYear(), month: today.getMonth() + 1 }
+    { year: today.getFullYear(), month: today.getMonth() + 1 },
   );
 
   // 3. Generate all months from minYearMonth to nextYear/12
   const allYearMonths = useMemo(
     () => getAllYearMonths(minYearMonth.year, minYearMonth.month, nextYear, 12),
-    [minYearMonth, nextYear]
+    [minYearMonth, nextYear],
   );
 
   // 4. Generate all Sundays for each year/month, merge with speaker data
@@ -346,7 +346,7 @@ export default function Speakers() {
   }, [allYearMonths, mergedSundays]);
 
   const [containers, setContainers] = useState(() =>
-    buildContainers(allSundays)
+    buildContainers(allSundays),
   );
 
   useEffect(() => {
@@ -374,8 +374,8 @@ export default function Speakers() {
   // DnD sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 5 },
-    })
+      activationConstraint: { distance: 8 },
+    }),
   );
 
   const findContainer = (id) => {
@@ -400,7 +400,7 @@ export default function Speakers() {
         axios.patch(`/api/speaker/${item.id}`, {
           date: item.date,
           order: item.order,
-        })
+        }),
       );
       await Promise.all(updatePromises);
       if (typeof getSpeakerHistory2 === "function") getSpeakerHistory2();
@@ -411,19 +411,24 @@ export default function Speakers() {
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
-    setActiveId(null);
-    if (!over) return;
+    if (!over) {
+      setActiveId(null);
+      return;
+    }
     const activeContainer = findContainer(active.id);
     const overContainer = findContainer(over.id);
 
-    if (!activeContainer || !overContainer) return;
+    if (!activeContainer || !overContainer) {
+      setActiveId(null);
+      return;
+    }
 
     if (activeContainer === overContainer) {
       const oldIndex = containers[activeContainer].findIndex(
-        (i) => i.id === active.id
+        (i) => i.id === active.id,
       );
       const newIndex = containers[overContainer].findIndex(
-        (i) => i.id === over.id
+        (i) => i.id === over.id,
       );
       setContainers((prev) => {
         const newArr = arrayMove(prev[activeContainer], oldIndex, newIndex);
@@ -441,14 +446,14 @@ export default function Speakers() {
       });
     } else {
       const activeItem = containers[activeContainer].find(
-        (i) => i.id === active.id
+        (i) => i.id === active.id,
       );
       setContainers((prev) => {
         const newActive = prev[activeContainer].filter(
-          (i) => i.id !== active.id
+          (i) => i.id !== active.id,
         );
         const overIndex = prev[overContainer].findIndex(
-          (i) => i.id === over.id
+          (i) => i.id === over.id,
         );
         const newOver =
           overIndex === -1
@@ -472,6 +477,7 @@ export default function Speakers() {
         };
       });
     }
+    setActiveId(null);
   };
 
   const activeItem =
@@ -488,22 +494,32 @@ export default function Speakers() {
   const currentYear = today.getFullYear().toString();
   const currentMonth = (today.getMonth() + 1).toString().padStart(2, "0");
 
-  // Scroll to the correct month-row on load, offset by sticky header (63px)
+  const [hasScrolledToCurrentMonth, setHasScrolledToCurrentMonth] =
+    useState(false);
+
+  // Scroll to the correct month-row on initial load only
   useLayoutEffect(() => {
-    // Use useLayoutEffect to scroll before paint/fade-in
-    const monthKey = `${currentYear}-${currentMonth}`;
-    const ref = monthRefs.current[monthKey];
-    if (ref) {
-      let parent = ref;
-      while (parent && !parent.classList.contains("container")) {
-        parent = parent.parentElement;
+    // Only scroll on initial load and when grouped data is first available
+    if (
+      !hasScrolledToCurrentMonth &&
+      grouped &&
+      Object.keys(grouped).length > 0
+    ) {
+      const monthKey = `${currentYear}-${currentMonth}`;
+      const ref = monthRefs.current[monthKey];
+      if (ref) {
+        let parent = ref;
+        while (parent && !parent.classList.contains("container")) {
+          parent = parent.parentElement;
+        }
+        if (parent && parent.scrollTop !== undefined) {
+          parent.scrollTop = ref.offsetTop - parent.offsetTop - 68;
+        }
       }
-      if (parent && parent.scrollTop !== undefined) {
-        parent.scrollTop = ref.offsetTop - parent.offsetTop - 68;
-      }
+      setHasScrolledToCurrentMonth(true);
     }
     // eslint-disable-next-line
-  }, [grouped, currentYear, currentMonth]);
+  }, [grouped, currentYear, currentMonth, hasScrolledToCurrentMonth]);
 
   return (
     <div className="container" style={{ overflowY: "auto", height: "92vh" }}>
@@ -530,7 +546,7 @@ export default function Speakers() {
                   .map(([month, sundays]) => {
                     const allIds = sundays.flatMap(
                       ({ date }) =>
-                        containers[date]?.map((item) => item.id) || []
+                        containers[date]?.map((item) => item.id) || [],
                     );
                     const monthKey = `${year}-${month.padStart(2, "0")}`;
                     return (
@@ -587,14 +603,23 @@ export default function Speakers() {
             ))}
           <DragOverlay>
             {activeItem ? (
-              <DraggableItem_Speaker
-                id={activeItem.id}
-                name={activeItem.label || activeItem.name}
-                subject={activeItem.subject}
-                speaker_id={activeItem.speaker_id}
-                handleOpenEdit={handleOpenEdit}
-                handleDeleteSpeaker={handleDeleteSpeaker}
-              />
+              <div
+                style={{
+                  padding: "8px",
+                  backgroundColor: "#fbefd8",
+                  border: "1px solid #f9c399",
+                  borderRadius: "4px",
+                  opacity: 0.8,
+                  fontSize: "0.9rem",
+                }}
+              >
+                <div style={{ fontWeight: 600 }}>
+                  {activeItem.label || activeItem.name}
+                </div>
+                <div style={{ fontStyle: "italic", color: "#cb8525" }}>
+                  {activeItem.subject}
+                </div>
+              </div>
             ) : null}
           </DragOverlay>
         </DndContext>
