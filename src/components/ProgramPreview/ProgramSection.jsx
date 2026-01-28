@@ -6,8 +6,10 @@ import { checkForSpecialSundays } from "../../pages/Dashboard.logic";
 
 const BasicStrings = {
   wonderfulProgram: "We have a wonderful program today, we will hear from",
-  fastSunday:
-    "We now invite you to come forward to share a brief testimony of the Savior, and would like to close 25 after the hour.",
+  fastSundayIntro:
+    "We thank you for your reverence during the sacrament, we'll excuse the Aaronic Priesthood holders to sit with their families.",
+  fastSundayOutro:
+    "We now invite you to come forward to share a brief testimony of the Savior, and would like to close at 5 to the hour. Please remember to state your name.",
 };
 
 const ProgramSection = ({
@@ -33,9 +35,9 @@ const ProgramSection = ({
       <div className="info-block">
         <div className="info-block__title">Program</div>
         <div className="info-block__value">
-          <p>We'd like to thank all in attendance for your reverence.</p>
+          <p>{BasicStrings.fastSundayIntro}</p>
           <p className="error-text">SHARE A BRIEF TESTIMONY</p>
-          <p>{BasicStrings.fastSunday}</p>
+          <p>{BasicStrings.fastSundayOutro}</p>
         </div>
       </div>
     );
@@ -46,9 +48,9 @@ const ProgramSection = ({
       <div className="info-block">
         <div className="info-block__title">Program</div>
         <div className="info-block__value">
-          <p>We'd like to thank all in attendance for your reverence.</p>
+          <p>{BasicStrings.fastSundayIntro}</p>
           <p className="error-text">SHARE A BRIEF TESTIMONY</p>
-          <p>{BasicStrings.fastSunday}</p>
+          <p>{BasicStrings.fastSundayOutro}</p>
         </div>
       </div>
     );
@@ -88,8 +90,9 @@ const ProgramSection = ({
       <div className="info-block">
         <div className="info-block__title">Program</div>
         <div className="info-block__value">
-          <p>We'd like to thank all in attendance for your reverence.</p>
-          <p>No speakers scheduled</p>
+          <p>{BasicStrings.fastSundayIntro}</p>
+          <p className="error-text">SHARE A BRIEF TESTIMONY</p>
+          <p>{BasicStrings.fastSundayOutro}</p>
         </div>
       </div>
     );
@@ -99,15 +102,10 @@ const ProgramSection = ({
 
   // Use stored position or calculate default midpoint
   let hymnPosition = programData.intermediate_hymn_position;
-  if (hymnPosition === null || hymnPosition === undefined) {
-    // Default midpoint logic if no position is saved
-    if (speakers.length === 2) {
-      hymnPosition = 1;
-    } else if (speakers.length === 3) {
-      hymnPosition = 2;
-    } else {
-      hymnPosition = Math.floor(speakers.length / 2);
-    }
+  if (hymnPosition === null || hymnPosition === undefined || 
+      (hymnPosition === 1 && speakers.length > 2)) {
+    // Default midpoint logic if no position is saved, or if using old default for 3+ speakers
+    hymnPosition = Math.ceil(speakers.length / 2);
   }
 
   // Clamp position to valid range (0 = before all, speakers.length = after all)
@@ -146,7 +144,10 @@ const ProgramSection = ({
     <div className="info-block">
       <div className="info-block__title">Program</div>
       <div className="info-block__value">
-        <p>We'd like to thank all in attendance for your reverence.</p>
+        <p>
+          We'd like to thank for your reverence during the administration of the
+          sacrament.
+        </p>
         <p>{BasicStrings.wonderfulProgram}</p>
 
         {speakers.map((speaker, index) => {

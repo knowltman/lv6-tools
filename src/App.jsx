@@ -29,7 +29,7 @@ const Speakers = lazy(() => import("./pages/Speakers"));
 const Music = lazy(() => import("./pages/Music"));
 const Members = lazy(() => import("./pages/Members"));
 const Settings = lazy(() => import("./pages/Settings"));
-//const Bulletin = lazy(() => import("./pages/Bulletin"));
+const Bulletin = lazy(() => import("./pages/Bulletin"));
 
 import { getNextSunday } from "./pages/Dashboard.logic";
 import { programStore } from "./stores/program";
@@ -212,12 +212,10 @@ function App() {
             path="/settings"
             element={isLoggedIn ? <Settings /> : <Navigate to="/login" />}
           />
-          {/* <Route
+          <Route
             path="/bulletin"
-            element={
-              isLoggedIn ? <Bulletin date={date} /> : <Navigate to="/login" />
-            }
-          /> */}
+            element={isLoggedIn ? <Bulletin /> : <Navigate to="/login" />}
+          />
         </Routes>
       </Suspense>
       <>

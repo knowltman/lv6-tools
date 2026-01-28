@@ -69,6 +69,7 @@ const NavBar = (props) => {
 
   return (
     <Box
+      className="navbar-print-hide"
       sx={{
         borderBottom: 1,
         borderColor: "divider",

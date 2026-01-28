@@ -19,17 +19,15 @@ import SnackBar from "../components/SnackBar";
 const Settings = () => {
   const {
     meetingTime,
-    morningGreetings,
-    afternoonGreetings,
+    greeting,
     loading,
     fetchSettings,
     setMeetingTime,
-    saveGreetings,
+    saveGreeting,
   } = settingsStore();
 
-  // Local state for editing greetings
-  const [localMorningGreetings, setLocalMorningGreetings] = useState([]);
-  const [localAfternoonGreetings, setLocalAfternoonGreetings] = useState([]);
+  // Local state for editing greeting
+  const [localGreeting, setLocalGreeting] = useState("");
   const [saving, setSaving] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
@@ -38,11 +36,10 @@ const Settings = () => {
     fetchSettings();
   }, [fetchSettings]);
 
-  // Update local state when store values change
+  // Update local state when store value changes
   useEffect(() => {
-    setLocalMorningGreetings(morningGreetings);
-    setLocalAfternoonGreetings(afternoonGreetings);
-  }, [morningGreetings, afternoonGreetings]);
+    setLocalGreeting(greeting);
+  }, [greeting]);
 
   // Save meeting time to database when it changes
   const handleMeetingTimeChange = (event) => {
@@ -51,26 +48,18 @@ const Settings = () => {
   };
 
   // Handle greeting text changes
-  const handleMorningGreetingChange = (index, value) => {
-    const updated = [...localMorningGreetings];
-    updated[index] = value;
-    setLocalMorningGreetings(updated);
+  const handleGreetingChange = (value) => {
+    setLocalGreeting(value);
   };
 
-  const handleAfternoonGreetingChange = (index, value) => {
-    const updated = [...localAfternoonGreetings];
-    updated[index] = value;
-    setLocalAfternoonGreetings(updated);
-  };
-
-  // Save greetings to database
-  const handleSaveGreetings = async () => {
+  // Save greeting to database
+  const handleSaveGreeting = async () => {
     setSaving(true);
     try {
-      await saveGreetings(localMorningGreetings, localAfternoonGreetings);
+      await saveGreeting(localGreeting);
       setShowSuccessToast(true);
     } catch (error) {
-      console.error("Failed to save greetings:", error);
+      console.error("Failed to save greeting:", error);
     } finally {
       setSaving(false);
     }
@@ -138,46 +127,21 @@ const Settings = () => {
               color="text.secondary"
               sx={{ mb: 2, textTransform: "uppercase", fontWeight: 600 }}
             >
-              Program Greetings
+              Program Greeting
             </Typography>
-
-            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 500 }}>
-              Morning Greetings
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              The greeting will automatically change "Good afternoon" to "Good
+              morning" based on your meeting time (9:00 AM or 10:30 AM uses
+              morning).
             </Typography>
-            {localMorningGreetings.map((greeting, index) => (
-              <TextField
-                key={`morning-${index}`}
-                fullWidth
-                multiline
-                rows={2}
-                label={`Morning Greeting ${index + 1}`}
-                value={greeting}
-                onChange={(e) =>
-                  handleMorningGreetingChange(index, e.target.value)
-                }
-                sx={{ mb: 2 }}
-              />
-            ))}
-
-            <Divider sx={{ my: 3 }} />
-
-            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 500 }}>
-              Afternoon Greetings
-            </Typography>
-            {localAfternoonGreetings.map((greeting, index) => (
-              <TextField
-                key={`afternoon-${index}`}
-                fullWidth
-                multiline
-                rows={2}
-                label={`Afternoon Greeting ${index + 1}`}
-                value={greeting}
-                onChange={(e) =>
-                  handleAfternoonGreetingChange(index, e.target.value)
-                }
-                sx={{ mb: 2 }}
-              />
-            ))}
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              label="Greeting"
+              value={localGreeting}
+              onChange={(e) => handleGreetingChange(e.target.value)}
+            />
           </CardContent>
         </Card>
       </Box>
@@ -197,7 +161,7 @@ const Settings = () => {
       >
         <Button
           variant="contained"
-          onClick={handleSaveGreetings}
+          onClick={handleSaveGreeting}
           disabled={saving}
         >
           {saving ? "Saving..." : "Save Settings"}
@@ -207,7 +171,7 @@ const Settings = () => {
         open={showSuccessToast}
         setOpen={setShowSuccessToast}
         severity="success"
-        message="Greetings saved successfully"
+        message="Greeting saved successfully"
       />
     </Box>
   );

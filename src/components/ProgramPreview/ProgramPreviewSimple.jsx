@@ -18,7 +18,7 @@ const BasicStrings = {
   forLeading: "for leading our music today, and",
   accompanying: "for accompanying us on the organ",
   broadcast:
-    "We would also like to thank our Young Women ushers ________________________ and _________________________, and our reverence examples ________________________ and _________________________ we'll excuse them to sit with their families",
+    "We would also like to thank our Young Women ushers ____________________________________________, and our reverence examples ____________________________________________ we'll excuse them to sit with their families",
   invocation: "Following the singing, our invocation will be offered by...",
   newMembers:
     "We've received membership records for the following Individuals. Please stand as your name is read.",
@@ -75,8 +75,7 @@ const ProgramPreviewSimple = (props) => {
     selectedProgramDate,
   } = programStore();
 
-  const { meetingTime, morningGreetings, afternoonGreetings, fetchSettings } =
-    settingsStore();
+  const { meetingTime, greeting, fetchSettings } = settingsStore();
 
   useEffect(() => {
     fetchSettings();
@@ -84,14 +83,11 @@ const ProgramPreviewSimple = (props) => {
 
   // Determine greeting based on meeting time
   const getGreeting = () => {
-    const greetings =
-      meetingTime === "9:00 AM" || meetingTime === "10:30 AM"
-        ? morningGreetings
-        : afternoonGreetings;
-
-    // Select random greeting
-    const randomIndex = Math.floor(Math.random() * greetings.length);
-    return greetings[randomIndex];
+    const isMorning = meetingTime === "9:00 AM" || meetingTime === "10:30 AM";
+    if (isMorning) {
+      return greeting.replace(/^Good afternoon/i, "Good morning");
+    }
+    return greeting;
   };
 
   //const { programData } = programStore();
