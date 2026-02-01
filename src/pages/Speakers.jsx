@@ -28,6 +28,7 @@ import AddSpeakerPopup from "../components/Popups/AddSpeakerPopup";
 import EditSpeakerPopup from "../components/Popups/EditSpeakerPopup";
 import AddMemberPopup from "../components/Popups/AddMemberPopup";
 import AddEventPopup from "../components/Popups/AddEventPopup";
+import { useMediaQuery } from "@mui/material";
 import axios from "axios";
 // Helper: get all Sundays in a month
 function getAllSundays(year, month) {
@@ -148,6 +149,8 @@ export default function Speakers() {
   const [specialSunday, setSpecialSunday] = useState(defaultSpecialSunday);
   const [outsideCreate, setOutsideCreate] = useState({});
   const [eventValue, setEventValue] = useState(defaultEvent);
+
+  const isMobile = useMediaQuery("(max-width:499px)");
 
   const handleClose = () => {
     setSelectedMember({ member: "" });
@@ -561,38 +564,53 @@ export default function Speakers() {
                           items={allIds}
                           strategy={verticalListSortingStrategy}
                         >
-                          {sundays.map(({ date }) => (
-                            <div key={date}>
-                              <SundayContainer_Speaker
-                                date={date}
-                                handleAddSpecial={handleAddSpecial}
-                                handleAddSpeaker={handleAddSpeaker}
-                                handleAddEvent={handleAddEvent}
-                                setSelectedMember={setSelectedMember}
-                                setScheduledSpeaker={setScheduledSpeaker}
-                                selectedMember={selectedMember}
-                                specialSundays={specialSundays}
-                              >
-                                {(containers[date] || []).length === 0
-                                  ? null
-                                  : containers[date]
-                                      .filter((item) => item && item.id)
-                                      .map((item) => (
-                                        <DraggableItem_Speaker
-                                          key={item.id}
-                                          id={item.id}
-                                          name={item.label}
-                                          subject={item.subject}
-                                          speaker_id={item.speaker_id}
-                                          handleOpenEdit={handleOpenEdit}
-                                          handleDeleteSpeaker={
-                                            handleDeleteSpeaker
-                                          }
-                                        />
-                                      ))}
-                              </SundayContainer_Speaker>
-                            </div>
-                          ))}
+                          {(() => {
+                            const sortedSundays = isMobile
+                              ? sundays
+                                  .slice()
+                                  .sort(
+                                    (a, b) =>
+                                      new Date(a.date) - new Date(b.date),
+                                  )
+                              : sundays
+                                  .slice()
+                                  .sort(
+                                    (a, b) =>
+                                      new Date(b.date) - new Date(a.date),
+                                  );
+                            return sortedSundays.map(({ date }) => (
+                              <div key={date}>
+                                <SundayContainer_Speaker
+                                  date={date}
+                                  handleAddSpecial={handleAddSpecial}
+                                  handleAddSpeaker={handleAddSpeaker}
+                                  handleAddEvent={handleAddEvent}
+                                  setSelectedMember={setSelectedMember}
+                                  setScheduledSpeaker={setScheduledSpeaker}
+                                  selectedMember={selectedMember}
+                                  specialSundays={specialSundays}
+                                >
+                                  {(containers[date] || []).length === 0
+                                    ? null
+                                    : containers[date]
+                                        .filter((item) => item && item.id)
+                                        .map((item) => (
+                                          <DraggableItem_Speaker
+                                            key={item.id}
+                                            id={item.id}
+                                            name={item.label}
+                                            subject={item.subject}
+                                            speaker_id={item.speaker_id}
+                                            handleOpenEdit={handleOpenEdit}
+                                            handleDeleteSpeaker={
+                                              handleDeleteSpeaker
+                                            }
+                                          />
+                                        ))}
+                                </SundayContainer_Speaker>
+                              </div>
+                            ));
+                          })()}
                         </SortableContext>
                       </div>
                     );

@@ -31,6 +31,8 @@ export const ProgramSidebar = (props) => {
     setHaveOtherWardBusiness,
     haveStakeBusiness,
     setHaveStakeBusiness,
+    haveClosingAnnouncements,
+    setHaveClosingAnnouncements,
   } = programStore((state) => state);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -284,6 +286,15 @@ export const ProgramSidebar = (props) => {
           checkboxState={haveStakeBusiness}
           setCheckboxState={setHaveStakeBusiness}
           checkboxLabel={"Stake Business"}
+        />
+        <DynamicList
+          fieldName={"closing_announcements"}
+          fieldLabel={"Closing Business"}
+          formValues={formValues2 || []}
+          setFormValues={updateFormValue}
+          checkboxState={haveClosingAnnouncements}
+          setCheckboxState={setHaveClosingAnnouncements}
+          checkboxLabel={"Closing Business"}
         />
       </Box>
       <div className={isMobile ? "save-button-mobile" : "save-button"}>

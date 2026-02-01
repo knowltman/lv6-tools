@@ -15,6 +15,7 @@ const Program = (props) => {
     specialSundays,
     haveSpeakers,
     haveAnnouncements,
+    haveClosingAnnouncements,
     haveNewMembers,
     haveCallings,
     haveReleases,

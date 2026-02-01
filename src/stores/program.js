@@ -84,6 +84,16 @@ export const programStore = create((set) => ({
             )
           : false,
       }));
+
+      set(() => ({
+        haveClosingAnnouncements: Array.isArray(finalData.closing_announcements)
+          ? !(
+              finalData.closing_announcements.length === 0 ||
+              (finalData.closing_announcements.length === 1 &&
+                finalData.closing_announcements[0] === "")
+            )
+          : false,
+      }));
     } catch (error) {
       console.error("Error fetching program data:", error);
     }
@@ -111,4 +121,7 @@ export const programStore = create((set) => ({
   haveAnnouncements: false,
   setHaveAnnouncements: (newHasAnnouncements) =>
     set({ haveAnnouncements: newHasAnnouncements }),
+  haveClosingAnnouncements: false,
+  setHaveClosingAnnouncements: (newHasClosingAnnouncements) =>
+    set({ haveClosingAnnouncements: newHasClosingAnnouncements }),
 }));

@@ -71,6 +71,8 @@ const ProgramPreviewSimple = (props) => {
     haveSpeakers,
     haveAnnouncements,
     setHaveAnnouncements,
+    haveClosingAnnouncements,
+    setHaveClosingAnnouncements,
     specialSundays,
     selectedProgramDate,
   } = programStore();
@@ -371,6 +373,15 @@ const ProgramPreviewSimple = (props) => {
         specialSundays={specialSundays}
       />
       <SectionSeparator title="" />
+      {haveClosingAnnouncements ? (
+        <BusinessItem
+          title="Business"
+          value={programData.closing_announcements || []}
+          checkboxState={haveClosingAnnouncements}
+          setCheckboxState={setHaveClosingAnnouncements}
+          stateName="closing_announcements"
+        />
+      ) : null}
       <InfoBlock
         title="Closing"
         isLoading={isLoading}

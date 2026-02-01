@@ -20,7 +20,7 @@ const DynamicListInline = ({
   const generateUniqueId = () => `id-${Date.now()}-${Math.random()}`;
 
   useEffect(() => {
-    if (value.length === 0) {
+    if (!value || value.length === 0) {
       handleAddField();
     } else {
       setLocalValues(value);

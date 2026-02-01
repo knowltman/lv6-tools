@@ -109,6 +109,7 @@ export const defaultFormValues = {
   callings: [],
   other_ward_business: [],
   stake_business: [],
+  closing_announcements: [],
   benediction: { first_name: "", last_name: "" },
   date: date,
 };
