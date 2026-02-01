@@ -89,7 +89,7 @@ export const ProgramSidebar = (props) => {
               member.calling === "Bishop" ||
               member.calling === "Bishopric First Counselor" ||
               member.calling === "Bishopric Second Counselor" ||
-              member.calling === "Stake"
+              member.calling === "Stake",
           )}
           fieldName={"presiding"}
           fieldLabel={"Presiding"}
@@ -104,7 +104,7 @@ export const ProgramSidebar = (props) => {
             (member) =>
               member.calling === "Bishop" ||
               member.calling === "Bishopric First Counselor" ||
-              member.calling === "Bishopric Second Counselor"
+              member.calling === "Bishopric Second Counselor",
           )}
           fieldName={"conducting"}
           fieldLabel={"Conducting"}
