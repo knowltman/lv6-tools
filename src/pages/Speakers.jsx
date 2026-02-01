@@ -30,6 +30,12 @@ import AddMemberPopup from "../components/Popups/AddMemberPopup";
 import AddEventPopup from "../components/Popups/AddEventPopup";
 import { useMediaQuery } from "@mui/material";
 import axios from "axios";
+import {
+  mapToSundaysFormat,
+  groupSundaysByMonth,
+  getCurrentMonth,
+} from "./SchedulePage.logic";
+
 // Helper: get all Sundays in a month
 function getAllSundays(year, month) {
   const sundays = [];
@@ -41,18 +47,6 @@ function getAllSundays(year, month) {
     date.setDate(date.getDate() + 7);
   }
   return sundays;
-}
-
-// Helper: group by year and month
-function groupByYearMonth(sundays) {
-  const grouped = {};
-  sundays.forEach(({ date, speakers }) => {
-    const [year, month] = date.split("-").slice(0, 2);
-    if (!grouped[year]) grouped[year] = {};
-    if (!grouped[year][month]) grouped[year][month] = [];
-    grouped[year][month].push({ date, speakers });
-  });
-  return grouped;
 }
 
 // Merge all speakers for the same date into one object
@@ -358,17 +352,16 @@ export default function Speakers() {
   }, [speakerHistory2]);
 
   // 7. Group for rendering (sort speakers by order)
-  const grouped = useMemo(() => {
+  const groupedSundays = useMemo(() => {
     // Only sort if speakerHistory2 is loaded (prevents janky reordering after fade-in)
-    if (!speakerHistory2 || speakerHistory2.length === 0) return {};
-    const groupedRaw = groupByYearMonth(allSundays);
-    Object.values(groupedRaw).forEach((months) => {
-      Object.values(months).forEach((sundays) => {
-        sundays.forEach((sunday) => {
-          if (sunday.speakers && sunday.speakers.length > 1) {
-            sunday.speakers.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-          }
-        });
+    if (!speakerHistory2 || speakerHistory2.length === 0) return [];
+    const groupedRaw = groupSundaysByMonth(allSundays);
+    // Sort speakers within each Sunday
+    groupedRaw.forEach(([month, sundays]) => {
+      sundays.forEach((sunday) => {
+        if (sunday.speakers && sunday.speakers.length > 1) {
+          sunday.speakers.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        }
       });
     });
     return groupedRaw;
@@ -495,7 +488,9 @@ export default function Speakers() {
   // Find current year/month as string keys
   //const today = new Date();
   const currentYear = today.getFullYear().toString();
-  const currentMonth = (today.getMonth() + 1).toString().padStart(2, "0");
+
+  const currentMonth = getCurrentMonth();
+  const currentMonthRef = useRef(null);
 
   const [hasScrolledToCurrentMonth, setHasScrolledToCurrentMonth] =
     useState(false);
@@ -505,11 +500,10 @@ export default function Speakers() {
     // Only scroll on initial load and when grouped data is first available
     if (
       !hasScrolledToCurrentMonth &&
-      grouped &&
-      Object.keys(grouped).length > 0
+      groupedSundays &&
+      groupedSundays.length > 0
     ) {
-      const monthKey = `${currentYear}-${currentMonth}`;
-      const ref = monthRefs.current[monthKey];
+      const ref = currentMonthRef.current;
       if (ref) {
         let parent = ref;
         while (parent && !parent.classList.contains("container")) {
@@ -522,7 +516,7 @@ export default function Speakers() {
       setHasScrolledToCurrentMonth(true);
     }
     // eslint-disable-next-line
-  }, [grouped, currentYear, currentMonth, hasScrolledToCurrentMonth]);
+  }, [groupedSundays, currentMonth, hasScrolledToCurrentMonth]);
 
   return (
     <div className="container" style={{ overflowY: "auto", height: "92vh" }}>
@@ -533,92 +527,50 @@ export default function Speakers() {
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          {Object.entries(grouped)
-            .sort(([a], [b]) => Number(b) - Number(a))
-            .map(([year, months]) => (
-              <div
-                key={year}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: ".5rem",
-                }}
-              >
-                {Object.entries(months)
-                  .sort(([a], [b]) => Number(b) - Number(a)) // descending order
-                  .map(([month, sundays]) => {
-                    const allIds = sundays.flatMap(
-                      ({ date }) =>
-                        containers[date]?.map((item) => item.id) || [],
-                    );
-                    const monthKey = `${year}-${month.padStart(2, "0")}`;
-                    return (
-                      <div
-                        key={month}
-                        className="month-row"
-                        ref={(el) => {
-                          if (el) monthRefs.current[monthKey] = el;
-                        }}
-                      >
-                        <SortableContext
-                          items={allIds}
-                          strategy={verticalListSortingStrategy}
-                        >
-                          {(() => {
-                            const sortedSundays = isMobile
-                              ? sundays
-                                  .slice()
-                                  .sort(
-                                    (a, b) =>
-                                      new Date(a.date) - new Date(b.date),
-                                  )
-                              : sundays
-                                  .slice()
-                                  .sort(
-                                    (a, b) =>
-                                      new Date(b.date) - new Date(a.date),
-                                  );
-                            return sortedSundays.map(({ date }) => (
-                              <div key={date}>
-                                <SundayContainer_Speaker
-                                  date={date}
-                                  handleAddSpecial={handleAddSpecial}
-                                  handleAddSpeaker={handleAddSpeaker}
-                                  handleAddEvent={handleAddEvent}
-                                  setSelectedMember={setSelectedMember}
-                                  setScheduledSpeaker={setScheduledSpeaker}
-                                  selectedMember={selectedMember}
-                                  specialSundays={specialSundays}
-                                >
-                                  {(containers[date] || []).length === 0
-                                    ? null
-                                    : containers[date]
-                                        .filter((item) => item && item.id)
-                                        .map((item) => (
-                                          <DraggableItem_Speaker
-                                            key={item.id}
-                                            id={item.id}
-                                            name={item.label}
-                                            subject={item.subject}
-                                            speaker_id={item.speaker_id}
-                                            handleOpenEdit={handleOpenEdit}
-                                            handleDeleteSpeaker={
-                                              handleDeleteSpeaker
-                                            }
-                                          />
-                                        ))}
-                                </SundayContainer_Speaker>
-                              </div>
-                            ));
-                          })()}
-                        </SortableContext>
-                      </div>
-                    );
-                  })}
-                {/* Move year header to the bottom */}
-                <h3 className={"year-header"}>{year}</h3>
+          {groupedSundays.map(([month, sundays]) => (
+            <div
+              key={month}
+              ref={month === currentMonth ? currentMonthRef : null}
+            >
+              <h3>{month}</h3>
+              <div className="month-row">
+                <SortableContext
+                  items={sundays.flatMap((sunday) => containers[sunday.date]?.map((item) => item.id) || [])}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {sundays.map((sunday) => (
+                    <SundayContainer_Speaker
+                      key={sunday.date}
+                      date={sunday.date}
+                      handleAddSpecial={handleAddSpecial}
+                      handleAddSpeaker={handleAddSpeaker}
+                      handleAddEvent={handleAddEvent}
+                      setSelectedMember={setSelectedMember}
+                      setScheduledSpeaker={setScheduledSpeaker}
+                      selectedMember={selectedMember}
+                      specialSundays={specialSundays}
+                    >
+                      {(containers[sunday.date] || []).length === 0
+                        ? null
+                        : containers[sunday.date]
+                            .filter((item) => item && item.id)
+                            .map((item) => (
+                              <DraggableItem_Speaker
+                                key={item.id}
+                                id={item.id}
+                                name={item.label}
+                                subject={item.subject}
+                                speaker_id={item.speaker_id}
+                                handleOpenEdit={handleOpenEdit}
+                                handleDeleteSpeaker={handleDeleteSpeaker}
+                              />
+                            ))}
+                    </SundayContainer_Speaker>
+                  ))}
+                </SortableContext>
               </div>
-            ))}
+            </div>
+          ))}
           <DragOverlay>
             {activeItem ? (
               <div
