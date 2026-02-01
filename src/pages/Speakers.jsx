@@ -535,7 +535,10 @@ export default function Speakers() {
               <h3>{month}</h3>
               <div className="month-row">
                 <SortableContext
-                  items={sundays.flatMap((sunday) => containers[sunday.date]?.map((item) => item.id) || [])}
+                  items={sundays.flatMap(
+                    (sunday) =>
+                      containers[sunday.date]?.map((item) => item.id) || [],
+                  )}
                   strategy={verticalListSortingStrategy}
                 >
                   {sundays.map((sunday) => (
