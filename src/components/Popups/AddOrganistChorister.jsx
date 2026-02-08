@@ -38,7 +38,9 @@ export const AddOrganistChorister = (props) => {
               chorister: choristerOrganistForm.chorister,
             }}
             setFormValues={(updateFn) => {
-              const currentFormValues = { chorister: choristerOrganistForm.chorister };
+              const currentFormValues = {
+                chorister: choristerOrganistForm.chorister,
+              };
               const updatedFormValues = updateFn(currentFormValues);
               setChoristerOrganistForm((prev) => ({
                 ...prev,
@@ -57,7 +59,9 @@ export const AddOrganistChorister = (props) => {
               organist: choristerOrganistForm.organist,
             }}
             setFormValues={(updateFn) => {
-              const currentFormValues = { organist: choristerOrganistForm.organist };
+              const currentFormValues = {
+                organist: choristerOrganistForm.organist,
+              };
               const updatedFormValues = updateFn(currentFormValues);
               setChoristerOrganistForm((prev) => ({
                 ...prev,

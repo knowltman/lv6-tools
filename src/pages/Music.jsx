@@ -74,15 +74,15 @@ const Music = (props) => {
       const currentYear = new Date().getFullYear();
       const years = Array.from(
         { length: currentYear - 2023 + 2 },
-        (_, i) => 2024 + i
+        (_, i) => 2024 + i,
       );
 
       const mappedSundays = years.flatMap((year) =>
-        mapToSundaysMusicFormat(musicHistory2, musicAdmin, year)
+        mapToSundaysMusicFormat(musicHistory2, musicAdmin, year),
       );
 
       const filteredSunday = mappedSundays.filter(
-        (sunday) => date === sunday.date
+        (sunday) => date === sunday.date,
       );
 
       if (!filteredSunday) return;
@@ -103,7 +103,7 @@ const Music = (props) => {
             date: music.date,
             chorister: music.chorister,
             organist: music.organist,
-          }))
+          })),
       );
 
       setItems(initialItems);
@@ -149,7 +149,7 @@ const Music = (props) => {
 
         // Filter for items on the new Sunday (date) and update their order
         const sundayItems = updatedItems.filter(
-          (item) => item.date === newItem.date
+          (item) => item.date === newItem.date,
         );
 
         const changedItems = [];
@@ -179,7 +179,7 @@ const Music = (props) => {
         axios.patch(`/api/music/${item.id}`, {
           date: item.date,
           order: item.order,
-        })
+        }),
       );
 
       await Promise.all(updatePromises);
@@ -278,7 +278,7 @@ const Music = (props) => {
         .getState()
         .updateFormValue(
           `${scheduledMusic.type}_hymn`,
-          songFormData[`${scheduledMusic.type}_hymn`]
+          songFormData[`${scheduledMusic.type}_hymn`],
         );
 
       setSelectedHymn({ number: "", name: "" });
@@ -295,14 +295,17 @@ const Music = (props) => {
   };
 
   const handleSaveChoristerOrganist = async () => {
-    console.log('choristerOrganistForm at save:', choristerOrganistForm);
+    console.log("choristerOrganistForm at save:", choristerOrganistForm);
     const chorister_id = choristerOrganistForm.chorister?.id;
     const organist_id = choristerOrganistForm.organist?.id;
     const sundayDate = choristerOrganistForm.date;
 
     if (!sundayDate) {
-      console.error('ERROR: No date in choristerOrganistForm!', choristerOrganistForm);
-      alert('Error: No date selected. Please try opening the popup again.');
+      console.error(
+        "ERROR: No date in choristerOrganistForm!",
+        choristerOrganistForm,
+      );
+      alert("Error: No date selected. Please try opening the popup again.");
       return;
     }
 
@@ -312,7 +315,7 @@ const Music = (props) => {
       organist_id: organist_id,
     };
 
-    console.log('Form data being sent:', formData);
+    console.log("Form data being sent:", formData);
 
     try {
       const response = await axios.post(`/api/music-admin`, formData);
@@ -349,19 +352,29 @@ const Music = (props) => {
   };
 
   const handleAddChoristerOrganist = (date) => {
-    console.log('handleAddChoristerOrganist called with date:', date, 'typeof:', typeof date);
+    console.log(
+      "handleAddChoristerOrganist called with date:",
+      date,
+      "typeof:",
+      typeof date,
+    );
     if (!date) {
-      console.error('ERROR: handleAddChoristerOrganist called with no date!');
+      console.error("ERROR: handleAddChoristerOrganist called with no date!");
       return;
     }
-    
-    console.log('musicAdmin available:', !!musicAdmin, 'length:', musicAdmin?.length);
-    console.log('members available:', !!members, 'length:', members?.length);
-    
+
+    console.log(
+      "musicAdmin available:",
+      !!musicAdmin,
+      "length:",
+      musicAdmin?.length,
+    );
+    console.log("members available:", !!members, "length:", members?.length);
+
     // Find existing music admin data for this date
     const existingAdmin = musicAdmin.find((admin) => admin.date === date);
-    console.log('existingAdmin for date', date, ':', existingAdmin);
-    
+    console.log("existingAdmin for date", date, ":", existingAdmin);
+
     const existingChorister = existingAdmin?.chorister_id
       ? members.find((member) => member.id === existingAdmin.chorister_id)
       : { first_name: "", last_name: "" };
@@ -374,8 +387,8 @@ const Music = (props) => {
       organist: existingOrganist,
       date: date,
     };
-    
-    console.log('Setting choristerOrganistForm to:', newForm);
+
+    console.log("Setting choristerOrganistForm to:", newForm);
     setChoristerOrganistForm(newForm);
     setChoristerOrganistOpen(true);
   };
