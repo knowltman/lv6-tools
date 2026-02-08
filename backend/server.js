@@ -779,7 +779,10 @@ router.post("/music-admin", async (req, res) => {
 
     const query = `INSERT INTO music_admin_dates (${fields.join(
       ", ",
-    )}) VALUES (${placeholders.join(", ")})`;
+    )}) VALUES (${placeholders.join(", ")}) ON DUPLICATE KEY UPDATE ${fields
+      .slice(1)
+      .map((field) => `${field} = VALUES(${field})`)
+      .join(", ")}`;
 
     // Run the query
     const [results] = await db.promise().query(query, values);

@@ -37,7 +37,14 @@ export const AddOrganistChorister = (props) => {
             formValues={{
               chorister: choristerOrganistForm.chorister,
             }}
-            setFormValues={setChoristerOrganistForm}
+            setFormValues={(updateFn) => {
+              const currentFormValues = { chorister: choristerOrganistForm.chorister };
+              const updatedFormValues = updateFn(currentFormValues);
+              setChoristerOrganistForm((prev) => ({
+                ...prev,
+                chorister: updatedFormValues.chorister,
+              }));
+            }}
             options={members.filter((member) => member.calling === "Chorister")}
             fieldName={"chorister"}
             fieldLabel={"Chorister"}
@@ -49,7 +56,14 @@ export const AddOrganistChorister = (props) => {
             formValues={{
               organist: choristerOrganistForm.organist,
             }}
-            setFormValues={setChoristerOrganistForm}
+            setFormValues={(updateFn) => {
+              const currentFormValues = { organist: choristerOrganistForm.organist };
+              const updatedFormValues = updateFn(currentFormValues);
+              setChoristerOrganistForm((prev) => ({
+                ...prev,
+                organist: updatedFormValues.organist,
+              }));
+            }}
             options={members.filter((member) => member.calling === "Organist")}
             fieldName={"organist"}
             fieldLabel={"Organist"}

@@ -35,14 +35,14 @@ const SundayContainer_Music = ({
   // );
 
   const hasChoristerOrganist = musicAdmin.find(
-    (data) => data.date === sunday.date
+    (data) => data.date === sunday.date,
   );
 
   //console.log(hasChoristerOrganist);
 
   // Check if the current Sunday is a special Sunday
   const specialSunday = specialSundays.find(
-    (special) => special.date === sunday.date
+    (special) => special.date === sunday.date,
   );
 
   const getName = (id) => {
@@ -62,16 +62,8 @@ const SundayContainer_Music = ({
   };
 
   const handleAvatarGroupClick = () => {
-    const hasChorister =
-      getName(hasChoristerOrganist.chorister_id).member ?? {};
-    const hasOrganist = getName(hasChoristerOrganist.organist_id).member ?? {};
-
-    setChoristerOrganistForm((prev) => ({
-      ...prev,
-      chorister: hasChorister ?? {},
-      organist: hasOrganist ?? {},
-    }));
-    handleAddChoristerOrganist();
+    console.log("Avatar clicked for sunday:", sunday, "date:", sunday.date);
+    handleAddChoristerOrganist(sunday.date);
   };
 
   const isConferenceSunday =
@@ -137,26 +129,21 @@ const SundayContainer_Music = ({
       >
         {items
           .filter(
-            (item) => format(parseISO(item.date), "yyyy-MM-dd") === sunday.date
+            (item) => format(parseISO(item.date), "yyyy-MM-dd") === sunday.date,
           )
-          .map(
-            (item) => (
-              console.log(item),
-              (
-                <DraggableItem_Music
-                  key={item.id}
-                  id={item.id}
-                  name={item.name}
-                  type={item.type}
-                  number={item.hymn_number}
-                  performer={item.performer}
-                  setOpen={setOpen}
-                  date={item.date}
-                  handleDeleteMusic={handleDeleteMusic}
-                />
-              )
-            )
-          )}
+          .map((item) => (
+            <DraggableItem_Music
+              key={item.id}
+              id={item.id}
+              name={item.name}
+              type={item.type}
+              number={item.hymn_number}
+              performer={item.performer}
+              setOpen={setOpen}
+              date={item.date}
+              handleDeleteMusic={handleDeleteMusic}
+            />
+          ))}
 
         {specialSunday &&
         !["Other", "Fast Sunday"].includes(specialSunday.type) ? (

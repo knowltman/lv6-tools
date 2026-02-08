@@ -294,10 +294,17 @@ const Music = (props) => {
     setOpen(false);
   };
 
-  const handleSaveChoristerOrganist = async (date) => {
-    const chorister_id = choristerOrganistForm.chorister.id;
-    const organist_id = choristerOrganistForm.organist.id;
+  const handleSaveChoristerOrganist = async () => {
+    console.log('choristerOrganistForm at save:', choristerOrganistForm);
+    const chorister_id = choristerOrganistForm.chorister?.id;
+    const organist_id = choristerOrganistForm.organist?.id;
     const sundayDate = choristerOrganistForm.date;
+
+    if (!sundayDate) {
+      console.error('ERROR: No date in choristerOrganistForm!', choristerOrganistForm);
+      alert('Error: No date selected. Please try opening the popup again.');
+      return;
+    }
 
     const formData = {
       date: sundayDate,
@@ -305,7 +312,7 @@ const Music = (props) => {
       organist_id: organist_id,
     };
 
-    console.log(formData);
+    console.log('Form data being sent:', formData);
 
     try {
       const response = await axios.post(`/api/music-admin`, formData);
@@ -342,11 +349,35 @@ const Music = (props) => {
   };
 
   const handleAddChoristerOrganist = (date) => {
-    setChoristerOrganistOpen(true);
-    setChoristerOrganistForm((prev) => ({
-      ...prev,
+    console.log('handleAddChoristerOrganist called with date:', date, 'typeof:', typeof date);
+    if (!date) {
+      console.error('ERROR: handleAddChoristerOrganist called with no date!');
+      return;
+    }
+    
+    console.log('musicAdmin available:', !!musicAdmin, 'length:', musicAdmin?.length);
+    console.log('members available:', !!members, 'length:', members?.length);
+    
+    // Find existing music admin data for this date
+    const existingAdmin = musicAdmin.find((admin) => admin.date === date);
+    console.log('existingAdmin for date', date, ':', existingAdmin);
+    
+    const existingChorister = existingAdmin?.chorister_id
+      ? members.find((member) => member.id === existingAdmin.chorister_id)
+      : { first_name: "", last_name: "" };
+    const existingOrganist = existingAdmin?.organist_id
+      ? members.find((member) => member.id === existingAdmin.organist_id)
+      : { first_name: "", last_name: "" };
+
+    const newForm = {
+      chorister: existingChorister,
+      organist: existingOrganist,
       date: date,
-    }));
+    };
+    
+    console.log('Setting choristerOrganistForm to:', newForm);
+    setChoristerOrganistForm(newForm);
+    setChoristerOrganistOpen(true);
   };
 
   const groupedSundays = groupSundaysByMonth(sundaysJson.sundays);
