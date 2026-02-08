@@ -13,9 +13,21 @@ export const settingsStore = create((set) => ({
     try {
       const response = await axios.get("/api/settings");
 
+      const loadedMeetingTime = response.data.meetingTime || "9:00 AM";
+      const loadedGreeting = response.data.greeting || DEFAULT_GREETING;
+
+      // Ensure greeting matches meeting time
+      const timeOfDay = loadedMeetingTime.includes("AM")
+        ? "morning"
+        : "afternoon";
+      const correctedGreeting = loadedGreeting.replace(
+        /Good (morning|afternoon)/i,
+        `Good ${timeOfDay}`,
+      );
+
       set({
-        meetingTime: response.data.meetingTime || "9:00 AM",
-        greeting: response.data.greeting || DEFAULT_GREETING,
+        meetingTime: loadedMeetingTime,
+        greeting: correctedGreeting,
         loading: false,
       });
     } catch (error) {
@@ -30,7 +42,16 @@ export const settingsStore = create((set) => ({
         setting_key: "meetingTime",
         setting_value: newTime,
       });
-      set({ meetingTime: newTime });
+
+      // Update greeting based on meeting time
+      const timeOfDay = newTime.includes("AM") ? "morning" : "afternoon";
+      const currentGreeting = settingsStore.getState().greeting;
+      const updatedGreeting = currentGreeting.replace(
+        /Good (morning|afternoon)/i,
+        `Good ${timeOfDay}`,
+      );
+
+      set({ meetingTime: newTime, greeting: updatedGreeting });
     } catch (error) {
       console.error("Error saving setting:", error);
     }

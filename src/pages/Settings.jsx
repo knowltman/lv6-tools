@@ -6,8 +6,6 @@ import {
   Select,
   MenuItem,
   Typography,
-  Card,
-  CardContent,
   CircularProgress,
   TextField,
   Button,
@@ -87,6 +85,7 @@ const Settings = () => {
         overflowY: "auto",
         display: "flex",
         flexDirection: "column",
+        width: "50vw",
       }}
     >
       <Box sx={{ pt: "5rem", px: "2rem", pb: "6rem", flex: 1 }}>
@@ -94,56 +93,43 @@ const Settings = () => {
           Settings
         </Typography>
 
-        <Card elevation={0} sx={{ mb: 4 }}>
-          <CardContent sx={{ p: 0 }}>
-            <Typography
-              variant="subtitle2"
-              color="text.secondary"
-              sx={{ mb: 2, textTransform: "uppercase", fontWeight: 600 }}
-            >
-              General
-            </Typography>
-            <FormControl fullWidth>
-              <InputLabel id="meeting-time-label">Meeting Time</InputLabel>
-              <Select
-                labelId="meeting-time-label"
-                id="meeting-time-select"
-                value={meetingTime}
-                label="Meeting Time"
-                onChange={handleMeetingTimeChange}
-              >
-                <MenuItem value="9:00 AM">9:00 AM</MenuItem>
-                <MenuItem value="10:30 AM">10:30 AM</MenuItem>
-                <MenuItem value="12:00 PM">12:00 PM</MenuItem>
-              </Select>
-            </FormControl>
-          </CardContent>
-        </Card>
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          sx={{ mb: 2, textTransform: "uppercase", fontWeight: 600 }}
+        >
+          General
+        </Typography>
+        <FormControl fullWidth sx={{ mb: 4 }}>
+          <InputLabel id="meeting-time-label">Meeting Time</InputLabel>
+          <Select
+            labelId="meeting-time-label"
+            id="meeting-time-select"
+            value={meetingTime}
+            label="Meeting Time"
+            onChange={handleMeetingTimeChange}
+          >
+            <MenuItem value="9:00 AM">9:00 AM</MenuItem>
+            <MenuItem value="10:30 AM">10:30 AM</MenuItem>
+            <MenuItem value="12:00 PM">12:00 PM</MenuItem>
+          </Select>
+        </FormControl>
 
-        <Card elevation={0}>
-          <CardContent sx={{ p: 0 }}>
-            <Typography
-              variant="subtitle2"
-              color="text.secondary"
-              sx={{ mb: 2, textTransform: "uppercase", fontWeight: 600 }}
-            >
-              Program Greeting
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              The greeting will automatically change "Good afternoon" to "Good
-              morning" based on your meeting time (9:00 AM or 10:30 AM uses
-              morning).
-            </Typography>
-            <TextField
-              fullWidth
-              multiline
-              rows={3}
-              label="Greeting"
-              value={localGreeting}
-              onChange={(e) => handleGreetingChange(e.target.value)}
-            />
-          </CardContent>
-        </Card>
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          sx={{ mb: 2, textTransform: "uppercase", fontWeight: 600 }}
+        >
+          Program Greeting
+        </Typography>
+        <TextField
+          fullWidth
+          multiline
+          rows={3}
+          label="Greeting"
+          value={localGreeting}
+          onChange={(e) => handleGreetingChange(e.target.value)}
+        />
       </Box>
       <Box
         sx={{
