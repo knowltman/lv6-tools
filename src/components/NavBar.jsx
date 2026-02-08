@@ -16,6 +16,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import Settings from "@mui/icons-material/Settings";
 import { Group } from "@mui/icons-material";
+import { LibraryMusic } from "@mui/icons-material";
 import Logout from "@mui/icons-material/Logout";
 import { useNavigate, useLocation } from "react-router-dom";
 import { membersStore } from "../stores/members";
@@ -47,6 +48,11 @@ const NavBar = (props) => {
 
   const handleSettingsNavigate = (event) => {
     navigate("/settings");
+    handleClose();
+  };
+
+  const handleHymnsNavigate = (event) => {
+    navigate("/hymns");
     handleClose();
   };
 
@@ -201,6 +207,12 @@ const NavBar = (props) => {
               <Group fontSize="small" />
             </ListItemIcon>{" "}
             Members
+          </MenuItem>
+          <MenuItem onClick={handleHymnsNavigate}>
+            <ListItemIcon>
+              <LibraryMusic fontSize="small" />
+            </ListItemIcon>
+            Hymns
           </MenuItem>
           <MenuItem onClick={handleSettingsNavigate}>
             <ListItemIcon>

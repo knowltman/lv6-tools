@@ -30,6 +30,7 @@ const Music = lazy(() => import("./pages/Music"));
 const Members = lazy(() => import("./pages/Members"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Bulletin = lazy(() => import("./pages/Bulletin"));
+const Hymns = lazy(() => import("./pages/Hymns"));
 
 import { getNextSunday } from "./pages/Dashboard.logic";
 import { programStore } from "./stores/program";
@@ -95,6 +96,7 @@ function App() {
     getMusicHistory2(date);
     getSpeakerHistory2();
     getProgramsList();
+    getAllHymns();
 
     try {
       setIsLoading(true);
@@ -211,6 +213,10 @@ function App() {
           <Route
             path="/settings"
             element={isLoggedIn ? <Settings /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/hymns"
+            element={isLoggedIn ? <Hymns /> : <Navigate to="/login" />}
           />
           <Route
             path="/bulletin"

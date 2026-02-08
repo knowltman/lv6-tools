@@ -50,19 +50,39 @@ db.query("SELECT 1", (err) => {
   else console.log("DATABASE: connected 👍 \n***************************");
 });
 
-// Create settings table if it doesn't exist
+// Create hymns table with proper structure
 db.query(
-  `CREATE TABLE IF NOT EXISTS settings (
+  `CREATE TABLE IF NOT EXISTS hymns (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    setting_key VARCHAR(255) UNIQUE NOT NULL,
-    setting_value TEXT,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    number INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    UNIQUE KEY unique_hymn_number (number)
   )`,
   (err) => {
     if (err) {
-      console.error("Error creating settings table:", err);
+      console.error("Error creating hymns table:", err);
     } else {
-      console.log("Settings table ready");
+      console.log("Hymns table ready");
+      // Check if id column has AUTO_INCREMENT and fix it if needed
+      db.query(`SHOW CREATE TABLE hymns`, (err, results) => {
+        if (!err && results[0] && results[0]["Create Table"]) {
+          const createTableSQL = results[0]["Create Table"];
+          if (!createTableSQL.includes("AUTO_INCREMENT")) {
+            console.log("Hymns table missing AUTO_INCREMENT, fixing...");
+            // Alter the existing table to add AUTO_INCREMENT without dropping data
+            db.query(
+              `ALTER TABLE hymns MODIFY COLUMN id INT AUTO_INCREMENT`,
+              (err) => {
+                if (err) {
+                  console.error("Error modifying hymns table:", err);
+                } else {
+                  console.log("Hymns table updated with AUTO_INCREMENT");
+                }
+              },
+            );
+          }
+        }
+      });
     }
   },
 );

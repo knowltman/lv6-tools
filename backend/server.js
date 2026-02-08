@@ -65,12 +65,46 @@ router.post("/login", async (req, res) => {
 
 // Route to get data from SQLite
 router.get("/hymns", (req, res) => {
-  db.query("SELECT * FROM hymns", [], (err, rows) => {
+  db.query("SELECT * FROM hymns ORDER BY number", [], (err, rows) => {
     if (err) {
       res.status(400).send(err.message);
       return;
     }
     res.json(rows);
+  });
+});
+
+router.post("/hymns", (req, res) => {
+  const { number, name } = req.body;
+
+  if (!number || !name) {
+    return res
+      .status(400)
+      .json({ message: "Hymn number and name are required" });
+  }
+
+  db.query(
+    "INSERT INTO hymns (number, name) VALUES (?, ?)",
+    [number, name],
+    (err, result) => {
+      if (err) {
+        res.status(400).send(err.message);
+        return;
+      }
+      res.json({ id: result.insertId, number, name });
+    },
+  );
+});
+
+router.delete("/hymns/:id", (req, res) => {
+  const { id } = req.params;
+
+  db.query("DELETE FROM hymns WHERE id = ?", [id], (err, result) => {
+    if (err) {
+      res.status(400).send(err.message);
+      return;
+    }
+    res.json({ message: "Hymn deleted successfully" });
   });
 });
 
