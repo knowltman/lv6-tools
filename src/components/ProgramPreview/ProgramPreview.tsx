@@ -110,7 +110,7 @@ const ProgramPreview = (props) => {
 
   const isSpecialSunday = checkForSpecialSundays(
     programDate,
-    specialSundaysSpeakers
+    specialSundaysSpeakers,
   );
 
   const getProgram = () => {
@@ -130,25 +130,25 @@ const ProgramPreview = (props) => {
     ) {
       return `<p>${BasicStrings.wonderfulProgram}
      <b class=${formValues.speaker_1.first_name ? "" : "error-text"}>${
-        formValues.speaker_1.first_name
-          ? formValues.speaker_1.first_name
-          : "Select a Speaker"
-      } ${formValues.speaker_1.last_name}</b>${
-        formValues.intermediate_hymn.number !== undefined
-          ? getIntermediate(3)
-          : noIntermediateHymn
-      }
+       formValues.speaker_1.first_name
+         ? formValues.speaker_1.first_name
+         : "Select a Speaker"
+     } ${formValues.speaker_1.last_name}</b>${
+       formValues.intermediate_hymn.number !== undefined
+         ? getIntermediate(3)
+         : noIntermediateHymn
+     }
     <b class=${formValues.speaker_2?.first_name ? "" : "error-text"}>${
-        formValues.speaker_2.first_name
-          ? formValues.speaker_2.first_name
-          : "Select a Speaker"
-      } ${formValues.speaker_2.last_name}</b> ${
-        BasicStrings.concludingSpeaker
-      } <b class=${formValues.speaker_3.first_name ? "" : "error-text"}>${
-        formValues.speaker_3.first_name
-          ? formValues.speaker_3.first_name
-          : "Select a speaker"
-      } ${formValues.speaker_3.last_name}</b>${BasicStrings.gotoThatPoint}`;
+      formValues.speaker_2.first_name
+        ? formValues.speaker_2.first_name
+        : "Select a Speaker"
+    } ${formValues.speaker_2.last_name}</b> ${
+      BasicStrings.concludingSpeaker
+    } <b class=${formValues.speaker_3.first_name ? "" : "error-text"}>${
+      formValues.speaker_3.first_name
+        ? formValues.speaker_3.first_name
+        : "Select a speaker"
+    } ${formValues.speaker_3.last_name}</b>${BasicStrings.gotoThatPoint}`;
       //There are only two speakers
     } else if (
       formValues.speaker_1.first_name &&
@@ -167,10 +167,10 @@ const ProgramPreview = (props) => {
       }
 
   <b class=${formValues.speaker_2?.first_name ? "" : "error-text"}>${
-        formValues.speaker_2.first_name
-          ? formValues.speaker_2.first_name
-          : "Select a Speaker"
-      } ${formValues.speaker_2.last_name}</b> `;
+    formValues.speaker_2.first_name
+      ? formValues.speaker_2.first_name
+      : "Select a Speaker"
+  } ${formValues.speaker_2.last_name}</b> `;
     }
   };
 
@@ -219,23 +219,23 @@ const ProgramPreview = (props) => {
           } 
         </b><p>${BasicStrings.musicThanks}
         <b class=${formValues.chorister.first_name ? "" : "error-text"}>${
-            formValues.chorister.first_name
-              ? formValues.chorister.first_name
-              : "Select a Chorister"
-          } ${formValues.chorister.last_name}</b> ${BasicStrings.forLeading}
+          formValues.chorister.first_name
+            ? formValues.chorister.first_name
+            : "Select a Chorister"
+        } ${formValues.chorister.last_name}</b> ${BasicStrings.forLeading}
         <b class=${formValues.organist.first_name ? "" : "error-text"}>${
-            formValues.organist.first_name
-              ? formValues.organist.first_name
-              : "Select an Organist"
-          } ${formValues.organist.last_name}</b>
+          formValues.organist.first_name
+            ? formValues.organist.first_name
+            : "Select an Organist"
+        } ${formValues.organist.last_name}</b>
         ${BasicStrings.accompanying}.</p><p>${BasicStrings.broadcast}.</p>
         <p>${BasicStrings.invocation} <b class=${
-            formValues.invocation.first_name ? "" : "error-text"
-          }>${
-            formValues.invocation.first_name
-              ? formValues.invocation.first_name
-              : "Select an invocation"
-          } ${formValues.invocation.last_name}</b></p>`}
+          formValues.invocation.first_name ? "" : "error-text"
+        }>${
+          formValues.invocation.first_name
+            ? formValues.invocation.first_name
+            : "Select an invocation"
+        } ${formValues.invocation.last_name}</b></p>`}
         />
         {haveNewMembers ||
         haveReleases ||
@@ -310,12 +310,12 @@ const ProgramPreview = (props) => {
               : "Select a hymn"
           } 
         </b>${BasicStrings.benediction}  <b class=${
-            formValues.benediction.first_name ? "" : "error-text"
-          }>${
-            formValues.benediction.first_name
-              ? formValues.benediction.first_name
-              : "Select a benediction"
-          } ${formValues.benediction.last_name}</b></p>`}
+          formValues.benediction.first_name ? "" : "error-text"
+        }>${
+          formValues.benediction.first_name
+            ? formValues.benediction.first_name
+            : "Select a benediction"
+        } ${formValues.benediction.last_name}</b></p>`}
         />
       </div>
       <Backdrop

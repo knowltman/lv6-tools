@@ -71,4 +71,5 @@ export const settingsStore = create((set) => ({
       console.error("Error saving ward name:", error);
       throw error;
     }
-  },}));
+  },
+}));
