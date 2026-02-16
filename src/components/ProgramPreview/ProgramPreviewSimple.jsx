@@ -77,7 +77,7 @@ const ProgramPreviewSimple = (props) => {
     selectedProgramDate,
   } = programStore();
 
-  const { meetingTime, greeting, fetchSettings } = settingsStore();
+  const { meetingTime, greeting, wardName, fetchSettings } = settingsStore();
 
   useEffect(() => {
     fetchSettings();
@@ -86,10 +86,11 @@ const ProgramPreviewSimple = (props) => {
   // Determine greeting based on meeting time
   const getGreeting = () => {
     const isMorning = meetingTime === "9:00 AM" || meetingTime === "10:30 AM";
+    let greetingText = greeting.replace(/\[WARD_NAME\]/g, wardName);
     if (isMorning) {
-      return greeting.replace(/^Good afternoon/i, "Good morning");
+      return greetingText.replace(/^Good afternoon/i, "Good morning");
     }
-    return greeting;
+    return greetingText.replace(/^Good morning/i, "Good afternoon");
   };
 
   //const { programData } = programStore();
@@ -217,7 +218,7 @@ const ProgramPreviewSimple = (props) => {
       <div className="main-header">
         <div className="ward-name">
           <img style={{ width: "30px" }} src="../lv6_Logo.svg" />
-          Lakeview 6th Ward
+          {wardName}
         </div>
         <div>{format(parseISO(selectedProgramDate), "MMMM, d, yyyy")}</div>
       </div>

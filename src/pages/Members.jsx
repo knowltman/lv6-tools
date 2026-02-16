@@ -8,8 +8,7 @@ import { dataStore } from "../stores/data";
 import { membersStore } from "../stores/members";
 
 const Members = () => {
-  const { members, setMembers, memberData } = dataStore();
-  const { fetchMemberData } = membersStore();
+  const { members, setMembers, memberData, fetchMemberData } = membersStore();
   //const fetchMemberData = membersStore((state) => state.fetchMemberData);
 
   const [isAddMember, setIsAddMember] = useState(false);
@@ -25,13 +24,8 @@ const Members = () => {
 
   return (
     <>
-      <WardMembers
-        members={members}
-        setMembers={setMembers}
-        fetchMemberData={fetchMemberData}
-        memberData={memberData}
-      />
-      <Backdrop open={isAddMember} sx={{ zIndex: 2 }} />
+      <WardMembers />
+      {/* <Backdrop open={isAddMember} sx={{ zIndex: 2 }} /> */}
       <AddMemberPopup
         open={isAddMember}
         handleClose={handleClose}

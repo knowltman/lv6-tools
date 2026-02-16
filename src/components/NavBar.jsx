@@ -11,6 +11,7 @@ import {
   Drawer,
   List,
   ListItem,
+  ListItemButton,
   useMediaQuery,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -101,15 +102,15 @@ const NavBar = (props) => {
             >
               <List style={{ width: 300 }}>
                 {menuItems.map((item) => (
-                  <ListItem
-                    button
-                    key={item.label}
-                    onClick={() => {
-                      navigate(item.path);
-                      setDrawerOpen(false);
-                    }}
-                  >
-                    <h3>{item.label}</h3>
+                  <ListItem key={item.label}>
+                    <ListItemButton
+                      onClick={() => {
+                        navigate(item.path);
+                        setDrawerOpen(false);
+                      }}
+                    >
+                      <h3>{item.label}</h3>
+                    </ListItemButton>
                   </ListItem>
                 ))}
               </List>

@@ -2,11 +2,14 @@ import { create } from "zustand";
 import axios from "axios";
 
 const DEFAULT_GREETING =
-  "Good afternoon and thank you for joining us for the Lakeview 6th Ward Sacrament Meeting.";
+  "Good afternoon and thank you for joining us for the [WARD_NAME] Sacrament Meeting.";
+
+const DEFAULT_WARD_NAME = "Lakeview 6th Ward";
 
 export const settingsStore = create((set) => ({
   meetingTime: "9:00 AM",
   greeting: DEFAULT_GREETING,
+  wardName: DEFAULT_WARD_NAME,
   loading: true,
 
   fetchSettings: async () => {
@@ -15,19 +18,12 @@ export const settingsStore = create((set) => ({
 
       const loadedMeetingTime = response.data.meetingTime || "9:00 AM";
       const loadedGreeting = response.data.greeting || DEFAULT_GREETING;
-
-      // Ensure greeting matches meeting time
-      const timeOfDay = loadedMeetingTime.includes("AM")
-        ? "morning"
-        : "afternoon";
-      const correctedGreeting = loadedGreeting.replace(
-        /Good (morning|afternoon)/i,
-        `Good ${timeOfDay}`,
-      );
+      const loadedWardName = response.data.wardName || DEFAULT_WARD_NAME;
 
       set({
         meetingTime: loadedMeetingTime,
-        greeting: correctedGreeting,
+        greeting: loadedGreeting,
+        wardName: loadedWardName,
         loading: false,
       });
     } catch (error) {
@@ -43,15 +39,7 @@ export const settingsStore = create((set) => ({
         setting_value: newTime,
       });
 
-      // Update greeting based on meeting time
-      const timeOfDay = newTime.includes("AM") ? "morning" : "afternoon";
-      const currentGreeting = settingsStore.getState().greeting;
-      const updatedGreeting = currentGreeting.replace(
-        /Good (morning|afternoon)/i,
-        `Good ${timeOfDay}`,
-      );
-
-      set({ meetingTime: newTime, greeting: updatedGreeting });
+      set({ meetingTime: newTime });
     } catch (error) {
       console.error("Error saving setting:", error);
     }
@@ -70,4 +58,17 @@ export const settingsStore = create((set) => ({
       throw error;
     }
   },
-}));
+
+  setWardName: async (newWardName) => {
+    try {
+      await axios.post("/api/settings", {
+        setting_key: "wardName",
+        setting_value: newWardName,
+      });
+
+      set({ wardName: newWardName });
+    } catch (error) {
+      console.error("Error saving ward name:", error);
+      throw error;
+    }
+  },}));

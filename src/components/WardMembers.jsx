@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Checkbox, TextField, IconButton } from "@mui/material";
+import {
+  Checkbox,
+  TextField,
+  IconButton,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import MemberDetail from "./MemberEditor/MemberDetail";
 import { membersStore } from "../stores/members";
@@ -11,6 +19,7 @@ const WardMembers = () => {
   const [editValues, setEditValues] = useState({
     first_name: "",
     last_name: "",
+    calling: "",
   });
 
   const {
@@ -19,6 +28,7 @@ const WardMembers = () => {
     removeMember,
     updateMemberField,
     fetchMemberData,
+    memberData,
   } = membersStore();
 
   // Handle edit start
@@ -43,6 +53,7 @@ const WardMembers = () => {
     setEditValues({
       first_name: member.first_name,
       last_name: member.last_name,
+      calling: member.calling || "",
     });
   };
 
@@ -69,6 +80,7 @@ const WardMembers = () => {
           <div className="header-cell">First Name</div>
           <div className="header-cell">Last Name</div>
           <div className="header-cell">Gender</div>
+          <div className="header-cell">Calling</div>
           <div className="header-cell">Can Ask</div>
           <div className="header-cell"></div>
         </div>
@@ -87,7 +99,7 @@ const WardMembers = () => {
                   updateMemberField(
                     member.id,
                     "active",
-                    member.active === 1 ? 0 : 1
+                    member.active === 1 ? 0 : 1,
                   )
                 }
               />
@@ -134,6 +146,45 @@ const WardMembers = () => {
             {/* Gender */}
             <div className="table-cell">{member.sex}</div>
 
+            {/* Calling */}
+            <div className="table-cell">
+              {editingIndex === index ? (
+                <FormControl fullWidth size="small" variant="standard">
+                  <InputLabel>Calling</InputLabel>
+                  <Select
+                    name="calling"
+                    value={editValues.calling || member.calling || ""}
+                    onChange={(e) => handleInputChange(e, member.id)}
+                    label="Calling"
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    <MenuItem value="Bishop">Bishop</MenuItem>
+                    <MenuItem value="Bishopric First Counselor">
+                      Bishopric First Counselor
+                    </MenuItem>
+                    <MenuItem value="Bishopric Second Counselor">
+                      Bishopric Second Counselor
+                    </MenuItem>
+                    <MenuItem value="Stake Representative">
+                      Stake Representative
+                    </MenuItem>
+                    <MenuItem value="Ward Executive Secretary">
+                      Ward Executive Secretary
+                    </MenuItem>
+                    <MenuItem value="Ward Clerk">Ward Clerk</MenuItem>
+                    <MenuItem value="Chorister">Chorister</MenuItem>
+                    <MenuItem value="Organist">Organist</MenuItem>
+                  </Select>
+                </FormControl>
+              ) : (
+                <span onClick={() => handleEdit(member.id, index)}>
+                  {member.calling || "None"}
+                </span>
+              )}
+            </div>
+
             {/* Can Ask Checkbox */}
             <div className="table-cell">
               <Checkbox
@@ -142,7 +193,7 @@ const WardMembers = () => {
                   updateMemberField(
                     member.id,
                     "can_ask",
-                    member.can_ask === 1 ? 0 : 1
+                    member.can_ask === 1 ? 0 : 1,
                   )
                 }
               />

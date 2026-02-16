@@ -18,14 +18,17 @@ const Settings = () => {
   const {
     meetingTime,
     greeting,
+    wardName,
     loading,
     fetchSettings,
     setMeetingTime,
     saveGreeting,
+    setWardName,
   } = settingsStore();
 
   // Local state for editing greeting
   const [localGreeting, setLocalGreeting] = useState("");
+  const [localWardName, setLocalWardName] = useState("");
   const [saving, setSaving] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
@@ -37,7 +40,8 @@ const Settings = () => {
   // Update local state when store value changes
   useEffect(() => {
     setLocalGreeting(greeting);
-  }, [greeting]);
+    setLocalWardName(wardName);
+  }, [greeting, wardName]);
 
   // Save meeting time to database when it changes
   const handleMeetingTimeChange = (event) => {
@@ -50,6 +54,11 @@ const Settings = () => {
     setLocalGreeting(value);
   };
 
+  // Handle ward name changes
+  const handleWardNameChange = (value) => {
+    setLocalWardName(value);
+  };
+
   // Save greeting to database
   const handleSaveGreeting = async () => {
     setSaving(true);
@@ -58,6 +67,35 @@ const Settings = () => {
       setShowSuccessToast(true);
     } catch (error) {
       console.error("Failed to save greeting:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Save ward name to database
+  const handleSaveWardName = async () => {
+    setSaving(true);
+    try {
+      await setWardName(localWardName);
+      setShowSuccessToast(true);
+    } catch (error) {
+      console.error("Failed to save ward name:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Save all settings
+  const handleSaveSettings = async () => {
+    setSaving(true);
+    try {
+      await Promise.all([
+        saveGreeting(localGreeting),
+        setWardName(localWardName),
+      ]);
+      setShowSuccessToast(true);
+    } catch (error) {
+      console.error("Failed to save settings:", error);
     } finally {
       setSaving(false);
     }
@@ -120,6 +158,21 @@ const Settings = () => {
           color="text.secondary"
           sx={{ mb: 2, textTransform: "uppercase", fontWeight: 600 }}
         >
+          Ward Name
+        </Typography>
+        <TextField
+          fullWidth
+          label="Ward Name"
+          value={localWardName}
+          onChange={(e) => handleWardNameChange(e.target.value)}
+          sx={{ mb: 4 }}
+        />
+
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          sx={{ mb: 2, textTransform: "uppercase", fontWeight: 600 }}
+        >
           Program Greeting
         </Typography>
         <TextField
@@ -147,7 +200,7 @@ const Settings = () => {
       >
         <Button
           variant="contained"
-          onClick={handleSaveGreeting}
+          onClick={handleSaveSettings}
           disabled={saving}
         >
           {saving ? "Saving..." : "Save Settings"}

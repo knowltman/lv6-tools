@@ -453,7 +453,7 @@ router.delete("/delete-speaker/:id", async (req, res) => {
 });
 
 router.post("/add-member", async (req, res) => {
-  const { first_name, last_name, sex, isYouth, can_ask } = req.body;
+  const { first_name, last_name, sex, isYouth, can_ask, calling } = req.body;
 
   if (!first_name || !last_name) {
     return res.status(400).json({ message: "Invalid data" });
@@ -463,8 +463,8 @@ router.post("/add-member", async (req, res) => {
     await db
       .promise()
       .query(
-        "INSERT INTO ward_members (first_name, last_name, sex, active, isYouth, can_ask) VALUES (?, ?, ?, ?, ?, ?)",
-        [first_name, last_name, sex, 1, isYouth, can_ask],
+        "INSERT INTO ward_members (first_name, last_name, sex, active, isYouth, can_ask, calling) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [first_name, last_name, sex, 1, isYouth, can_ask, calling || null],
       );
 
     res.status(200).json({ message: "Ward member saved successfully!" });

@@ -12,51 +12,7 @@ import {
   CircularProgress,
   circularProgressClasses,
 } from "@mui/material";
-
-const BasicStrings = {
-  opening:
-    "Good morning and thank you for joining us for the Lakeview 6th Ward Sacrament Meeting. If we have any visitors or those who may be joining us for the first time, we hope all will feel welcome today.",
-  openingHymn: "We will begin our Sacrament meeting today by singing hymn",
-  beginText: "We will begin our Sacrament meeting today by singing hymn",
-  musicThanks: "We would like to thank",
-  forLeading: "for leading our music today, and",
-  accompanying: "for accompanying us on the organ",
-  broadcast:
-    "We would also like to thank <b>Don Rigby</b> for helping with the broadcast, and our wonderful Young Women ushers",
-  invocation: "Following the singing, our invocation will be offered by",
-  newMembers:
-    "We've received membership records for the following individuals. If you're here, please stand as your name is read.",
-  newMembersClose:
-    "All those that can join us in extending a hand of fellowship, please do so with the uplifted hand.",
-  releases:
-    "The following individual(s) have been released from their callings",
-  releasesClose:
-    "Those who wish to express their appreciation may manifest it by the uplifted hand.",
-  callings:
-    "We've extended callings to the following individual(s) - if you're here please stand as your name is read.",
-  callingsClose:
-    "We propose that these individuals be sustained. Those in favor may manifest it by the uplifted hand <PAUSE>. Those opposed, if any, may manifest it <PAUSE>. We invite those who have been sustained today to meet after the block to be set apart.",
-  sacramentIntro: "We will now prepare for the sacrament by singing hymn",
-  afterWhich:
-    "after which the holders of the Aaronic Priesthood will administer the sacrament.",
-  thanksForReverence:
-    "We thank you for your reverence during the sacrament, we'll excuse the Aaronic Priesthood holders to return to their families.",
-  wonderfulProgram:
-    "We have a wonderful program for today. We'll first hear from",
-  regularClose: "Thanks to all of our speakers... our closing hymn will be",
-  fastSundayClose:
-    "Thank you for your testimonies. We will now conclude by singing hymn",
-  benediction: "after which our benediction will be offered by",
-  followedBy: "will be followed by",
-  concludingSpeaker: "and our concluding speaker will be",
-  gotoThatPoint: ". We'll go to that point...",
-  fastSunday:
-    "We now invite you to come forward to share a brief testimony of the Savior, and would like to close 25 after the hour.",
-  intermediateHymn: "We will then sing hymn",
-  intermediateHymnWardChoir: "The Ward Choir will then sing",
-  intermediateSpecialSelection: "We will then have",
-  followingTheIntermediate: "after which we will hear from",
-};
+import { settingsStore } from "../../stores/settings";
 
 const ProgramPreview = (props) => {
   const {
@@ -71,6 +27,52 @@ const ProgramPreview = (props) => {
     isLoading,
     specialSundaysSpeakers,
   } = props;
+
+  const { wardName } = settingsStore();
+
+  const BasicStrings = {
+    opening: `Good morning and thank you for joining us for the ${wardName} Sacrament Meeting. If we have any visitors or those who may be joining us for the first time, we hope all will feel welcome today.`,
+    openingHymn: "We will begin our Sacrament meeting today by singing hymn",
+    beginText: "We will begin our Sacrament meeting today by singing hymn",
+    musicThanks: "We would like to thank",
+    forLeading: "for leading our music today, and",
+    accompanying: "for accompanying us on the organ",
+    broadcast:
+      "We would also like to thank <b>Don Rigby</b> for helping with the broadcast, and our wonderful Young Women ushers",
+    invocation: "Following the singing, our invocation will be offered by",
+    newMembers:
+      "We've received membership records for the following individuals. If you're here, please stand as your name is read.",
+    newMembersClose:
+      "All those that can join us in extending a hand of fellowship, please do so with the uplifted hand.",
+    releases:
+      "The following individual(s) have been released from their callings",
+    releasesClose:
+      "Those who wish to express their appreciation may manifest it by the uplifted hand.",
+    callings:
+      "We've extended callings to the following individual(s) - if you're here please stand as your name is read.",
+    callingsClose:
+      "We propose that these individuals be sustained. Those in favor may manifest it by the uplifted hand <PAUSE>. Those opposed, if any, may manifest it <PAUSE>. We invite those who have been sustained today to meet after the block to be set apart.",
+    sacramentIntro: "We will now prepare for the sacrament by singing hymn",
+    afterWhich:
+      "after which the holders of the Aaronic Priesthood will administer the sacrament.",
+    thanksForReverence:
+      "We thank you for your reverence during the sacrament, we'll excuse the Aaronic Priesthood holders to return to their families.",
+    wonderfulProgram:
+      "We have a wonderful program for today. We'll first hear from",
+    regularClose: "Thanks to all of our speakers... our closing hymn will be",
+    fastSundayClose:
+      "Thank you for your testimonies. We will now conclude by singing hymn",
+    benediction: "after which our benediction will be offered by",
+    followedBy: "will be followed by",
+    concludingSpeaker: "and our concluding speaker will be",
+    gotoThatPoint: ". We'll go to that point...",
+    fastSunday:
+      "We now invite you to come forward to share a brief testimony of the Savior, and would like to close 25 after the hour.",
+    intermediateHymn: "We will then sing hymn",
+    intermediateHymnWardChoir: "The Ward Choir will then sing",
+    intermediateSpecialSelection: "We will then have",
+    followingTheIntermediate: "after which we will hear from",
+  };
 
   const hasIntermediateHymn = `. ${BasicStrings.intermediateHymn} <b>#${formValues.intermediate_hymn.number} ${formValues.intermediate_hymn.name}</b>, ${BasicStrings.followingTheIntermediate}`;
   const hasIntermediateOnlyTwo = `. ${BasicStrings.intermediateHymn} <b>#${formValues.intermediate_hymn.number} ${formValues.intermediate_hymn.name}</b> ${BasicStrings.concludingSpeaker} `;
@@ -178,7 +180,7 @@ const ProgramPreview = (props) => {
         <div className="main-header">
           <div className="ward-name">
             <img style={{ width: "30px" }} src="../lv6_Logo.svg" />
-            Lakeview 6th Ward
+            {wardName}
           </div>
           <div>{programDate}</div>
         </div>

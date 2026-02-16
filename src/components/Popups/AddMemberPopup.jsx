@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { membersStore } from "../../stores/members";
 
 import {
@@ -15,14 +15,17 @@ import {
   Checkbox,
   FormControlLabel,
   Box,
+  Select,
+  MenuItem,
+  InputLabel,
 } from "@mui/material";
 import axios from "axios";
 
 const AddMemberPopup = ({
   open,
   handleClose,
-  outsideCreate,
-  setOutsideCreate,
+  outsideCreate = null,
+  setOutsideCreate = null,
 }) => {
   const defaultValues = {
     first_name: outsideCreate?.firstName || "",
@@ -30,6 +33,7 @@ const AddMemberPopup = ({
     sex: "",
     isYouth: false,
     can_ask: true,
+    calling: "",
   };
   const [formValues, setFormValues] = useState(defaultValues);
   const { fetchAllMembers } = membersStore();
@@ -43,13 +47,15 @@ const AddMemberPopup = ({
   };
 
   const handleCheckboxChange = (e) => {
+    const { name, checked } = e.target;
     setFormValues({
       ...formValues,
-      isYouth: e.target.checked,
+      [name]: checked,
     });
   };
 
-  const handleSave = async () => {
+  const handleSave = async (e) => {
+    e.preventDefault();
     try {
       const response = await axios.post(`/api/add-member`, {
         first_name: outsideCreate?.firstName || formValues.first_name,
@@ -57,12 +63,15 @@ const AddMemberPopup = ({
         sex: formValues.sex,
         isYouth: formValues.isYouth ? 1 : null,
         can_ask: formValues.can_ask ? 1 : 0,
+        calling: formValues.calling || null,
       });
 
       if (response.status === 200) {
         handleClose();
         setFormValues(defaultValues);
-        setOutsideCreate(null);
+        if (setOutsideCreate) {
+          setOutsideCreate(null);
+        }
         await fetchAllMembers(); // Call the fetchMembers function directly from the store
       } else {
         console.error("Unexpected response:", response);
@@ -72,17 +81,19 @@ const AddMemberPopup = ({
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = (e) => {
+    e.preventDefault();
     setFormValues(defaultValues);
-    setOutsideCreate(null);
-    handleClose();
+    if (handleClose) {
+      handleClose();
+    }
   };
 
   return (
     <Dialog open={open} onClose={handleClose} suppressContentEditableWarning>
       <DialogTitle>Add Ward Member</DialogTitle>
       <DialogContent>
-        <form>
+        <form onSubmit={(e) => e.preventDefault()}>
           <div className="two-col">
             <TextField
               fullWidth
@@ -132,10 +143,40 @@ const AddMemberPopup = ({
                 />
               </RadioGroup>
             </FormControl>
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Calling</InputLabel>
+              <Select
+                label="Calling"
+                name="calling"
+                value={formValues.calling}
+                onChange={handleChange}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value="Bishop">Bishop</MenuItem>
+                <MenuItem value="Bishopric First Counselor">
+                  Bishopric First Counselor
+                </MenuItem>
+                <MenuItem value="Bishopric Second Counselor">
+                  Bishopric Second Counselor
+                </MenuItem>
+                <MenuItem value="Stake Representative">
+                  Stake Representative
+                </MenuItem>
+                <MenuItem value="Ward Executive Secretary">
+                  Ward Executive Secretary
+                </MenuItem>
+                <MenuItem value="Ward Clerk">Ward Clerk</MenuItem>
+                <MenuItem value="Chorister">Chorister</MenuItem>
+                <MenuItem value="Organist">Organist</MenuItem>
+              </Select>
+            </FormControl>
             <Box>
               <FormControlLabel
                 control={
                   <Checkbox
+                    name="isYouth"
                     checked={formValues.isYouth}
                     onChange={handleCheckboxChange}
                   />
@@ -145,6 +186,7 @@ const AddMemberPopup = ({
               <FormControlLabel
                 control={
                   <Checkbox
+                    name="can_ask"
                     checked={formValues.can_ask}
                     onChange={handleCheckboxChange}
                   />
@@ -156,8 +198,15 @@ const AddMemberPopup = ({
         </form>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCancel}>Cancel</Button>
-        <Button onClick={handleSave} variant="contained" color="primary">
+        <Button onClick={handleCancel} variant="text">
+          Cancel
+        </Button>
+        <Button
+          type="button"
+          onClick={handleSave}
+          variant="contained"
+          color="primary"
+        >
           Save
         </Button>
       </DialogActions>

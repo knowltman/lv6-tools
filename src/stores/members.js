@@ -11,7 +11,7 @@ export const membersStore = create((set) => ({
     try {
       const response = await axios.get(`/api/members`);
       const sortedData = response.data.sort((a, b) =>
-        a.last_name.localeCompare(b.last_name)
+        a.last_name.localeCompare(b.last_name),
       );
 
       set({ members: sortedData });
@@ -46,14 +46,20 @@ export const membersStore = create((set) => ({
     }
   },
   updateMemberField: async (memberId, field, value) => {
-    // Optimistically update state for members
-    set((state) => ({
-      members: state.members.map((m) =>
-        m.id === memberId ? { ...m, [field]: value } : m
-      ),
-      // Set a flag to indicate that an update is in progress
-      isUpdating: true,
-    }));
+    // Store the previous value for reverting on error
+    let previousValue;
+    set((state) => {
+      const member = state.members.find((m) => m.id === memberId);
+      previousValue = member ? member[field] : null;
+
+      return {
+        members: state.members.map((m) =>
+          m.id === memberId ? { ...m, [field]: value } : m,
+        ),
+        // Set a flag to indicate that an update is in progress
+        isUpdating: true,
+      };
+    });
 
     try {
       // Send PATCH request to update the server
@@ -74,11 +80,11 @@ export const membersStore = create((set) => ({
       // Revert to previous value if the API request fails
       set((state) => ({
         members: state.members.map((m) =>
-          m.id === memberId ? { ...m, [field]: value ? 0 : 1 } : m
+          m.id === memberId ? { ...m, [field]: previousValue } : m,
         ),
         memberData:
           state.memberData.id === memberId
-            ? { ...state.memberData, [field]: value ? 0 : 1 }
+            ? { ...state.memberData, [field]: previousValue }
             : state.memberData,
         isUpdating: false, // Reset the loading flag
       }));
