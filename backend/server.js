@@ -3,6 +3,9 @@ import cors from "cors";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import bodyParser from "body-parser";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
 import db from "./db.js"; // note the .js at the end
 
@@ -19,6 +22,90 @@ const hashPassword = async (password) => {
     throw new Error("Error hashing password: " + error.message);
   }
 };
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    // Use path relative to project root (assuming server runs from root)
+    const uploadPath = path.join(process.cwd(), "public", "uploads");
+    console.log("Upload destination path:", uploadPath);
+    console.log("Resolved path:", path.resolve(uploadPath));
+    console.log("Current working directory:", process.cwd());
+
+    // Ensure directory exists
+    if (!fs.existsSync(uploadPath)) {
+      console.log("Creating uploads directory:", uploadPath);
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    // Generate unique filename with timestamp
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const filename = uniqueSuffix + path.extname(file.originalname);
+    console.log("Generated filename:", filename);
+    cb(null, filename);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit (increased from 5MB)
+  },
+  fileFilter: (req, file, cb) => {
+    // More permissive file filter - check both mimetype and extension
+    const allowedMimetypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "image/bmp",
+      "image/tiff",
+      "image/svg+xml",
+    ];
+
+    const allowedExtensions = [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".gif",
+      ".webp",
+      ".bmp",
+      ".tiff",
+      ".tif",
+      ".svg",
+    ];
+
+    const fileExtension = path.extname(file.originalname).toLowerCase();
+
+    console.log("File upload check:", {
+      originalname: file.originalname,
+      mimetype: file.mimetype,
+      extension: fileExtension,
+    });
+
+    if (
+      allowedMimetypes.includes(file.mimetype) ||
+      allowedExtensions.includes(fileExtension)
+    ) {
+      cb(null, true);
+    } else {
+      console.log("File rejected:", {
+        mimetype: file.mimetype,
+        extension: fileExtension,
+      });
+      cb(
+        new Error(
+          `File type not allowed. Allowed types: ${allowedMimetypes.join(", ")} or extensions: ${allowedExtensions.join(", ")}`,
+        ),
+        false,
+      );
+    }
+  },
+});
 
 // const password = "Bishopric2024";
 // hashPassword(password)
@@ -61,6 +148,259 @@ router.post("/login", async (req, res) => {
       }
     },
   );
+});
+
+// User management endpoints
+router.get("/users", (req, res) => {
+  db.query(
+    `SELECT u.id, u.username, u.memberId, u.image, m.first_name, m.last_name, m.calling
+     FROM users u
+     LEFT JOIN ward_members m ON u.memberId = m.id
+     ORDER BY u.username`,
+    [],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json(rows);
+    },
+  );
+});
+
+router.post("/upload", upload.single("image"), (req, res) => {
+  console.log("Upload endpoint called");
+  console.log("Request file:", req.file);
+  console.log("Request body:", req.body);
+
+  try {
+    if (!req.file) {
+      console.log("No file in request");
+      return res.status(400).json({
+        error: "No file uploaded",
+        details: "Make sure the file is selected and is a valid image format",
+      });
+    }
+
+    console.log("File uploaded successfully:", req.file.filename);
+
+    // Return the file path that can be used by the frontend
+    const fileUrl = `/uploads/${req.file.filename}`;
+    console.log("Returning URL:", fileUrl);
+
+    res.json({
+      success: true,
+      url: fileUrl,
+      filename: req.file.filename,
+      size: req.file.size,
+      mimetype: req.file.mimetype,
+    });
+  } catch (error) {
+    console.error("Upload error caught:", error);
+    console.error("Error stack:", error.stack);
+
+    // Handle multer errors specifically
+    if (error.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({
+        error: "File too large",
+        details: "Maximum file size is 10MB",
+      });
+    }
+
+    if (error.message.includes("File type not allowed")) {
+      return res.status(400).json({
+        error: "Invalid file type",
+        details: error.message,
+      });
+    }
+
+    res.status(500).json({
+      error: "File upload failed",
+      details: error.message,
+    });
+  }
+});
+
+router.post("/users", async (req, res) => {
+  const { username, password, first_name, last_name, calling, image } =
+    req.body;
+
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ error: "Username and password are required" });
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // First, create or update the member record
+    let memberId;
+    if (first_name && last_name) {
+      const memberQuery = `
+        INSERT INTO ward_members (first_name, last_name, calling)
+        VALUES (?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+        calling = VALUES(calling)
+      `;
+      const memberResult = await new Promise((resolve, reject) => {
+        db.query(
+          memberQuery,
+          [first_name, last_name, calling || null],
+          (err, result) => {
+            if (err) reject(err);
+            else resolve(result);
+          },
+        );
+      });
+      memberId = memberResult.insertId;
+    }
+
+    // Then create the user record
+    const userQuery = `
+      INSERT INTO users (username, password, memberId, image)
+      VALUES (?, ?, ?, ?)
+    `;
+    const userResult = await new Promise((resolve, reject) => {
+      db.query(
+        userQuery,
+        [username, hashedPassword, memberId, image || null],
+        (err, result) => {
+          if (err) reject(err);
+          else resolve(result);
+        },
+      );
+    });
+
+    // Return the created user with member data
+    db.query(
+      `SELECT u.id, u.username, u.memberId, u.image, m.first_name, m.last_name, m.calling
+       FROM users u
+       LEFT JOIN ward_members m ON u.memberId = m.id
+       WHERE u.id = ?`,
+      [userResult.insertId],
+      (err, rows) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        res.json(rows[0]);
+      },
+    );
+  } catch (error) {
+    console.error("Error creating user:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put("/users/:id", async (req, res) => {
+  const userId = req.params.id;
+  const { username, password, first_name, last_name, calling, image } =
+    req.body;
+
+  try {
+    // Get current user data
+    const currentUser = await new Promise((resolve, reject) => {
+      db.query("SELECT * FROM users WHERE id = ?", [userId], (err, results) => {
+        if (err) reject(err);
+        else resolve(results[0]);
+      });
+    });
+
+    if (!currentUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Update member data if provided
+    if (
+      first_name !== undefined ||
+      last_name !== undefined ||
+      calling !== undefined
+    ) {
+      const memberUpdate = {};
+      const memberValues = [];
+
+      if (first_name !== undefined) {
+        memberUpdate.first_name = first_name;
+        memberValues.push(first_name);
+      }
+      if (last_name !== undefined) {
+        memberUpdate.last_name = last_name;
+        memberValues.push(last_name);
+      }
+      if (calling !== undefined) {
+        memberUpdate.calling = calling;
+        memberValues.push(calling);
+      }
+
+      if (Object.keys(memberUpdate).length > 0) {
+        const setClause = Object.keys(memberUpdate)
+          .map((key) => `${key} = ?`)
+          .join(", ");
+        const memberQuery = `UPDATE ward_members SET ${setClause} WHERE id = ?`;
+        memberValues.push(currentUser.memberId);
+
+        await new Promise((resolve, reject) => {
+          db.query(memberQuery, memberValues, (err, result) => {
+            if (err) reject(err);
+            else resolve(result);
+          });
+        });
+      }
+    }
+
+    // Update user data
+    let userQuery = "UPDATE users SET username = ?";
+    let userValues = [username];
+
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      userQuery += ", password = ?";
+      userValues.push(hashedPassword);
+    }
+
+    if (image !== undefined) {
+      userQuery += ", image = ?";
+      userValues.push(image);
+    }
+
+    userQuery += " WHERE id = ?";
+    userValues.push(userId);
+
+    await new Promise((resolve, reject) => {
+      db.query(userQuery, userValues, (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+
+    // Return updated user data
+    db.query(
+      `SELECT u.id, u.username, u.memberId, u.image, m.first_name, m.last_name, m.calling
+       FROM users u
+       LEFT JOIN ward_members m ON u.memberId = m.id
+       WHERE u.id = ?`,
+      [userId],
+      (err, rows) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        res.json(rows[0]);
+      },
+    );
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete("/users/:id", (req, res) => {
+  const userId = req.params.id;
+
+  db.query("DELETE FROM users WHERE id = ?", [userId], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({ message: "User deleted successfully" });
+  });
 });
 
 // Route to get data from SQLite
@@ -109,7 +449,11 @@ router.delete("/hymns/:id", (req, res) => {
 });
 
 router.get("/members", (req, res) => {
-  db.query("SELECT * FROM ward_members ", [], (err, rows) => {
+  db.query(`
+    SELECT wm.*, u.image
+    FROM ward_members wm
+    LEFT JOIN users u ON wm.id = u.memberId
+  `, [], (err, rows) => {
     if (err) {
       res.status(400).send(err.message);
       return;
@@ -124,16 +468,18 @@ router.get("/members/:id", (req, res) => {
 
   db.query(
     `
-    SELECT wm.*, 
+    SELECT wm.*,
+           u.image,
            -- Concatenate speaker dates separately
            GROUP_CONCAT(DISTINCT sd.date ORDER BY sd.date ASC SEPARATOR ' ') AS speaker_dates,
            -- Concatenate prayer dates separately
            GROUP_CONCAT(DISTINCT pd.date ORDER BY pd.date ASC SEPARATOR ' ') AS prayer_dates
     FROM ward_members wm
+    LEFT JOIN users u ON wm.id = u.memberId
     LEFT JOIN speaker_dates sd ON wm.id = sd.speaker_id
     LEFT JOIN prayer_dates pd ON wm.id = pd.speaker_id
     WHERE wm.id = ?
-    GROUP BY wm.id, wm.first_name, wm.last_name, wm.active, wm.isYouth, wm.sex, wm.can_ask, wm.calling;
+    GROUP BY wm.id, wm.first_name, wm.last_name, wm.active, wm.isYouth, wm.sex, wm.can_ask, wm.calling, u.image;
     `,
     [memberId],
     (err, row) => {

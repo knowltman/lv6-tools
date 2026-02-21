@@ -57,6 +57,11 @@ const NavBar = (props) => {
     handleClose();
   };
 
+  const handleMyAccountNavigate = (event) => {
+    navigate("/my-account");
+    handleClose();
+  };
+
   const menuItems = [
     {
       label: "Home",
@@ -149,7 +154,7 @@ const NavBar = (props) => {
             <Avatar sx={{ width: 32, height: 32 }}>
               <img
                 className={"user-image"}
-                src={getImageName(user)}
+                src={user.image || getImageName(user)}
                 alt={`${user.first_name} ${user.last_name}`}
               />
             </Avatar>
@@ -199,7 +204,7 @@ const NavBar = (props) => {
           transformOrigin={{ horizontal: "right", vertical: "top" }}
           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         >
-          <MenuItem onClick={handleClose}>
+          <MenuItem onClick={handleMyAccountNavigate}>
             <Avatar /> My account
           </MenuItem>
           <Divider />

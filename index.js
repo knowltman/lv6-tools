@@ -26,6 +26,9 @@ app.use("/api", (req, res) => {
   res.status(404).json({ error: "API route not found" });
 });
 
+// Serve uploaded images
+app.use("/uploads", express.static(path.join(__dirname, "public", "uploads")));
+
 // Serve static frontend files from dist
 app.use(express.static(path.join(__dirname, "dist")));
 

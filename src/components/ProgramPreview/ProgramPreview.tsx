@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { settingsStore } from "../../stores/settings";
 
-const ProgramPreview = (props) => {
+const ProgramPreview = (props: any) => {
   const {
     formValues,
     haveNewMembers,
@@ -83,7 +83,7 @@ const ProgramPreview = (props) => {
   const hasIntermediateHymnSpecial = `. ${BasicStrings.intermediateSpecialSelection} <b>${formValues.special_selection}</b>, ${BasicStrings.followingTheIntermediate}`;
   const hasIntermediateOnlyTwoSpecial = `. ${BasicStrings.intermediateSpecialSelection} <b>${formValues.special_selection}</b> ${BasicStrings.concludingSpeaker} `;
 
-  const getIntermediate = (speakerCount) => {
+  const getIntermediate = (speakerCount: any) => {
     if (formValues.intermediate_hymn.name === "Ward Choir") {
       return speakerCount == 2
         ? hasIntermediateOnlyTwoWardChoir

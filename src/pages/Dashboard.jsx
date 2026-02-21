@@ -44,6 +44,7 @@ const Dashboard = (props) => {
   const [speakerSuggestions, setSpeakerSuggestions] = useState({});
   const [youthSpeakerSuggestions, setYouthSpeakerSuggestions] = useState({});
   const [prayerSuggestions, setPrayerSuggestions] = useState({});
+  const [currentImage, setCurrentImage] = useState(null);
 
   // const nextSunday = getNextSunday();
   // const date = format(nextSunday, "yyyy-MM-dd");
@@ -101,6 +102,12 @@ const Dashboard = (props) => {
     //setNextSundaySpeakers(upcomingSpeakers);
   }, [formValues2]);
 
+  useEffect(() => {
+    if (user) {
+      setCurrentImage(user.image || getImageName(user));
+    }
+  }, [user]);
+
   const handleSelectionChange = (speaker) => {
     membersStore
       .getState()
@@ -126,7 +133,7 @@ const Dashboard = (props) => {
                       <Avatar sx={{ width: 100, height: 100 }}>
                         <img
                           className={"large-user-image"}
-                          src={getImageName(user)}
+                          src={currentImage}
                           alt={`${user.first_name} ${user.last_name}`}
                         />
                       </Avatar>

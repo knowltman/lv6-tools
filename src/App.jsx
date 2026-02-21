@@ -31,6 +31,7 @@ const Members = lazy(() => import("./pages/Members"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Bulletin = lazy(() => import("./pages/Bulletin"));
 const Hymns = lazy(() => import("./pages/Hymns"));
+const MyAccount = lazy(() => import("./pages/MyAccount"));
 
 import { getNextSunday } from "./pages/Dashboard.logic";
 import { programStore } from "./stores/program";
@@ -221,6 +222,10 @@ function App() {
           <Route
             path="/bulletin"
             element={isLoggedIn ? <Bulletin /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/my-account"
+            element={isLoggedIn ? <MyAccount /> : <Navigate to="/login" />}
           />
         </Routes>
       </Suspense>
