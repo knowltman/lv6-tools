@@ -449,17 +449,21 @@ router.delete("/hymns/:id", (req, res) => {
 });
 
 router.get("/members", (req, res) => {
-  db.query(`
+  db.query(
+    `
     SELECT wm.*, u.image
     FROM ward_members wm
     LEFT JOIN users u ON wm.id = u.memberId
-  `, [], (err, rows) => {
-    if (err) {
-      res.status(400).send(err.message);
-      return;
-    }
-    res.json(rows);
-  });
+  `,
+    [],
+    (err, rows) => {
+      if (err) {
+        res.status(400).send(err.message);
+        return;
+      }
+      res.json(rows);
+    },
+  );
 });
 
 //get a ward member by the id
