@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   IconButton,
@@ -16,19 +16,33 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Settings from "@mui/icons-material/Settings";
-import { Group } from "@mui/icons-material";
+import {
+  Group,
+  Home,
+  HomeMaxOutlined,
+  HomeMini,
+  HomeOutlined,
+  HomeTwoTone,
+} from "@mui/icons-material";
 import { LibraryMusic } from "@mui/icons-material";
 import Logout from "@mui/icons-material/Logout";
 import { useNavigate, useLocation } from "react-router-dom";
 import { membersStore } from "../stores/members";
 import MemberSearch from "./MemberSearch";
 import { getImageName } from "../app.logic";
+import { settingsStore } from "../stores/settings";
 
 const NavBar = (props) => {
   const { handleLogout } = props;
 
   const user = membersStore((state) => state.user);
   const isLoaded = user && user.first_name && user.last_name;
+
+  const { wardName, fetchSettings } = settingsStore();
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -67,7 +81,11 @@ const NavBar = (props) => {
       label: "Home",
       icon: (
         <IconButton title="home" key="home" onClick={() => navigate("/")}>
-          <img style={{ width: "30px" }} src="../lv6_Logo.svg" />
+          {wardName === "Lakeview 6th Ward" ? (
+            <img style={{ width: "30px" }} src="../lv6_Logo.svg" />
+          ) : (
+            <Home fontSize="Medium" />
+          )}
         </IconButton>
       ),
       path: "/",

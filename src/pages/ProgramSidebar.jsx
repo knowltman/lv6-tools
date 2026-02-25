@@ -41,6 +41,18 @@ export const ProgramSidebar = (props) => {
   //const isMobile = useMediaQuery("(max-width: 768px)");
 
   useEffect(() => {
+    if (
+      members &&
+      members.length > 0 &&
+      (!formValues2.presiding || !formValues2.presiding.first_name)
+    ) {
+      const bishop = members.find((m) => m.calling === "Bishop");
+      if (bishop) {
+        updateFormValue("presiding", bishop);
+      }
+    }
+  }, [members, formValues2.presiding, updateFormValue]);
+  useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);

@@ -221,7 +221,7 @@ router.post("/upload", upload.single("image"), (req, res) => {
 });
 
 router.post("/users", async (req, res) => {
-  const { username, password, first_name, last_name, calling, image } =
+  const { username, password, first_name, last_name, calling, image, sex } =
     req.body;
 
   if (!username || !password) {
@@ -237,15 +237,13 @@ router.post("/users", async (req, res) => {
     let memberId;
     if (first_name && last_name) {
       const memberQuery = `
-        INSERT INTO ward_members (first_name, last_name, calling)
-        VALUES (?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-        calling = VALUES(calling)
+        INSERT INTO ward_members (first_name, last_name, sex, active, isYouth, can_ask, calling)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
       const memberResult = await new Promise((resolve, reject) => {
         db.query(
           memberQuery,
-          [first_name, last_name, calling || null],
+          [first_name, last_name, sex || null, 1, null, 1, calling || null],
           (err, result) => {
             if (err) reject(err);
             else resolve(result);

@@ -10,7 +10,9 @@ import {
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import MemberDetail from "./MemberEditor/MemberDetail";
+import CreateUserPopup from "./Popups/CreateUserPopup";
 import { membersStore } from "../stores/members";
+import { usersStore } from "../stores/users";
 
 const apiURL = import.meta.env.VITE_API_URL;
 
@@ -21,6 +23,8 @@ const WardMembers = () => {
     last_name: "",
     calling: "",
   });
+  const [showCreateUser, setShowCreateUser] = useState(false);
+  const [memberToPromote, setMemberToPromote] = useState(null);
 
   const {
     members,
@@ -30,6 +34,8 @@ const WardMembers = () => {
     fetchMemberData,
     memberData,
   } = membersStore();
+
+  const { users } = usersStore();
 
   // Handle edit start
   // const handleEdit = (memberId, index) => {
@@ -59,11 +65,37 @@ const WardMembers = () => {
 
   // Handle input changes for first name and last name
   const handleInputChange = (e, memberId) => {
+    const { name, value } = e.target;
     setEditValues({
       ...editValues,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
-    updateMemberField(memberId, [e.target.name], e.target.value);
+
+    // Check if this is a calling change that requires user promotion
+    if (name === "calling") {
+      const leadershipCallings = [
+        "Bishop",
+        "Bishopric First Counselor",
+        "Bishopric Second Counselor",
+        "Stake Representative",
+        "Ward Executive Secretary",
+        "Ward Clerk",
+      ];
+
+      const member = members.find((m) => m.id === memberId);
+      const isCurrentlyUser = users.some((u) => u.memberId === memberId);
+
+      if (leadershipCallings.includes(value) && !isCurrentlyUser) {
+        // This calling requires a user account, but member doesn't have one
+        setMemberToPromote(member);
+        setShowCreateUser(true);
+        // Don't update the calling yet - wait for user creation
+        return;
+      }
+    }
+
+    // Update the field normally
+    updateMemberField(memberId, name, value);
   };
 
   const handleKeyDown = (e) => {
@@ -79,7 +111,7 @@ const WardMembers = () => {
           <div className="header-cell">Active</div>
           <div className="header-cell">First Name</div>
           <div className="header-cell">Last Name</div>
-          <div className="header-cell">Gender</div>
+          {/* <div className="header-cell">Gender</div> */}
           <div className="header-cell">Calling</div>
           <div className="header-cell">Can Ask</div>
           <div className="header-cell"></div>
@@ -144,13 +176,12 @@ const WardMembers = () => {
             </div>
 
             {/* Gender */}
-            <div className="table-cell">{member.sex}</div>
+            {/* <div className="table-cell">{member.sex}</div> */}
 
             {/* Calling */}
             <div className="table-cell">
               {editingIndex === index ? (
                 <FormControl fullWidth size="small" variant="standard">
-                  <InputLabel>Calling</InputLabel>
                   <Select
                     name="calling"
                     value={editValues.calling || member.calling || ""}
@@ -230,6 +261,23 @@ const WardMembers = () => {
       <div className="member-sidebar">
         <MemberDetail />
       </div>
+
+      <CreateUserPopup
+        open={showCreateUser}
+        handleClose={() => {
+          setShowCreateUser(false);
+          setMemberToPromote(null);
+          // If user was created, update the calling now
+          if (memberToPromote) {
+            updateMemberField(
+              memberToPromote.id,
+              "calling",
+              editValues.calling,
+            );
+          }
+        }}
+        memberData={memberToPromote}
+      />
     </div>
   );
 };

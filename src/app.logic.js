@@ -73,15 +73,7 @@ const nextSunday = getNextSunday();
 const date = format(nextSunday, "yyyy-MM-dd");
 
 export const defaultFormValues = {
-  presiding: {
-    id: 181,
-    first_name: "Bishop",
-    last_name: "Odell",
-    active: 1,
-    last_spoke: null,
-    can_ask: 1,
-    calling: "bishop",
-  },
+  presiding: { first_name: "", last_name: "" },
   conducting: { first_name: "", last_name: "" },
   opening_hymn: { number: "", name: "" },
   sacrament_hymn: { number: "", name: "" },
@@ -90,14 +82,8 @@ export const defaultFormValues = {
   closing_hymn: { number: "", name: "" },
   invocation: { first_name: "", last_name: "" },
   chorister: {
-    active: 1,
-    calling: "Chorister",
-    can_ask: 1,
-    first_name: "Karen",
-    id: 9,
-    isYouth: null,
-    last_name: "Barraclough",
-    sex: "F",
+    first_name: "",
+    last_name: "",
   },
   organist: { first_name: "", last_name: "" },
   speaker_1: { first_name: "", last_name: "" },

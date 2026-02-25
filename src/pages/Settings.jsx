@@ -57,6 +57,7 @@ const Settings = () => {
   // Handle ward name changes
   const handleWardNameChange = (value) => {
     setLocalWardName(value);
+    settingsStore.setState({ wardName: value }); // Instantly update UI
   };
 
   // Save greeting to database

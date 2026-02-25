@@ -217,7 +217,9 @@ const ProgramPreviewSimple = (props) => {
       {/* {isLoading ? <div className="loading_div"></div> : null} */}
       <div className="main-header">
         <div className="ward-name">
-          <img style={{ width: "30px" }} src="../lv6_Logo.svg" />
+          {wardName === "Lakeview 6th Ward" ? (
+            <img style={{ width: "30px" }} src="../lv6_Logo.svg" />
+          ) : null}
           {wardName}
         </div>
         <div>{format(parseISO(selectedProgramDate), "MMMM, d, yyyy")}</div>
