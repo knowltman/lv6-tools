@@ -87,7 +87,10 @@ const WardMembers = () => {
 
       if (leadershipCallings.includes(value) && !isCurrentlyUser) {
         // This calling requires a user account, but member doesn't have one
-        setMemberToPromote(member);
+        setMemberToPromote({
+          ...member,
+          calling: value, // Include the new calling
+        });
         setShowCreateUser(true);
         // Don't update the calling yet - wait for user creation
         return;
@@ -266,15 +269,14 @@ const WardMembers = () => {
         open={showCreateUser}
         handleClose={() => {
           setShowCreateUser(false);
-          setMemberToPromote(null);
-          // If user was created, update the calling now
+          // If user creation was cancelled, revert the calling change
           if (memberToPromote) {
-            updateMemberField(
-              memberToPromote.id,
-              "calling",
-              editValues.calling,
-            );
+            setEditValues({
+              ...editValues,
+              calling: memberToPromote.calling || "",
+            });
           }
+          setMemberToPromote(null);
         }}
         memberData={memberToPromote}
       />

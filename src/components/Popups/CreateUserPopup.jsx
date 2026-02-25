@@ -46,11 +46,13 @@ const CreateUserPopup = ({ open, handleClose, memberData = null }) => {
     if (open) {
       if (memberData) {
         // Pre-populate with member data for promotion
+        // Only use image if it's a valid uploaded image path
+        const isValidImagePath = memberData.image && memberData.image.startsWith('/uploads/');
         setFormData({
           username: "",
           password: "",
           confirmPassword: "",
-          image: memberData.image || "",
+          image: isValidImagePath ? memberData.image : "",
           sex: memberData.sex || "M",
         });
       } else {
@@ -188,8 +190,7 @@ const CreateUserPopup = ({ open, handleClose, memberData = null }) => {
         await createUser({
           username: formData.username,
           password: formData.password,
-          first_name: memberData.first_name,
-          last_name: memberData.last_name,
+          memberId: memberData.id,
           calling: memberData.calling,
           image: formData.image,
           sex: formData.sex,

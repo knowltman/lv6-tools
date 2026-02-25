@@ -221,7 +221,7 @@ router.post("/upload", upload.single("image"), (req, res) => {
 });
 
 router.post("/users", async (req, res) => {
-  const { username, password, first_name, last_name, calling, image, sex } =
+  const { username, password, first_name, last_name, calling, image, sex, memberId } =
     req.body;
 
   if (!username || !password) {
@@ -233,24 +233,104 @@ router.post("/users", async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // First, create or update the member record
-    let memberId;
-    if (first_name && last_name) {
-      const memberQuery = `
-        INSERT INTO ward_members (first_name, last_name, sex, active, isYouth, can_ask, calling)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-      `;
-      const memberResult = await new Promise((resolve, reject) => {
+    // Determine memberId - use provided memberId for promotion, or create new member
+    let finalMemberId = memberId;
+    if (finalMemberId) {
+      // Member ID provided (promotion case) - verify member exists
+      const existingMemberCheck = await new Promise((resolve, reject) => {
         db.query(
-          memberQuery,
-          [first_name, last_name, sex || null, 1, null, 1, calling || null],
-          (err, result) => {
+          "SELECT id FROM ward_members WHERE id = ?",
+          [parseInt(finalMemberId)],
+          (err, results) => {
             if (err) reject(err);
-            else resolve(result);
+            else resolve(results[0]);
           },
         );
       });
-      memberId = memberResult.insertId;
+
+      if (!existingMemberCheck) {
+        return res.status(400).json({ error: "Member not found" });
+      }
+
+      // Update calling if provided
+      if (calling) {
+        await new Promise((resolve, reject) => {
+          db.query(
+            "UPDATE ward_members SET calling = ? WHERE id = ?",
+            [calling, parseInt(finalMemberId)],
+            (err) => {
+              if (err) reject(err);
+              else resolve();
+            },
+          );
+        });
+      }
+    } else if (first_name && last_name) {
+      // Check if member already exists
+      const existingMember = await new Promise((resolve, reject) => {
+        db.query(
+          "SELECT id FROM ward_members WHERE first_name = ? AND last_name = ?",
+          [first_name, last_name],
+          (err, results) => {
+            if (err) reject(err);
+            else resolve(results[0]);
+          },
+        );
+      });
+
+      if (existingMember) {
+        // Check if this member already has a user account
+        const existingUser = await new Promise((resolve, reject) => {
+          db.query(
+            "SELECT id FROM users WHERE memberId = ?",
+            [existingMember.id],
+            (err, results) => {
+              if (err) reject(err);
+              else resolve(results[0]);
+            },
+          );
+        });
+
+        if (existingUser) {
+          return res.status(400).json({ error: "A user account already exists for this member" });
+        }
+
+        finalMemberId = existingMember.id;
+        // Update the existing member's calling if provided
+        if (calling) {
+          await new Promise((resolve, reject) => {
+            db.query(
+              "UPDATE ward_members SET calling = ? WHERE id = ?",
+              [calling, existingMember.id],
+              (err) => {
+                if (err) reject(err);
+                else resolve();
+              },
+            );
+          });
+        }
+      } else {
+        // Create new member record
+        const memberQuery = `
+          INSERT INTO ward_members (first_name, last_name, sex, active, isYouth, can_ask, calling)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
+        const memberResult = await new Promise((resolve, reject) => {
+          db.query(
+            memberQuery,
+            [first_name, last_name, sex || null, 1, null, 1, calling || null],
+            (err, result) => {
+              if (err) reject(err);
+              else resolve(result);
+            },
+          );
+        });
+        finalMemberId = memberResult.insertId;
+      }
+    }
+
+    if (!finalMemberId) {
+      return res.status(400).json({ error: "Unable to determine member ID" });
     }
 
     // Then create the user record
@@ -261,7 +341,7 @@ router.post("/users", async (req, res) => {
     const userResult = await new Promise((resolve, reject) => {
       db.query(
         userQuery,
-        [username, hashedPassword, memberId, image || null],
+        [username, hashedPassword, parseInt(finalMemberId), image || null],
         (err, result) => {
           if (err) reject(err);
           else resolve(result);
