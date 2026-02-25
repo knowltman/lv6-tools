@@ -17,15 +17,17 @@ export const membersStore = create((set) => ({
       set({ members: sortedData });
       const filteredUser =
         sortedData.find((user) => user.id === Number(currentUser)) || null;
-      
+
       // If user not found but we have a currentUser, keep the previous user
       // This prevents the user from disappearing due to data refresh issues
       if (!filteredUser && currentUser) {
-        console.warn("Current user not found in members list, keeping previous user data");
+        console.warn(
+          "Current user not found in members list, keeping previous user data",
+        );
         // Don't update the user if not found, to avoid setting it to null
         return;
       }
-      
+
       set({ user: filteredUser });
     } catch (error) {
       console.error("Error fetching members:", error);

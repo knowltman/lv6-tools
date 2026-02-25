@@ -222,7 +222,9 @@ const CreateUserPopup = ({ open, handleClose, memberData = null }) => {
         const currentUserId = localStorage.getItem("user");
         if (currentUserId && Number(currentUserId) === memberData.id) {
           const { members } = membersStore.getState();
-          const updatedUser = members.find((m) => m.id === Number(currentUserId));
+          const updatedUser = members.find(
+            (m) => m.id === Number(currentUserId),
+          );
           if (updatedUser) {
             membersStore.getState().setUser(updatedUser);
           }

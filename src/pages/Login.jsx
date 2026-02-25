@@ -16,15 +16,16 @@ const Login = (props) => {
 
   const getMemberRecord = async (userId) => {
     let filteredUser = members.find((user) => user.id === Number(userId));
-    
+
     // If user not found in current members list, refresh the data
     if (!filteredUser) {
       await membersStore.getState().fetchAllMembers();
       // Get the updated members list
       const updatedMembers = membersStore.getState().members;
-      filteredUser = updatedMembers.find((user) => user.id === Number(userId)) || null;
+      filteredUser =
+        updatedMembers.find((user) => user.id === Number(userId)) || null;
     }
-    
+
     return filteredUser;
   };
 
@@ -40,7 +41,9 @@ const Login = (props) => {
       const userRecord = await getMemberRecord(response.data.memberId);
 
       if (!userRecord) {
-        setMessage("Login successful, but user data not found. Please contact an administrator.");
+        setMessage(
+          "Login successful, but user data not found. Please contact an administrator.",
+        );
         return;
       }
 
