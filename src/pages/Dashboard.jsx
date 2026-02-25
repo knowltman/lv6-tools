@@ -105,7 +105,7 @@ const Dashboard = (props) => {
   useEffect(() => {
     if (user) {
       // Only use user.image if it's a valid uploaded image path
-      const isValidImagePath = user.image && user.image.startsWith('/uploads/');
+      const isValidImagePath = user.image && user.image.startsWith("/uploads/");
       setCurrentImage(isValidImagePath ? user.image : getImageName(user));
     }
   }, [user]);

@@ -9,9 +9,6 @@ import {
   Button,
   TextField,
   FormControl,
-  FormLabel,
-  RadioGroup,
-  Radio,
   Checkbox,
   FormControlLabel,
   Box,
@@ -30,7 +27,6 @@ const AddMemberPopup = ({
   const defaultValues = {
     first_name: outsideCreate?.firstName || "",
     last_name: outsideCreate?.lastName || "",
-    sex: "",
     isYouth: false,
     can_ask: true,
     calling: "",
@@ -60,7 +56,7 @@ const AddMemberPopup = ({
       const response = await axios.post(`/api/add-member`, {
         first_name: outsideCreate?.firstName || formValues.first_name,
         last_name: outsideCreate?.lastName || formValues.last_name,
-        sex: formValues.sex,
+        sex: "M", // Default to Male
         isYouth: formValues.isYouth ? 1 : null,
         can_ask: formValues.can_ask ? 1 : 0,
         calling: formValues.calling || null,
@@ -126,7 +122,8 @@ const AddMemberPopup = ({
             </Select>
           </FormControl> */}
           <Box display="flex" flexDirection="column" rowGap="1rem">
-            <FormControl>
+            {/* Gender field removed per user request */}
+            {/* <FormControl>
               <FormLabel id="sex">Gender</FormLabel>
               <RadioGroup
                 row
@@ -142,7 +139,7 @@ const AddMemberPopup = ({
                   label="Female"
                 />
               </RadioGroup>
-            </FormControl>
+            </FormControl> */}
             <FormControl fullWidth margin="normal">
               <InputLabel>Calling</InputLabel>
               <Select

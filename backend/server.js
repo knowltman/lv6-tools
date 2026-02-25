@@ -221,8 +221,16 @@ router.post("/upload", upload.single("image"), (req, res) => {
 });
 
 router.post("/users", async (req, res) => {
-  const { username, password, first_name, last_name, calling, image, sex, memberId } =
-    req.body;
+  const {
+    username,
+    password,
+    first_name,
+    last_name,
+    calling,
+    image,
+    sex,
+    memberId,
+  } = req.body;
 
   if (!username || !password) {
     return res
@@ -292,7 +300,9 @@ router.post("/users", async (req, res) => {
         });
 
         if (existingUser) {
-          return res.status(400).json({ error: "A user account already exists for this member" });
+          return res
+            .status(400)
+            .json({ error: "A user account already exists for this member" });
         }
 
         finalMemberId = existingMember.id;

@@ -47,7 +47,8 @@ const CreateUserPopup = ({ open, handleClose, memberData = null }) => {
       if (memberData) {
         // Pre-populate with member data for promotion
         // Only use image if it's a valid uploaded image path
-        const isValidImagePath = memberData.image && memberData.image.startsWith('/uploads/');
+        const isValidImagePath =
+          memberData.image && memberData.image.startsWith("/uploads/");
         setFormData({
           username: "",
           password: "",
