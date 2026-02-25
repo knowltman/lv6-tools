@@ -146,6 +146,10 @@ export default function Speakers() {
 
   const isMobile = useMediaQuery("(max-width:499px)");
 
+  useEffect(() => {
+    getSpeakerHistory2();
+  }, [getSpeakerHistory2]);
+
   const handleClose = () => {
     setSelectedMember({ member: "" });
     setScheduledSpeaker(defaultScheduledSpeaker);
@@ -353,8 +357,6 @@ export default function Speakers() {
 
   // 7. Group for rendering (sort speakers by order)
   const groupedSundays = useMemo(() => {
-    // Only sort if speakerHistory2 is loaded (prevents janky reordering after fade-in)
-    if (!speakerHistory2 || speakerHistory2.length === 0) return [];
     const groupedRaw = groupSundaysByMonth(allSundays);
     // Sort speakers within each Sunday
     groupedRaw.forEach(([month, sundays]) => {
@@ -365,7 +367,7 @@ export default function Speakers() {
       });
     });
     return groupedRaw;
-  }, [allSundays, speakerHistory2]);
+  }, [allSundays]);
 
   // DnD sensors
   const sensors = useSensors(

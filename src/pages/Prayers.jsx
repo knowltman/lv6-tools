@@ -43,6 +43,10 @@ const Prayers = (props) => {
     specialSundays &&
     specialSundays.filter((sunday) => !excludedTypes.includes(sunday.type));
 
+  useEffect(() => {
+    getPrayerHistory2();
+  }, [getPrayerHistory2]);
+
   const currentMonth = getCurrentMonth();
   const currentMonthRef = useRef(null);
 
@@ -85,24 +89,20 @@ const Prayers = (props) => {
   // }, [prayerSchedule]);
 
   useEffect(() => {
-    if (
-      prayerHistory2 &&
-      Array.isArray(prayerHistory2) &&
-      prayerHistory2.length > 0
-    ) {
-      const currentYear = new Date().getFullYear();
-      const years = Array.from(
-        { length: currentYear - 2023 + 2 },
-        (_, i) => 2024 + i
-      );
+    const currentYear = new Date().getFullYear();
+    const years = Array.from(
+      { length: currentYear - 2023 + 2 },
+      (_, i) => 2024 + i,
+    );
 
-      const allMappedSundays = years.flatMap((year) =>
-        mapToSundaysFormat(prayerHistory2, year)
-      );
+    const allMappedSundays = years.flatMap((year) =>
+      mapToSundaysFormat(prayerHistory2 || [], year),
+    );
 
-      setSundaysJson({ sundays: allMappedSundays });
+    setSundaysJson({ sundays: allMappedSundays });
 
-      const initialItems = allMappedSundays.flatMap((sunday) => [
+    const initialItems = allMappedSundays
+      .flatMap((sunday) => [
         {
           id: sunday.invocation.id,
           name: sunday.invocation.name,
@@ -115,11 +115,11 @@ const Prayers = (props) => {
           date: sunday.date,
           type: "benediction",
         },
-      ]);
+      ])
+      .filter((item) => item.id); // Only include items that have an id
 
-      setItems(initialItems);
-      setIsLoading(false);
-    }
+    setItems(initialItems);
+    setIsLoading(false);
   }, [prayerHistory2]);
 
   useEffect(() => {

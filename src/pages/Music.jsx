@@ -66,50 +66,48 @@ const Music = (props) => {
     specialSundays.filter((sunday) => !excludedTypes.includes(sunday.type));
 
   useEffect(() => {
-    if (
-      musicHistory2 &&
-      Array.isArray(musicHistory2) &&
-      musicHistory2.length > 0
-    ) {
-      const currentYear = new Date().getFullYear();
-      const years = Array.from(
-        { length: currentYear - 2023 + 2 },
-        (_, i) => 2024 + i,
-      );
+    getMusicHistory2();
+  }, [getMusicHistory2]);
 
-      const mappedSundays = years.flatMap((year) =>
-        mapToSundaysMusicFormat(musicHistory2, musicAdmin, year),
-      );
+  useEffect(() => {
+    const currentYear = new Date().getFullYear();
+    const years = Array.from(
+      { length: currentYear - 2023 + 2 },
+      (_, i) => 2024 + i,
+    );
 
-      const filteredSunday = mappedSundays.filter(
-        (sunday) => date === sunday.date,
-      );
+    const mappedSundays = years.flatMap((year) =>
+      mapToSundaysMusicFormat(musicHistory2 || [], musicAdmin || [], year),
+    );
 
-      if (!filteredSunday) return;
+    const filteredSunday = mappedSundays.filter(
+      (sunday) => date === sunday.date,
+    );
 
-      setSundaysJson({ sundays: mappedSundays });
+    if (!filteredSunday) return;
 
-      // Flatten out the entries for each sunday and handle each music entry type separately
-      const initialItems = mappedSundays.flatMap((sunday) =>
-        ["opening", "sacrament", "intermediate", "closing"]
-          .map((type) => sunday[type]) // Map each type of music
-          .filter((music) => music && music.id) // Filter out empty slots or entries without an ID
-          .map((music) => ({
-            id: music.id,
-            hymn_number: music.hymn_number,
-            name: music.name,
-            performer: music.performer,
-            type: music.type,
-            date: music.date,
-            chorister: music.chorister,
-            organist: music.organist,
-          })),
-      );
+    setSundaysJson({ sundays: mappedSundays });
 
-      setItems(initialItems);
-      setIsLoading(false);
-    }
-  }, [musicHistory2]);
+    // Flatten out the entries for each sunday and handle each music entry type separately
+    const initialItems = mappedSundays.flatMap((sunday) =>
+      ["opening", "sacrament", "intermediate", "closing"]
+        .map((type) => sunday[type]) // Map each type of music
+        .filter((music) => music && music.id) // Filter out empty slots or entries without an ID
+        .map((music) => ({
+          id: music.id,
+          hymn_number: music.hymn_number,
+          name: music.name,
+          performer: music.performer,
+          type: music.type,
+          date: music.date,
+          chorister: music.chorister,
+          organist: music.organist,
+        })),
+    );
+
+    setItems(initialItems);
+    setIsLoading(false);
+  }, [musicHistory2, musicAdmin, date]);
 
   useEffect(() => {
     if (!isLoading && currentMonthRef.current) {
