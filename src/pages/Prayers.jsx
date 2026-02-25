@@ -101,22 +101,20 @@ const Prayers = (props) => {
 
     setSundaysJson({ sundays: allMappedSundays });
 
-    const initialItems = allMappedSundays
-      .flatMap((sunday) => [
-        {
-          id: sunday.invocation.id,
-          name: sunday.invocation.name,
-          date: sunday.date,
-          type: "invocation",
-        },
-        {
-          id: sunday.benediction.id,
-          name: sunday.benediction.name,
-          date: sunday.date,
-          type: "benediction",
-        },
-      ])
-      .filter((item) => item.id); // Only include items that have an id
+    const initialItems = allMappedSundays.flatMap((sunday) => [
+      {
+        id: sunday.invocation.id,
+        name: sunday.invocation.name,
+        date: sunday.date,
+        type: "invocation",
+      },
+      {
+        id: sunday.benediction.id,
+        name: sunday.benediction.name,
+        date: sunday.date,
+        type: "benediction",
+      },
+    ]);
 
     setItems(initialItems);
     setIsLoading(false);
