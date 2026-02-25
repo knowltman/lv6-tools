@@ -40,13 +40,6 @@ const Login = (props) => {
       localStorage.setItem("user", response.data.memberId);
       const userRecord = await getMemberRecord(response.data.memberId);
 
-      if (!userRecord) {
-        setMessage(
-          "Login successful, but user data not found. Please contact an administrator.",
-        );
-        return;
-      }
-
       setUser(userRecord);
       setMessage("Login successful!");
       setIsLoggedIn(true);
