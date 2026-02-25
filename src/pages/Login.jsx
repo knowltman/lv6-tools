@@ -14,9 +14,17 @@ const Login = (props) => {
 
   const navigate = useNavigate();
 
-  const getMemberRecord = (userId) => {
-    const filteredUser =
-      members.find((user) => user.id === Number(userId)) || null;
+  const getMemberRecord = async (userId) => {
+    let filteredUser = members.find((user) => user.id === Number(userId));
+    
+    // If user not found in current members list, refresh the data
+    if (!filteredUser) {
+      await membersStore.getState().fetchAllMembers();
+      // Get the updated members list
+      const updatedMembers = membersStore.getState().members;
+      filteredUser = updatedMembers.find((user) => user.id === Number(userId)) || null;
+    }
+    
     return filteredUser;
   };
 
@@ -29,7 +37,12 @@ const Login = (props) => {
       });
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", response.data.memberId);
-      const userRecord = getMemberRecord(response.data.memberId);
+      const userRecord = await getMemberRecord(response.data.memberId);
+
+      if (!userRecord) {
+        setMessage("Login successful, but user data not found. Please contact an administrator.");
+        return;
+      }
 
       setUser(userRecord);
       setMessage("Login successful!");

@@ -217,6 +217,18 @@ const CreateUserPopup = ({ open, handleClose, memberData = null }) => {
       await usersStore.getState().fetchUsers();
       await membersStore.getState().fetchAllMembers();
 
+      // If the promoted member is the current user, update their user data
+      if (memberData) {
+        const currentUserId = localStorage.getItem("user");
+        if (currentUserId && Number(currentUserId) === memberData.id) {
+          const { members } = membersStore.getState();
+          const updatedUser = members.find((m) => m.id === Number(currentUserId));
+          if (updatedUser) {
+            membersStore.getState().setUser(updatedUser);
+          }
+        }
+      }
+
       handleClose();
     } catch (error) {
       console.error("Error creating user:", error);

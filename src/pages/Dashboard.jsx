@@ -55,7 +55,7 @@ const Dashboard = (props) => {
   const [progressValue, setProgressValue] = useState(0);
   //const [nextSundaySpeakers, setNextSundaySpeakers] = useState([]);
 
-  const isLoaded = user && user.first_name && user.last_name;
+  const isLoaded = user && user.first_name && user.last_name && user.first_name.trim() && user.last_name.trim() && user.calling;
 
   const isPrayersComplete = getPrayersCompletionStatus(formValues2);
   const isSpeakersComplete = getSpeakersCompletionStatus(formValues2);
