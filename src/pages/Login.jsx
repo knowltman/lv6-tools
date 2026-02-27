@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { OutlinedInput, Button } from "@mui/material";
+import { OutlinedInput, Button, Typography } from "@mui/material";
 import { membersStore } from "../stores/members";
 import { settingsStore } from "../stores/settings";
 
@@ -64,6 +64,9 @@ const Login = (props) => {
     <div className="login-screen">
       <div className="login-form">
         <img style={{ width: "80px" }} src={loginImage} />
+        <Typography variant="h6" fontWeight={"bold"} gutterBottom>
+          {wardName} Tools
+        </Typography>
         <form
           onSubmit={handleLogin}
           style={{
