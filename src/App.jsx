@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   useLocation,
+  useNavigate,
   Navigate,
 } from "react-router-dom";
 import { Suspense, lazy } from "react";
@@ -43,6 +44,9 @@ import { musicStore } from "./stores/music";
 import { speakersStore } from "./stores/speakers";
 
 function App() {
+    const fetchAllDataCalled = React.useRef(false);
+  const location = useLocation();
+  const navigate = useNavigate();
   const [isProgramSaved, setIsProgramSaved] = useState(false);
   const [savedStatus, setSavedStatus] = useState("");
   const [prayerHistory, setPrayerHistory] = useState([]);
@@ -50,12 +54,9 @@ function App() {
   const [musicHistory, setMusicHistory] = useState([]);
   // const [musicAdmin, setMusicAdmin] = useState([]);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("token") && localStorage.getItem("user")
-      ? true
-      : false,
-  );
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // true by default to block UI until login check
+  const [loginChecked, setLoginChecked] = useState(false); // track if login check is done
   // const [programsList, setProgramsList] = useState([]);
 
   const theme = createTheme({
@@ -76,20 +77,6 @@ function App() {
 
   const nextSunday = getNextSunday();
   const date = format(nextSunday, "yyyy-MM-dd");
-
-  const location = useLocation();
-  //console.log(musicAdmin);
-  // const fetchMusicAdmin = async () => {
-  //   try {
-  //     const response = await axios.get(`${apiURL}/api/music-admin`);
-  //     console.log("Music admin:", response.data);
-  //     setMusicAdmin(response.data);
-  //     const hasMusicAdmin = getNextSundayAdmin(response.data);
-  //     //NOTE: Add logic here to massage the music admin data so I can find the chorister and organist
-  //   } catch (error) {
-  //     console.error("Error fetching music admin:", error);
-  //   }
-  // };
 
   const fetchAllData = async () => {
     getProgramData(date);
@@ -118,9 +105,44 @@ function App() {
     }
   };
 
+  // On mount, check login state by hitting a protected endpoint
   useEffect(() => {
-    fetchAllData();
-  }, [date]);
+    const checkLogin = async () => {
+      try {
+        await axios.get("/api/members");
+        setIsLoggedIn(true);
+        // Fetch current user and set in store
+        const meRes = await axios.get("/api/me");
+        membersStore.getState().setUser(meRes.data);
+      } catch (err) {
+        const msg = `Login check failed: ${err?.response?.status} ${JSON.stringify(err?.response?.data)} ${err?.message}`;
+        // Show alert so user can see error even after refresh
+        alert(msg);
+        console.error(msg);
+        setIsLoggedIn(false);
+        membersStore.getState().setUser(null);
+      }
+      setIsLoading(false);
+      setLoginChecked(true);
+    };
+    checkLogin();
+  }, []);
+
+  useEffect(() => {
+    if (loginChecked && isLoggedIn && !fetchAllDataCalled.current) {
+      fetchAllDataCalled.current = true;
+      fetchAllData();
+    }
+    // Only run once after login check
+    // eslint-disable-next-line
+  }, [loginChecked, isLoggedIn]);
+
+  // Redirect from /login to / if already logged in (after refresh)
+  useEffect(() => {
+    if (loginChecked && isLoggedIn && location.pathname === "/login") {
+      navigate("/");
+    }
+  }, [loginChecked, isLoggedIn, location.pathname, navigate]);
 
   const handleSaveProgram = async (event) => {
     event.preventDefault();
@@ -138,10 +160,15 @@ function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    // Clear the cookie by setting it to expire
+    document.cookie = "lv6_access_token=; path=/; max-age=0; SameSite=Lax";
     setIsLoggedIn(false);
+    fetchAllDataCalled.current = false;
   };
+
+  if (isLoading) {
+    return <LoadingOverlay />;
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -238,7 +265,6 @@ function App() {
         severity={"success"}
         message={savedStatus}
       />
-      {isLoading ? <LoadingOverlay /> : null}
     </ThemeProvider>
   );
 }

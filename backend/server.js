@@ -23,6 +23,49 @@ const hashPassword = async (password) => {
   }
 };
 
+// Simple JWT verify middleware for protected GETs
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  let token = null;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+  } else if (req.cookies && req.cookies.lv6_access_token) {
+    token = req.cookies.lv6_access_token;
+  } else if (req.headers.cookie) {
+    // Parse manually if cookie parser not used
+    const match = req.headers.cookie.match(/lv6_access_token=([^;]+)/);
+    if (match) token = match[1];
+  }
+  if (!token) return res.status(401).json({ message: "Missing token" });
+  try {
+    req.user = jwt.verify(token, secretKey);
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid or expired token" });
+  }
+};
+
+// Return current user with member info based on JWT token
+router.get("/me", verifyToken, (req, res) => {
+  const { username } = req.user;
+  db.query(
+    `SELECT u.id, u.username, u.memberId, u.image, m.first_name, m.last_name, m.calling
+     FROM users u
+     LEFT JOIN ward_members m ON u.memberId = m.id
+     WHERE u.username = ?`,
+    [username],
+    (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (!results || results.length === 0) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      res.json(results[0]);
+    },
+  );
+});
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -121,37 +164,73 @@ router.get("/", (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-
-  db.query(
-    "SELECT * FROM users WHERE username = ?",
-    [username],
-    async (err, results) => {
-      if (err) {
-        return res.status(500).json({ message: "Database error" });
-      }
-
-      if (results.length === 0) {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-
-      const user = results[0];
-
-      const match = await bcrypt.compare(password, user.password);
-
-      if (match) {
-        const token = jwt.sign({ username }, secretKey, { expiresIn: "1h" });
-        const memberId = user.memberId;
-        return res.json({ token, memberId });
-      } else {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-    },
-  );
+  console.log("/login called", { body: req.body, secretKey: !!secretKey });
+  try {
+    if (!secretKey) {
+      console.error("JWT_SECRET is not set!");
+      return res
+        .status(500)
+        .json({ message: "Server misconfiguration: JWT_SECRET not set" });
+    }
+    const { username, password } = req.body;
+    db.query(
+      "SELECT * FROM users WHERE username = ?",
+      [username],
+      async (err, results) => {
+        if (err) {
+          console.error("DB error in /login:", err);
+          return res
+            .status(500)
+            .json({ message: "Database error", error: err.message });
+        }
+        if (!results || results.length === 0) {
+          return res.status(401).json({ message: "Invalid credentials" });
+        }
+        const user = results[0];
+        try {
+          const match = await bcrypt.compare(password, user.password);
+          if (match) {
+            console.log("secretKey at login:", secretKey);
+            let token;
+            try {
+              token = jwt.sign({ username }, secretKey, {
+                expiresIn: "1h",
+              });
+            } catch (jwtErr) {
+              console.error("jwt.sign error:", jwtErr);
+            }
+            console.log("token at login:", token);
+            const memberId = user.memberId;
+            res.cookie("lv6_access_token", token, {
+              httpOnly: false, // set to true for production, false for dev JS access
+              sameSite: "lax",
+              path: "/",
+              maxAge: 60 * 60 * 1000, // 1 hour
+            });
+            console.log("Login success, token issued, memberId:", memberId);
+            return res.json({ memberId });
+          } else {
+            console.log("Login failed: invalid credentials");
+            return res.status(401).json({ message: "Invalid credentials" });
+          }
+        } catch (bcryptErr) {
+          console.error("bcrypt error in /login:", bcryptErr);
+          return res
+            .status(500)
+            .json({ message: "Hash compare error", error: bcryptErr.message });
+        }
+      },
+    );
+  } catch (outerErr) {
+    console.error("Outer error in /login:", outerErr);
+    return res
+      .status(500)
+      .json({ message: "Login failed", error: outerErr.message });
+  }
 });
 
 // User management endpoints
-router.get("/users", (req, res) => {
+router.get("/users", verifyToken, (req, res) => {
   db.query(
     `SELECT u.id, u.username, u.memberId, u.image, m.first_name, m.last_name, m.calling
      FROM users u
@@ -536,7 +615,7 @@ router.delete("/hymns/:id", (req, res) => {
   });
 });
 
-router.get("/members", (req, res) => {
+router.get("/members", verifyToken, (req, res) => {
   db.query(
     `
     SELECT wm.*, u.image

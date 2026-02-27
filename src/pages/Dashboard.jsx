@@ -116,17 +116,23 @@ const Dashboard = (props) => {
     }
   }, [user]);
 
-  const handleSelectionChange = (speaker) => {
-    membersStore
-      .getState()
-      .fetchMemberData(speaker.speaker_id)
-      .then(() => {})
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-    uiStore.getState().setSidebarOpen(true);
-  };
+    // Only fetch suggestions once on mount
+    useEffect(() => {
+      fetchSuggestions();
+      // eslint-disable-next-line
+    }, []);
 
+    // Recalculate progress when formValues2 or dependencies change
+    useEffect(() => {
+      const newProgress = calculateProgress(
+        isPrayersComplete,
+        isSpeakersComplete,
+        isMusicComplete,
+        specialSundays,
+        isFirstSunday,
+      );
+      setProgressValue(newProgress);
+    }, [formValues2, isPrayersComplete, isSpeakersComplete, isMusicComplete, specialSundays, isFirstSunday]);
   return (
     <div className="container">
       <div className="dashboard">

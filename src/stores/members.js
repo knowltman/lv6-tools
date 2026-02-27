@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import axios from "axios";
 
-const currentUser = localStorage.getItem("user");
+// No longer use localStorage for user; rely on API/cookie
+const currentUser = null;
 
 export const membersStore = create((set) => ({
   user: null,

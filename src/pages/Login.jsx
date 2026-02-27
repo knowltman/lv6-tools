@@ -36,8 +36,7 @@ const Login = (props) => {
         username,
         password,
       });
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", response.data.memberId);
+      // The backend sets the cookie; do not overwrite it here.
       const userRecord = await getMemberRecord(response.data.memberId);
 
       setUser(userRecord);

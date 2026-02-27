@@ -1,18 +1,39 @@
+// ...existing code...
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import backend from "./backend/server.js";
+import cookieParser from "cookie-parser";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// CORS: Only allow trusted origins and log rejections
+const allowedOrigins = [];
+if (process.env.VITE_CLIENT_URL)
+  allowedOrigins.push(process.env.VITE_CLIENT_URL);
+allowedOrigins.push("http://localhost:5173"); // dev
+allowedOrigins.push("http://localhost:5001"); // direct backend
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // allow server-to-server or curl
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      console.warn("Blocked CORS origin:", origin);
+      return callback(new Error("CORS: Not allowed by policy"), false);
+    },
+    credentials: true,
+  }),
+);
 app.use(express.json());
+app.use(cookieParser());
 
 // API routes FIRST
 app.use((req, _res, next) => {
