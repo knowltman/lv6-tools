@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { OutlinedInput, Button } from "@mui/material";
 import { membersStore } from "../stores/members";
+import { settingsStore } from "../stores/settings";
 
 const Login = (props) => {
   const { setIsLoggedIn } = props;
@@ -11,6 +12,12 @@ const Login = (props) => {
   const [message, setMessage] = useState("");
 
   const { members, setUser } = membersStore((state) => state);
+  const { wardName, fetchSettings } = settingsStore();
+
+  // Fetch settings (wardName) on mount
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
 
   const navigate = useNavigate();
 
@@ -48,10 +55,15 @@ const Login = (props) => {
     }
   };
 
+  const loginImage =
+    wardName === "Lakeview 6th Ward"
+      ? "../lv6_Logo.svg"
+      : "../black_generic.svg";
+
   return (
     <div className="login-screen">
       <div className="login-form">
-        <img style={{ width: "80px" }} src="../lv6_Logo.svg" />
+        <img style={{ width: "80px" }} src={loginImage} />
         <form
           onSubmit={handleLogin}
           style={{

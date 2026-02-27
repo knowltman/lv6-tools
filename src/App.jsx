@@ -144,10 +144,6 @@ function App() {
         const meRes = await axios.get("/api/me");
         membersStore.getState().setUser(meRes.data);
       } catch (err) {
-        const msg = `Login check failed: ${err?.response?.status} ${JSON.stringify(err?.response?.data)} ${err?.message}`;
-        // Show alert so user can see error even after refresh
-        alert(msg);
-        console.error(msg);
         setIsLoggedIn(false);
         membersStore.getState().setUser(null);
       }
