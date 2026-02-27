@@ -116,23 +116,30 @@ const Dashboard = (props) => {
     }
   }, [user]);
 
-    // Only fetch suggestions once on mount
-    useEffect(() => {
-      fetchSuggestions();
-      // eslint-disable-next-line
-    }, []);
+  // Only fetch suggestions once on mount
+  useEffect(() => {
+    fetchSuggestions();
+    // eslint-disable-next-line
+  }, []);
 
-    // Recalculate progress when formValues2 or dependencies change
-    useEffect(() => {
-      const newProgress = calculateProgress(
-        isPrayersComplete,
-        isSpeakersComplete,
-        isMusicComplete,
-        specialSundays,
-        isFirstSunday,
-      );
-      setProgressValue(newProgress);
-    }, [formValues2, isPrayersComplete, isSpeakersComplete, isMusicComplete, specialSundays, isFirstSunday]);
+  // Recalculate progress when formValues2 or dependencies change
+  useEffect(() => {
+    const newProgress = calculateProgress(
+      isPrayersComplete,
+      isSpeakersComplete,
+      isMusicComplete,
+      specialSundays,
+      isFirstSunday,
+    );
+    setProgressValue(newProgress);
+  }, [
+    formValues2,
+    isPrayersComplete,
+    isSpeakersComplete,
+    isMusicComplete,
+    specialSundays,
+    isFirstSunday,
+  ]);
   return (
     <div className="container">
       <div className="dashboard">
