@@ -42,9 +42,38 @@ import { formStore } from "./stores/formValues";
 import { prayersStore } from "./stores/prayers";
 import { musicStore } from "./stores/music";
 import { speakersStore } from "./stores/speakers";
+import { settingsStore } from "./stores/settings";
 
 function App() {
-    const fetchAllDataCalled = React.useRef(false);
+  const fetchAllDataCalled = React.useRef(false);
+  const { wardName } = settingsStore();
+  // Update document title and favicon when wardName changes
+  useEffect(() => {
+    if (wardName) {
+      document.title = `${wardName} Program Generator`;
+      // Dynamically update favicon
+      // Update favicon
+      const favicon = document.querySelector('link[rel="icon"]');
+      if (favicon) {
+        if (wardName.toLowerCase().includes("lakeview 6th")) {
+          favicon.href = "/generic_favicon.svg";
+        } else {
+          favicon.href = "/lv6.svg";
+        }
+      }
+      // Update apple-touch-icon
+      const appleTouchIcon = document.querySelector(
+        'link[rel="apple-touch-icon"]',
+      );
+      if (appleTouchIcon) {
+        if (wardName.toLowerCase().includes("lakeview 6th")) {
+          appleTouchIcon.href = "/lv6_logo_touch.svg";
+        } else {
+          appleTouchIcon.href = "/generic_touch_icon.png";
+        }
+      }
+    }
+  }, [wardName]);
   const location = useLocation();
   const navigate = useNavigate();
   const [isProgramSaved, setIsProgramSaved] = useState(false);
