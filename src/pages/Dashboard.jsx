@@ -135,15 +135,15 @@ const Dashboard = (props) => {
                 <Grid2 size={{ xs: 12, md: 8 }}>
                   <div className="user-block">
                     {isLoaded ? (
-                      <Avatar sx={{ width: 100, height: 100 }}>
-                        {currentImage ? (
+                      currentImage ? (
+                        <Avatar sx={{ width: 100, height: 100 }}>
                           <img
                             className={"large-user-image"}
                             src={currentImage}
                             alt={`${user.first_name} ${user.last_name}`}
                           />
-                        ) : null}
-                      </Avatar>
+                        </Avatar>
+                      ) : null
                     ) : (
                       <Skeleton
                         variant="circular"

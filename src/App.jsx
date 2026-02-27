@@ -48,17 +48,17 @@ function App() {
   const fetchAllDataCalled = React.useRef(false);
   const { wardName } = settingsStore();
   // Update document title and favicon when wardName changes
+
   useEffect(() => {
     if (wardName) {
       document.title = `${wardName} Program Generator`;
-      // Dynamically update favicon
       // Update favicon
       const favicon = document.querySelector('link[rel="icon"]');
       if (favicon) {
-        if (wardName.toLowerCase().includes("lakeview 6th")) {
-          favicon.href = "/generic_favicon.svg";
-        } else {
+        if (wardName.toLowerCase().includes("lakeview")) {
           favicon.href = "/lv6.svg";
+        } else {
+          favicon.href = "/generic_favicon.svg";
         }
       }
       // Update apple-touch-icon
@@ -66,7 +66,7 @@ function App() {
         'link[rel="apple-touch-icon"]',
       );
       if (appleTouchIcon) {
-        if (wardName.toLowerCase().includes("lakeview 6th")) {
+        if (wardName.toLowerCase().includes("lakeview")) {
           appleTouchIcon.href = "/lv6_logo_touch.svg";
         } else {
           appleTouchIcon.href = "/generic_touch_icon.png";

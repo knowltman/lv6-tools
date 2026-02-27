@@ -76,7 +76,7 @@ const NavBar = (props) => {
           {wardName === "Lakeview 6th Ward" ? (
             <img style={{ width: "30px" }} src="../lv6_Logo.svg" />
           ) : (
-            <Home fontSize="Medium" />
+            <img style={{ width: "30px" }} src="../black_generic.svg" />
           )}
         </IconButton>
       ),
@@ -108,7 +108,11 @@ const NavBar = (props) => {
         {isMobile ? (
           <>
             <IconButton onClick={toggleDrawer(true)}>
-              <MenuIcon />
+              {wardName === "Lakeview 6th Ward" ? (
+                <img style={{ width: "30px" }} src="../lv6_Logo.svg" />
+              ) : (
+                <img style={{ width: "30px" }} src="../black_generic.svg" />
+              )}
             </IconButton>
             <Drawer
               anchor="left"
