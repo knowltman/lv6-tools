@@ -19,16 +19,19 @@ const Settings = () => {
     meetingTime,
     greeting,
     wardName,
+    ushersText,
     loading,
     fetchSettings,
     setMeetingTime,
     saveGreeting,
     setWardName,
+    setUshersText,
   } = settingsStore();
 
   // Local state for editing greeting
   const [localGreeting, setLocalGreeting] = useState("");
   const [localWardName, setLocalWardName] = useState("");
+  const [localUshersText, setLocalUshersText] = useState("");
   const [saving, setSaving] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
@@ -41,7 +44,8 @@ const Settings = () => {
   useEffect(() => {
     setLocalGreeting(greeting);
     setLocalWardName(wardName);
-  }, [greeting, wardName]);
+    setLocalUshersText(ushersText);
+  }, [greeting, wardName, ushersText]);
 
   // Save meeting time to database when it changes
   const handleMeetingTimeChange = (event) => {
@@ -93,6 +97,7 @@ const Settings = () => {
       await Promise.all([
         saveGreeting(localGreeting),
         setWardName(localWardName),
+        setUshersText(localUshersText),
       ]);
       setShowSuccessToast(true);
     } catch (error) {
@@ -128,7 +133,7 @@ const Settings = () => {
       }}
     >
       <Box sx={{ pt: "5rem", px: "2rem", pb: "6rem", flex: 1 }}>
-        <Typography variant="h4" sx={{ mb: 3, fontWeight: 500 }}>
+        <Typography variant="h4" sx={{ mb: 3, fontWeight: 100 }}>
           Settings
         </Typography>
 
@@ -183,6 +188,24 @@ const Settings = () => {
           label="Greeting"
           value={localGreeting}
           onChange={(e) => handleGreetingChange(e.target.value)}
+          sx={{ mb: 4 }}
+        />
+
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          sx={{ mb: 2, textTransform: "uppercase", fontWeight: 600 }}
+        >
+          Ushers & Reverence Text
+        </Typography>
+        <TextField
+          fullWidth
+          multiline
+          rows={6}
+          label="Ushers & Reverence Text"
+          value={localUshersText}
+          onChange={(e) => setLocalUshersText(e.target.value)}
+          sx={{ mb: 4 }}
         />
       </Box>
       <Box

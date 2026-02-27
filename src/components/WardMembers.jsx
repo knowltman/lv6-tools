@@ -10,9 +10,7 @@ import {
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import MemberDetail from "./MemberEditor/MemberDetail";
-import CreateUserPopup from "./Popups/CreateUserPopup";
 import { membersStore } from "../stores/members";
-import { usersStore } from "../stores/users";
 
 const apiURL = import.meta.env.VITE_API_URL;
 
@@ -23,8 +21,8 @@ const WardMembers = () => {
     last_name: "",
     calling: "",
   });
-  const [showCreateUser, setShowCreateUser] = useState(false);
-  const [memberToPromote, setMemberToPromote] = useState(null);
+  // const [showCreateUser, setShowCreateUser] = useState(false);
+  // const [memberToPromote, setMemberToPromote] = useState(null);
 
   const {
     members,
@@ -35,7 +33,7 @@ const WardMembers = () => {
     memberData,
   } = membersStore();
 
-  const { users } = usersStore();
+  // const { users } = usersStore();
 
   // Handle edit start
   // const handleEdit = (memberId, index) => {
@@ -71,31 +69,7 @@ const WardMembers = () => {
       [name]: value,
     });
 
-    // Check if this is a calling change that requires user promotion
-    if (name === "calling") {
-      const leadershipCallings = [
-        "Bishop",
-        "Bishopric First Counselor",
-        "Bishopric Second Counselor",
-        "Stake Representative",
-        "Ward Executive Secretary",
-        "Ward Clerk",
-      ];
-
-      const member = members.find((m) => m.id === memberId);
-      const isCurrentlyUser = users.some((u) => u.memberId === memberId);
-
-      if (leadershipCallings.includes(value) && !isCurrentlyUser) {
-        // This calling requires a user account, but member doesn't have one
-        setMemberToPromote({
-          ...member,
-          calling: value, // Include the new calling
-        });
-        setShowCreateUser(true);
-        // Don't update the calling yet - wait for user creation
-        return;
-      }
-    }
+    // Removed promote-to-user logic
 
     // Update the field normally
     updateMemberField(memberId, name, value);
@@ -265,21 +239,7 @@ const WardMembers = () => {
         <MemberDetail />
       </div>
 
-      <CreateUserPopup
-        open={showCreateUser}
-        handleClose={() => {
-          setShowCreateUser(false);
-          // If user creation was cancelled, revert the calling change
-          if (memberToPromote) {
-            setEditValues({
-              ...editValues,
-              calling: memberToPromote.calling || "",
-            });
-          }
-          setMemberToPromote(null);
-        }}
-        memberData={memberToPromote}
-      />
+      {/* Promote-to-user functionality removed */}
     </div>
   );
 };

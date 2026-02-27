@@ -6,11 +6,40 @@ import path from "path";
 import { fileURLToPath } from "url";
 import backend from "./backend/server.js";
 import cookieParser from "cookie-parser";
+import rateLimit from "express-rate-limit";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// Basic rate limiting: 5000 requests per 15 minutes per IP (excluding login)
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5000, // Limit each IP to 5000 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: "Too many requests, please try again later.",
+  },
+  skip: (req) => req.path === "/login",
+});
+
+// Stricter rate limiting for login attempts: 10 per 15 minutes per IP
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 login attempts per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: "Too many login attempts, please try again later.",
+  },
+});
+
+// Apply login limiter only to login route
+app.use("/api/login", loginLimiter);
+// Apply general limiter to all other API routes
+app.use("/api", apiLimiter);
 
 // CORS: Only allow trusted origins and log rejections
 const allowedOrigins = [];

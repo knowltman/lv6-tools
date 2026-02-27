@@ -77,7 +77,8 @@ const ProgramPreviewSimple = (props) => {
     selectedProgramDate,
   } = programStore();
 
-  const { meetingTime, greeting, wardName, fetchSettings } = settingsStore();
+  const { meetingTime, greeting, wardName, fetchSettings, ushersText } =
+    settingsStore();
 
   useEffect(() => {
     fetchSettings();
@@ -255,7 +256,7 @@ const ProgramPreviewSimple = (props) => {
             ? programData.organist?.first_name
             : "Select an Organist"
         } ${programData.organist?.last_name}</b>
-        ${BasicStrings.accompanying}. ${BasicStrings.broadcast}.</p>
+        ${BasicStrings.accompanying}. ${ushersText}</p>
         <p style='margin-top: .5rem'>${BasicStrings.beginText}</p><p><b class=${
           programData.opening_hymn.name ? "" : "error-text"
         }></p><p>${

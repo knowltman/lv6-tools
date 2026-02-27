@@ -13,17 +13,9 @@ import {
   ListItem,
   ListItemButton,
   useMediaQuery,
+  MenuList,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import Settings from "@mui/icons-material/Settings";
-import {
-  Group,
-  Home,
-  HomeMaxOutlined,
-  HomeMini,
-  HomeOutlined,
-  HomeTwoTone,
-} from "@mui/icons-material";
+import { Group, Home, Settings, MenuRounded } from "@mui/icons-material";
 import { LibraryMusic } from "@mui/icons-material";
 import Logout from "@mui/icons-material/Logout";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -168,7 +160,7 @@ const NavBar = (props) => {
           aria-haspopup="true"
           aria-expanded={open ? "true" : undefined}
         >
-          {isLoaded ? (
+          {/* {isLoaded ? (
             <Avatar sx={{ width: 32, height: 32 }}>
               <img
                 className={"user-image"}
@@ -183,7 +175,8 @@ const NavBar = (props) => {
               height={32}
               animation="wave"
             />
-          )}
+          )} */}
+          <MenuRounded fontSize="medium" />
         </IconButton>
         <Menu
           anchorEl={anchorEl}

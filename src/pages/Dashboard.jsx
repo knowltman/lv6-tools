@@ -46,14 +46,10 @@ const Dashboard = (props) => {
   const [prayerSuggestions, setPrayerSuggestions] = useState({});
   const [currentImage, setCurrentImage] = useState(null);
 
-  // const nextSunday = getNextSunday();
-  // const date = format(nextSunday, "yyyy-MM-dd");
-
   const isFirstSunday =
     getDate(parseISO(date)) <= 7 && parseISO(date).getDay() === 0;
 
   const [progressValue, setProgressValue] = useState(0);
-  //const [nextSundaySpeakers, setNextSundaySpeakers] = useState([]);
 
   const isLoaded =
     user &&
@@ -103,9 +99,6 @@ const Dashboard = (props) => {
     );
     fetchSuggestions();
     setProgressValue(newProgress);
-
-    // const upcomingSpeakers = getNextSundaySpeakers(sundaySpeakers);
-    //setNextSundaySpeakers(upcomingSpeakers);
   }, [formValues2]);
 
   useEffect(() => {
@@ -150,11 +143,11 @@ const Dashboard = (props) => {
               {!isMobile && (
                 <Grid2 size={{ xs: 12, md: 8 }}>
                   <div className="user-block">
-                    {isLoaded ? (
+                    {/* {isLoaded ? (
                       <Avatar sx={{ width: 100, height: 100 }}>
                         <img
                           className={"large-user-image"}
-                          src={currentImage}
+                          src={user.image || getImageName(user)}
                           alt={`${user.first_name} ${user.last_name}`}
                         />
                       </Avatar>
@@ -165,7 +158,7 @@ const Dashboard = (props) => {
                         height={128}
                         animation="wave"
                       />
-                    )}
+                    )} */}
                     <div className="user-block__user-info">
                       {isLoaded ? (
                         <>
