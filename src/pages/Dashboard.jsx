@@ -27,6 +27,7 @@ import { prayersStore } from "../stores/prayers";
 import { musicStore } from "../stores/music";
 import { formStore } from "../stores/formValues";
 import axios from "axios";
+
 import { getImageName } from "../app.logic";
 
 const Dashboard = (props) => {
@@ -41,10 +42,16 @@ const Dashboard = (props) => {
   const { sundayMusic } = musicStore();
   const { formValues2 } = formStore();
 
-  const [speakerSuggestions, setSpeakerSuggestions] = useState({});
-  const [youthSpeakerSuggestions, setYouthSpeakerSuggestions] = useState({});
-  const [prayerSuggestions, setPrayerSuggestions] = useState({});
+  const [speakerSuggestions, setSpeakerSuggestions] = useState([]);
+  const [youthSpeakerSuggestions, setYouthSpeakerSuggestions] = useState([]);
+  const [prayerSuggestions, setPrayerSuggestions] = useState([]);
   const [currentImage, setCurrentImage] = useState(null);
+  // Prevent crash: add a no-op handler for selection
+  const handleSelectionChange = (speaker) => {
+    // TODO: Implement actual selection logic if needed
+    // For now, just prevent errors and infinite loops
+    // alert(`Selected: ${speaker.first_name} ${speaker.last_name}`);
+  };
 
   const isFirstSunday =
     getDate(parseISO(date)) <= 7 && parseISO(date).getDay() === 0;
@@ -63,59 +70,27 @@ const Dashboard = (props) => {
   const isSpeakersComplete = getSpeakersCompletionStatus(formValues2);
   const isMusicComplete = getMusicCompletionStatus(sundayMusic);
 
+  // Only fetch suggestions once on mount
   const fetchSuggestions = async () => {
     try {
-      setIsLoading(true);
-
-      const speakerSuggestionsResponse = await axios.get(
-        `/api/speaker-suggestions`,
-      );
-
-      const youthSpeakerSuggestionsResponse = await axios.get(
-        `/api/youth-speaker-suggestions`,
-      );
-      const prayerSuggestionsResponse = await axios.get(
-        `/api/prayer-suggestions`,
-      );
-
+      const [
+        speakerSuggestionsResponse,
+        youthSpeakerSuggestionsResponse,
+        prayerSuggestionsResponse,
+      ] = await Promise.all([
+        axios.get(`/api/speaker-suggestions`),
+        axios.get(`/api/youth-speaker-suggestions`),
+        axios.get(`/api/prayer-suggestions`),
+      ]);
       setSpeakerSuggestions(speakerSuggestionsResponse.data);
       setYouthSpeakerSuggestions(youthSpeakerSuggestionsResponse.data);
       setPrayerSuggestions(prayerSuggestionsResponse.data);
-
-      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
-      setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    const newProgress = calculateProgress(
-      isPrayersComplete,
-      isSpeakersComplete,
-      isMusicComplete,
-      specialSundays,
-      isFirstSunday,
-    );
-    fetchSuggestions();
-    setProgressValue(newProgress);
-  }, [formValues2]);
-
-  useEffect(() => {
-    if (user) {
-      // Only use user.image if it's a valid uploaded image path
-      const isValidImagePath = user.image && user.image.startsWith("/uploads/");
-      setCurrentImage(isValidImagePath ? user.image : getImageName(user));
-    }
-  }, [user]);
-
-  // Only fetch suggestions once on mount
-  useEffect(() => {
-    fetchSuggestions();
-    // eslint-disable-next-line
-  }, []);
-
-  // Recalculate progress when formValues2 or dependencies change
+  // Only recalculate progress when dependencies change
   useEffect(() => {
     const newProgress = calculateProgress(
       isPrayersComplete,
@@ -126,13 +101,29 @@ const Dashboard = (props) => {
     );
     setProgressValue(newProgress);
   }, [
-    formValues2,
     isPrayersComplete,
     isSpeakersComplete,
     isMusicComplete,
     specialSundays,
     isFirstSunday,
   ]);
+
+  useEffect(() => {
+    if (user) {
+      // Only use user.image if it's a valid uploaded image path
+      const isValidImagePath = user.image && user.image.startsWith("/uploads/");
+      setCurrentImage(isValidImagePath ? user.image : getImageName(user));
+    }
+  }, [user]);
+
+  // Only fetch suggestions once on mount (no dependencies)
+  useEffect(() => {
+    fetchSuggestions();
+    // No dependencies: do not add fetchSuggestions or setIsLoading
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ...existing code...
   return (
     <div className="container">
       <div className="dashboard">
@@ -143,13 +134,15 @@ const Dashboard = (props) => {
               {!isMobile && (
                 <Grid2 size={{ xs: 12, md: 8 }}>
                   <div className="user-block">
-                    {/* {isLoaded ? (
+                    {isLoaded ? (
                       <Avatar sx={{ width: 100, height: 100 }}>
-                        <img
-                          className={"large-user-image"}
-                          src={user.image || getImageName(user)}
-                          alt={`${user.first_name} ${user.last_name}`}
-                        />
+                        {currentImage ? (
+                          <img
+                            className={"large-user-image"}
+                            src={currentImage}
+                            alt={`${user.first_name} ${user.last_name}`}
+                          />
+                        ) : null}
                       </Avatar>
                     ) : (
                       <Skeleton
@@ -158,7 +151,7 @@ const Dashboard = (props) => {
                         height={128}
                         animation="wave"
                       />
-                    )} */}
+                    )}
                     <div className="user-block__user-info">
                       {isLoaded ? (
                         <>

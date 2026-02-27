@@ -13,10 +13,10 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Basic rate limiting: 5000 requests per 15 minutes per IP (excluding login)
+// Basic rate limiting: 10000 requests per 15 minutes per IP (excluding login)
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5000, // Limit each IP to 5000 requests per windowMs
+  max: 10000, // Limit each IP to 10000 requests per windowMs
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -25,10 +25,10 @@ const apiLimiter = rateLimit({
   skip: (req) => req.path === "/login",
 });
 
-// Stricter rate limiting for login attempts: 10 per 15 minutes per IP
+// Stricter rate limiting for login attempts: 50 per 15 minutes per IP
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 login attempts per windowMs
+  max: 50, // Limit each IP to 50 login attempts per windowMs
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -42,11 +42,16 @@ app.use("/api/login", loginLimiter);
 app.use("/api", apiLimiter);
 
 // CORS: Only allow trusted origins and log rejections
+
 const allowedOrigins = [];
-if (process.env.VITE_CLIENT_URL)
-  allowedOrigins.push(process.env.VITE_CLIENT_URL);
-allowedOrigins.push("http://localhost:5173"); // dev
-allowedOrigins.push("http://localhost:5001"); // direct backend
+if (process.env.VITE_CLIENT_URL) {
+  // Support comma-separated list of origins
+  process.env.VITE_CLIENT_URL.split(",").forEach((origin) => {
+    if (origin && origin.trim()) allowedOrigins.push(origin.trim());
+  });
+}
+// allowedOrigins.push("http://localhost:5173"); // dev
+// allowedOrigins.push("http://localhost:5001"); // direct backend
 
 app.use(
   cors({

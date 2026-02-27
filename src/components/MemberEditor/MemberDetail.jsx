@@ -1,5 +1,14 @@
-import { useState } from "react";
-import { IconButton, Box, Chip, useMediaQuery } from "@mui/material";
+import React, { useState } from "react";
+import {
+  IconButton,
+  Box,
+  Chip,
+  useMediaQuery,
+  FormControl,
+  Select,
+  MenuItem,
+  Button,
+} from "@mui/material";
 import {
   differenceInYears,
   differenceInMonths,
@@ -165,7 +174,7 @@ const MemberDetail = () => {
             parsedDate = parse(
               `${month}/${day}/${fullYear}`,
               dateFormat,
-              new Date()
+              new Date(),
             );
           }
         }
@@ -200,6 +209,31 @@ const MemberDetail = () => {
   const memberName = `${memberData?.first_name ?? ""} ${
     memberData?.last_name ?? ""
   }`;
+
+  const [callingEdit, setCallingEdit] = useState(memberData?.calling || "");
+  const [callingSaving, setCallingSaving] = useState(false);
+
+  // Update local callingEdit when memberData changes
+  React.useEffect(() => {
+    setCallingEdit(memberData?.calling || "");
+  }, [memberData]);
+
+  const handleCallingSave = async () => {
+    setCallingSaving(true);
+    try {
+      await axios.patch(`/api/update-member/${memberData?.id}`, {
+        calling: callingEdit,
+      });
+      fetchMemberData(memberData?.id);
+      setSavedStatus("Calling updated successfully");
+      setIsProgramSaved(true);
+    } catch (e) {
+      setSavedStatus("Failed to update calling");
+      setIsProgramSaved(true);
+    } finally {
+      setCallingSaving(false);
+    }
+  };
 
   //Speaker dates
   const speakerDates = memberData?.speaker_dates
@@ -374,6 +408,46 @@ const MemberDetail = () => {
             ></Chip>
           ) : null}
         </div>
+        {/* Calling dropdown edit */}
+        <div style={{ margin: "2rem 0 1rem 0" }}>
+          <FormControl fullWidth size="small" variant="standard">
+            <Select
+              value={callingEdit}
+              onChange={(e) => setCallingEdit(e.target.value)}
+              label="Calling"
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value="Bishop">Bishop</MenuItem>
+              <MenuItem value="Bishopric First Counselor">
+                Bishopric First Counselor
+              </MenuItem>
+              <MenuItem value="Bishopric Second Counselor">
+                Bishopric Second Counselor
+              </MenuItem>
+              <MenuItem value="Stake Representative">
+                Stake Representative
+              </MenuItem>
+              <MenuItem value="Ward Executive Secretary">
+                Ward Executive Secretary
+              </MenuItem>
+              <MenuItem value="Ward Clerk">Ward Clerk</MenuItem>
+              <MenuItem value="Chorister">Chorister</MenuItem>
+              <MenuItem value="Organist">Organist</MenuItem>
+            </Select>
+          </FormControl>
+          <Button
+            variant="contained"
+            size="small"
+            style={{ marginTop: 8 }}
+            onClick={handleCallingSave}
+            disabled={callingSaving}
+          >
+            {callingSaving ? "Saving..." : "Save Calling"}
+          </Button>
+        </div>
+
         {memberData?.can_ask ? (
           <InfoWrapper />
         ) : (
