@@ -46,7 +46,7 @@ import { settingsStore } from "./stores/settings";
 
 function App() {
   const fetchAllDataCalled = React.useRef(false);
-  const { wardName } = settingsStore();
+  const { wardName, rootFontSize } = settingsStore();
   // Update document title and favicon when wardName changes
 
   useEffect(() => {
@@ -74,6 +74,14 @@ function App() {
       }
     }
   }, [wardName]);
+
+  // Dynamically update root font size
+  useEffect(() => {
+    let size = "100%";
+    if (rootFontSize === "medium") size = "120%";
+    if (rootFontSize === "large") size = "140%";
+    document.documentElement.style.fontSize = size;
+  }, [rootFontSize]);
   const location = useLocation();
   const navigate = useNavigate();
   const [isProgramSaved, setIsProgramSaved] = useState(false);

@@ -20,12 +20,14 @@ const Settings = () => {
     greeting,
     wardName,
     ushersText,
+    rootFontSize,
     loading,
     fetchSettings,
     setMeetingTime,
     saveGreeting,
     setWardName,
     setUshersText,
+    setRootFontSize,
   } = settingsStore();
 
   // Local state for editing greeting
@@ -33,6 +35,7 @@ const Settings = () => {
   const [localWardName, setLocalWardName] = useState("");
   const [localUshersText, setLocalUshersText] = useState("");
   const [saving, setSaving] = useState(false);
+  const [localRootFontSize, setLocalRootFontSize] = useState("small");
   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   // Load settings from database on mount
@@ -45,7 +48,8 @@ const Settings = () => {
     setLocalGreeting(greeting);
     setLocalWardName(wardName);
     setLocalUshersText(ushersText);
-  }, [greeting, wardName, ushersText]);
+    setLocalRootFontSize(rootFontSize || "small");
+  }, [greeting, wardName, ushersText, rootFontSize]);
 
   // Save meeting time to database when it changes
   const handleMeetingTimeChange = (event) => {
@@ -98,6 +102,7 @@ const Settings = () => {
         saveGreeting(localGreeting),
         setWardName(localWardName),
         setUshersText(localUshersText),
+        setRootFontSize(localRootFontSize),
       ]);
       setShowSuccessToast(true);
     } catch (error) {
@@ -144,6 +149,21 @@ const Settings = () => {
         >
           General
         </Typography>
+
+        <FormControl fullWidth sx={{ mb: 4 }}>
+          <InputLabel id="root-font-size-label">Font Size</InputLabel>
+          <Select
+            labelId="root-font-size-label"
+            id="root-font-size-select"
+            value={localRootFontSize}
+            label="Font Size"
+            onChange={(e) => setLocalRootFontSize(e.target.value)}
+          >
+            <MenuItem value="small">Small</MenuItem>
+            <MenuItem value="medium">Medium</MenuItem>
+            <MenuItem value="large">Large</MenuItem>
+          </Select>
+        </FormControl>
         <FormControl fullWidth sx={{ mb: 4 }}>
           <InputLabel id="meeting-time-label">Meeting Time</InputLabel>
           <Select

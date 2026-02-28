@@ -5,14 +5,18 @@ const DEFAULT_GREETING =
   "Good afternoon and thank you for joining us for the [WARD_NAME] Sacrament Meeting.";
 
 const DEFAULT_WARD_NAME = "Lakeview 6th Ward";
+
 const DEFAULT_USHERS_TEXT =
   "We would also like to thank our Young Women ushers ____________________________________________, and our reverence examples ____________________________________________ we'll excuse them to sit with their families.";
+
+const DEFAULT_ROOT_FONT_SIZE = "small"; // small, medium, large
 
 export const settingsStore = create((set) => ({
   meetingTime: "9:00 AM",
   greeting: DEFAULT_GREETING,
   wardName: DEFAULT_WARD_NAME,
   ushersText: DEFAULT_USHERS_TEXT,
+  rootFontSize: DEFAULT_ROOT_FONT_SIZE,
   loading: true,
 
   fetchSettings: async () => {
@@ -26,17 +30,32 @@ export const settingsStore = create((set) => ({
         response.data.ushersText !== undefined
           ? response.data.ushersText
           : DEFAULT_USHERS_TEXT;
+      const loadedRootFontSize =
+        response.data.rootFontSize ?? DEFAULT_ROOT_FONT_SIZE;
 
       set({
         meetingTime: loadedMeetingTime,
         greeting: loadedGreeting,
         wardName: loadedWardName,
         ushersText: loadedUshersText,
+        rootFontSize: loadedRootFontSize,
         loading: false,
       });
     } catch (error) {
       console.error("Error fetching settings:", error);
       set({ loading: false });
+    }
+  },
+  setRootFontSize: async (size) => {
+    try {
+      await axios.post("/api/settings", {
+        setting_key: "rootFontSize",
+        setting_value: size,
+      });
+      set({ rootFontSize: size });
+    } catch (error) {
+      console.error("Error saving root font size:", error);
+      throw error;
     }
   },
   setUshersText: async (newText) => {
