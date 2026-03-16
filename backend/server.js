@@ -747,39 +747,26 @@ router.get("/programs/:date", (req, res) => {
     SELECT pd.id, pd.type, wm.first_name, wm.last_name
     FROM prayer_dates pd
     JOIN ward_members wm ON wm.id = pd.speaker_id
-    WHERE DATE_FORMAT(pd.date, '%Y-%m-%d')
-              = ?
+    WHERE DATE_FORMAT(pd.date, '%Y-%m-%d') = ?
   `;
 
   db.query(programQuery, [formattedDate], (err, programRows) => {
     if (err) {
-     
-              return res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: err.message });
     }
 
     // Fetch speakers and prayers regardless of whether program exists
-    db.query(speakersQuery, [formattedDate], (err, 
-              speakerRows) => {
-   
-                if (err) {
-        return re
-           s  .status(500).json({
-             
-      e       rror: err.message });
+    db.query(speakersQuery, [formattedDate], (err, speakerRows) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
       }
 
-      db.query(prayersQuery, [formattedDate], (err, pra
-y             erRows) => {
+      db.query(prayersQuery, [formattedDate], (err, prayerRows) => {
         if (err) {
-         
-               return res.status
-         (    500).json({ error: err.message }
-)             ;
+          return res.status(500).json({ error: err.message });
         }
 
-        
-            /
-             / If program exists, parse and enhance it with live speaker/prayer data
+        // If program exists, parse and enhance it with live speaker/prayer data
         if (programRows && programRows.length > 0) {
           const program = programRows[0];
           let programData = {};
