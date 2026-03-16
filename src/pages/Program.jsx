@@ -29,65 +29,9 @@ const Program = (props) => {
 
   const programRef = useRef();
 
-  const reactPrint = useReactToPrint({
-    // support both modern `content` (function returning element)
-    // and older `contentRef` shapes by providing both.
-    content: () => programRef.current,
+  const handlePrint = useReactToPrint({
     contentRef: programRef,
-    onBeforeGetContent: () => {
-      if (!programRef.current) {
-        console.warn("react-to-print: programRef is not set yet");
-      }
-    },
   });
-
-  const isIOS =
-    typeof navigator !== "undefined" &&
-    (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
-
-  const openWindowAndPrint = (el) => {
-    try {
-      const win = window.open("", "_blank");
-      if (!win) {
-        alert(
-          "Unable to open print window (popup blocked). Please allow popups for this site.",
-        );
-        return;
-      }
-      const headContent = document.head.innerHTML;
-      const html = `<!doctype html><html><head>${headContent}</head><body>${el.innerHTML}</body></html>`;
-      win.document.open();
-      win.document.write(html);
-      win.document.close();
-      win.focus();
-      // Delay to allow styles to load
-      setTimeout(() => {
-        try {
-          win.print();
-        } catch (e) {
-          console.warn("Fallback print failed:", e);
-        }
-      }, 500);
-    } catch (e) {
-      console.error("openWindowAndPrint error:", e);
-    }
-  };
-
-  const handlePrint = () => {
-    // For iOS devices use the new-window fallback which is more reliable
-    if (isIOS) {
-      if (programRef.current) openWindowAndPrint(programRef.current);
-      else console.warn("No programRef available for printing");
-      return;
-    }
-    try {
-      reactPrint();
-    } catch (err) {
-      console.warn("react-to-print failed, falling back to window print:", err);
-      if (programRef.current) openWindowAndPrint(programRef.current);
-    }
-  };
 
   // const handleProgramOpen = (programDate) => {
   //   // if (data === undefined) {

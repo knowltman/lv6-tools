@@ -16,9 +16,6 @@ export const settingsStore = create((set) => ({
   greeting: DEFAULT_GREETING,
   wardName: DEFAULT_WARD_NAME,
   ushersText: DEFAULT_USHERS_TEXT,
-  // Print/layout settings
-  showSectionBeforeSacrament: true,
-  showSectionBeforeClosingAnnouncements: true,
   rootFontSize: DEFAULT_ROOT_FONT_SIZE,
   loading: true,
 
@@ -35,10 +32,6 @@ export const settingsStore = create((set) => ({
           : DEFAULT_USHERS_TEXT;
       const loadedRootFontSize =
         response.data.rootFontSize ?? DEFAULT_ROOT_FONT_SIZE;
-      const loadedShowSectionBeforeSacrament =
-        response.data.showSectionBeforeSacrament ?? true;
-      const loadedShowSectionBeforeClosingAnnouncements =
-        response.data.showSectionBeforeClosingAnnouncements ?? true;
 
       set({
         meetingTime: loadedMeetingTime,
@@ -46,9 +39,6 @@ export const settingsStore = create((set) => ({
         wardName: loadedWardName,
         ushersText: loadedUshersText,
         rootFontSize: loadedRootFontSize,
-        showSectionBeforeSacrament: loadedShowSectionBeforeSacrament,
-        showSectionBeforeClosingAnnouncements:
-          loadedShowSectionBeforeClosingAnnouncements,
         loading: false,
       });
     } catch (error) {
@@ -65,33 +55,6 @@ export const settingsStore = create((set) => ({
       set({ rootFontSize: size });
     } catch (error) {
       console.error("Error saving root font size:", error);
-      throw error;
-    }
-  },
-  setShowSectionBeforeSacrament: async (value) => {
-    try {
-      await axios.post("/api/settings", {
-        setting_key: "showSectionBeforeSacrament",
-        setting_value: value,
-      });
-      set({ showSectionBeforeSacrament: value });
-    } catch (error) {
-      console.error("Error saving showSectionBeforeSacrament:", error);
-      throw error;
-    }
-  },
-  setShowSectionBeforeClosingAnnouncements: async (value) => {
-    try {
-      await axios.post("/api/settings", {
-        setting_key: "showSectionBeforeClosingAnnouncements",
-        setting_value: value,
-      });
-      set({ showSectionBeforeClosingAnnouncements: value });
-    } catch (error) {
-      console.error(
-        "Error saving showSectionBeforeClosingAnnouncements:",
-        error,
-      );
       throw error;
     }
   },

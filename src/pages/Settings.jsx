@@ -9,9 +9,6 @@ import {
   CircularProgress,
   TextField,
   Button,
-  FormGroup,
-  FormControlLabel,
-  Switch,
   Divider,
 } from "@mui/material";
 import { settingsStore } from "../stores/settings";
@@ -39,12 +36,6 @@ const Settings = () => {
   const [localUshersText, setLocalUshersText] = useState("");
   const [saving, setSaving] = useState(false);
   const [localRootFontSize, setLocalRootFontSize] = useState("small");
-  const [localShowSectionBeforeSacrament, setLocalShowSectionBeforeSacrament] =
-    useState(true);
-  const [
-    localShowSectionBeforeClosingAnnouncements,
-    setLocalShowSectionBeforeClosingAnnouncements,
-  ] = useState(true);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   // Load settings from database on mount
@@ -58,12 +49,6 @@ const Settings = () => {
     setLocalWardName(wardName);
     setLocalUshersText(ushersText);
     setLocalRootFontSize(rootFontSize || "small");
-    setLocalShowSectionBeforeSacrament(
-      settingsStore.getState().showSectionBeforeSacrament ?? true,
-    );
-    setLocalShowSectionBeforeClosingAnnouncements(
-      settingsStore.getState().showSectionBeforeClosingAnnouncements ?? true,
-    );
   }, [greeting, wardName, ushersText, rootFontSize]);
 
   // Save meeting time to database when it changes
@@ -118,16 +103,6 @@ const Settings = () => {
         setWardName(localWardName),
         setUshersText(localUshersText),
         setRootFontSize(localRootFontSize),
-        settingsStore.getState().setShowSectionBeforeSacrament &&
-          settingsStore
-            .getState()
-            .setShowSectionBeforeSacrament(localShowSectionBeforeSacrament),
-        settingsStore.getState().setShowSectionBeforeClosingAnnouncements &&
-          settingsStore
-            .getState()
-            .setShowSectionBeforeClosingAnnouncements(
-              localShowSectionBeforeClosingAnnouncements,
-            ),
       ]);
       setShowSuccessToast(true);
     } catch (error) {
@@ -252,41 +227,6 @@ const Settings = () => {
           onChange={(e) => setLocalUshersText(e.target.value)}
           sx={{ mb: 4 }}
         />
-
-        <Divider sx={{ my: 2 }} />
-        <Typography
-          variant="subtitle2"
-          color="text.secondary"
-          sx={{ mb: 2, textTransform: "uppercase", fontWeight: 600 }}
-        >
-          Program Layout
-        </Typography>
-        <FormGroup sx={{ mb: 2 }}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={localShowSectionBeforeSacrament}
-                onChange={(e) =>
-                  setLocalShowSectionBeforeSacrament(e.target.checked)
-                }
-              />
-            }
-            label="Show separator before Sacrament"
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={localShowSectionBeforeClosingAnnouncements}
-                onChange={(e) =>
-                  setLocalShowSectionBeforeClosingAnnouncements(
-                    e.target.checked,
-                  )
-                }
-              />
-            }
-            label="Show separator before Closing Business"
-          />
-        </FormGroup>
       </Box>
       <Box
         sx={{
