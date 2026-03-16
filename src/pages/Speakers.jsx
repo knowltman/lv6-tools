@@ -325,7 +325,7 @@ export default function Speakers() {
       }
       return min;
     },
-    { year: today.getFullYear(), month: today.getMonth() + 1 },
+    { year: today.getFullYear() - 1, month: 1 },
   );
 
   // 3. Generate all months from minYearMonth to nextYear/12
