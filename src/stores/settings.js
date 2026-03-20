@@ -10,6 +10,8 @@ const DEFAULT_USHERS_TEXT =
   "We would also like to thank our Young Women ushers ____________________________________________, and our reverence examples ____________________________________________ we'll excuse them to sit with their families.";
 
 const DEFAULT_ROOT_FONT_SIZE = "small"; // small, medium, large
+const DEFAULT_CLOSING_LINE =
+  "Thanks to all of our speakers... our closing hymn will be...";
 
 export const settingsStore = create((set) => ({
   meetingTime: "9:00 AM",
@@ -17,6 +19,7 @@ export const settingsStore = create((set) => ({
   wardName: DEFAULT_WARD_NAME,
   ushersText: DEFAULT_USHERS_TEXT,
   rootFontSize: DEFAULT_ROOT_FONT_SIZE,
+  closingLine: DEFAULT_CLOSING_LINE,
   loading: true,
 
   showDividers: true,
@@ -69,6 +72,10 @@ export const settingsStore = create((set) => ({
           ? response.data.showDividerBeforeClosing === "true" ||
             response.data.showDividerBeforeClosing === true
           : true;
+      const loadedClosingLine =
+        response.data.closingLine !== undefined
+          ? response.data.closingLine
+          : DEFAULT_CLOSING_LINE;
 
       set({
         meetingTime: loadedMeetingTime,
@@ -76,6 +83,7 @@ export const settingsStore = create((set) => ({
         wardName: loadedWardName,
         ushersText: loadedUshersText,
         rootFontSize: loadedRootFontSize,
+        closingLine: loadedClosingLine,
         showDividers: loadedShowDividers,
         showDividerAfterInvocation: loadedShowDividerAfterInvocation,
         showDividerBeforeBusiness: loadedShowDividerBeforeBusiness,
@@ -151,6 +159,19 @@ export const settingsStore = create((set) => ({
       set({ wardName: newWardName });
     } catch (error) {
       console.error("Error saving ward name:", error);
+      throw error;
+    }
+  },
+
+  setClosingLine: async (line) => {
+    try {
+      await axios.post("/api/settings", {
+        setting_key: "closingLine",
+        setting_value: line,
+      });
+      set({ closingLine: line });
+    } catch (error) {
+      console.error("Error saving closingLine:", error);
       throw error;
     }
   },

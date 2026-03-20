@@ -89,6 +89,7 @@ const ProgramPreviewSimple = (props) => {
     showDividerBeforeSacrament,
     showDividerBeforeProgram,
     showDividerBeforeClosing,
+    closingLine,
   } = settingsStore();
 
   useEffect(() => {
@@ -399,7 +400,9 @@ const ProgramPreviewSimple = (props) => {
         title="Closing"
         isLoading={isLoading}
         value={`${
-          haveSpeakers || isSpecialSunday
+          closingLine?.trim()
+            ? closingLine
+            : haveSpeakers || isSpecialSunday
             ? BasicStrings.regularClose
             : BasicStrings.fastSundayClose
         } <p><b class=${programData.closing_hymn.name ? "" : "error-text"}>${

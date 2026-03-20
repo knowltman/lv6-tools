@@ -36,6 +36,7 @@ const ProgramPreview = (props: any) => {
     showDividerBeforeSacrament,
     showDividerBeforeProgram,
     showDividerBeforeClosing,
+    closingLine,
   } = settingsStore();
 
   const BasicStrings = {
@@ -314,7 +315,9 @@ const ProgramPreview = (props: any) => {
         <InfoBlock
           title="Closing"
           value={`${
-            haveSpeakers
+            closingLine?.trim()
+              ? closingLine
+              : haveSpeakers
               ? BasicStrings.regularClose
               : BasicStrings.fastSundayClose
           } <b class=${formValues.closing_hymn.name ? "" : "error-text"}>${

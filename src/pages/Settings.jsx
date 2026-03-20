@@ -23,6 +23,7 @@ const Settings = () => {
     wardName,
     ushersText,
     rootFontSize,
+    closingLine,
     showDividerAfterInvocation,
     showDividerBeforeBusiness,
     showDividerBeforeSacrament,
@@ -33,6 +34,7 @@ const Settings = () => {
     setMeetingTime,
     saveGreeting,
     setWardName,
+    setClosingLine,
     setUshersText,
     setRootFontSize,
     setShowDividerAfterInvocation,
@@ -58,6 +60,7 @@ const Settings = () => {
     useState(true);
   const [localShowDividerBeforeClosing, setLocalShowDividerBeforeClosing] =
     useState(true);
+  const [localClosingLine, setLocalClosingLine] = useState("");
   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   // Load settings from database on mount
@@ -71,6 +74,7 @@ const Settings = () => {
     setLocalWardName(wardName);
     setLocalUshersText(ushersText);
     setLocalRootFontSize(rootFontSize || "small");
+    setLocalClosingLine(closingLine || "");
     setLocalShowDividerAfterInvocation(
       showDividerAfterInvocation !== undefined
         ? showDividerAfterInvocation
@@ -97,6 +101,7 @@ const Settings = () => {
     wardName,
     ushersText,
     rootFontSize,
+    closingLine,
     showDividerAfterInvocation,
     showDividerBeforeBusiness,
     showDividerBeforeSacrament,
@@ -156,6 +161,7 @@ const Settings = () => {
         setWardName(localWardName),
         setUshersText(localUshersText),
         setRootFontSize(localRootFontSize),
+        setClosingLine(localClosingLine),
         setShowDividerAfterInvocation(localShowDividerAfterInvocation),
         setShowDividerBeforeBusiness(localShowDividerBeforeBusiness),
         setShowDividerBeforeSacrament(localShowDividerBeforeSacrament),
@@ -259,7 +265,6 @@ const Settings = () => {
         >
           Program Dividers
         </Typography>
-
         <FormControlLabel
           control={
             <Switch
@@ -306,6 +311,22 @@ const Settings = () => {
             />
           }
           label="Before closing"
+        />
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          sx={{ mb: 2, mt: 4, textTransform: "uppercase", fontWeight: 600 }}
+        >
+          Closing Line
+        </Typography>
+        <TextField
+          fullWidth
+          multiline
+          rows={2}
+          label="Closing line"
+          value={localClosingLine}
+          onChange={(e) => setLocalClosingLine(e.target.value)}
+          sx={{ mt: 2 }}
         />
 
         <Typography
