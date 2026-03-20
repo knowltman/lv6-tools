@@ -574,11 +574,48 @@ button:hover {
 }
 
 @media print {
+  html,
+  body,
+  .container,
+  .scroll-box,
+  .printable {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
   .print-only,
   .printable {
-    display: block;
-    padding: 2rem;
-    position: relative;
+    padding: 0.75rem !important;
+    position: static !important;
+  }
+
+  @page {
+    margin: 0.5rem;
+  }
+
+  .navbar-print-hide,
+  .nav-bar,
+  .menu,
+  .save-button,
+  .save-button-mobile,
+  .MuiTab-root,
+  .MuiTabs-root,
+  .no-print,
+  .sidebar-tab,
+  .program-sidebar,
+  .ProgramSidebar,
+  .mobile-sidebar,
+  .OurBlueTab,
+  .tabs-mobile,
+  .sidebar-expand-open,
+  .sidebar-expand-close,
+  .MuiDrawer-root,
+  .MuiDrawer-paper {
+    display: none !important;
   }
 }
 

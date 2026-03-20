@@ -347,6 +347,7 @@ export const ProgramSidebar = (props) => {
         >
           {sidebar}
           <Button
+            className="sidebar-expand-close no-print"
             style={{
               position: "absolute",
               right: "0",
@@ -364,6 +365,7 @@ export const ProgramSidebar = (props) => {
       )}
       {isMobile && (
         <Button
+          className="sidebar-expand-open no-print"
           style={{
             position: "absolute",
             top: "50%",
