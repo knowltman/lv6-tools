@@ -77,8 +77,19 @@ const ProgramPreviewSimple = (props) => {
     selectedProgramDate,
   } = programStore();
 
-  const { meetingTime, greeting, wardName, fetchSettings, ushersText } =
-    settingsStore();
+  const {
+    meetingTime,
+    greeting,
+    wardName,
+    fetchSettings,
+    ushersText,
+    showDividers,
+    showDividerAfterInvocation,
+    showDividerBeforeBusiness,
+    showDividerBeforeSacrament,
+    showDividerBeforeProgram,
+    showDividerBeforeClosing,
+  } = settingsStore();
 
   useEffect(() => {
     fetchSettings();
@@ -283,8 +294,7 @@ const ProgramPreviewSimple = (props) => {
             : "_________________________________"
         }</b></p>`}
       />
-      {programData.speaker_1?.subject?.includes("Blessing") ||
-      programData.speaker_1?.subject?.includes("blessing") ? (
+      {showDividers && showDividerAfterInvocation ? (
         <SectionSeparator title="" />
       ) : null}
       {programData.speaker_1?.subject?.includes("Blessing") ||
@@ -300,7 +310,9 @@ const ProgramPreviewSimple = (props) => {
       haveCallings ||
       haveOtherWardBusiness ||
       haveStakeBusiness ? (
-        <SectionSeparator title="" />
+        showDividers && showDividerBeforeBusiness ? (
+          <SectionSeparator title="" />
+        ) : null
       ) : null}
       {haveNewMembers ? (
         <BusinessItem
@@ -353,7 +365,9 @@ const ProgramPreviewSimple = (props) => {
           value={programData.stake_business}
         />
       ) : null}
-      <SectionSeparator title="" />
+      {showDividers && showDividerBeforeSacrament && (
+        <SectionSeparator title="" />
+      )}
       <InfoBlock
         title="Sacrament"
         isLoading={isLoading}
@@ -369,14 +383,18 @@ const ProgramPreviewSimple = (props) => {
         } 
         </b><p>${BasicStrings.afterWhich}</p>`}
       />
-      <SectionSeparator title="" />
+      {showDividers && showDividerBeforeProgram && (
+        <SectionSeparator title="" />
+      )}
       <ProgramSection
         programData={programData}
         isLoading={isLoading}
         selectedProgramDate={selectedProgramDate}
         specialSundays={specialSundays}
       />
-      <SectionSeparator title="" />
+      {showDividers && showDividerBeforeClosing && (
+        <SectionSeparator title="" />
+      )}
       {haveClosingAnnouncements ? (
         <BusinessItem
           title="Business"

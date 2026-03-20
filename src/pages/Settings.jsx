@@ -10,6 +10,8 @@ import {
   TextField,
   Button,
   Divider,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import { settingsStore } from "../stores/settings";
 import SnackBar from "../components/SnackBar";
@@ -21,6 +23,11 @@ const Settings = () => {
     wardName,
     ushersText,
     rootFontSize,
+    showDividerAfterInvocation,
+    showDividerBeforeBusiness,
+    showDividerBeforeSacrament,
+    showDividerBeforeProgram,
+    showDividerBeforeClosing,
     loading,
     fetchSettings,
     setMeetingTime,
@@ -28,6 +35,11 @@ const Settings = () => {
     setWardName,
     setUshersText,
     setRootFontSize,
+    setShowDividerAfterInvocation,
+    setShowDividerBeforeBusiness,
+    setShowDividerBeforeSacrament,
+    setShowDividerBeforeProgram,
+    setShowDividerBeforeClosing,
   } = settingsStore();
 
   // Local state for editing greeting
@@ -36,6 +48,16 @@ const Settings = () => {
   const [localUshersText, setLocalUshersText] = useState("");
   const [saving, setSaving] = useState(false);
   const [localRootFontSize, setLocalRootFontSize] = useState("small");
+  const [localShowDividerAfterInvocation, setLocalShowDividerAfterInvocation] =
+    useState(true);
+  const [localShowDividerBeforeBusiness, setLocalShowDividerBeforeBusiness] =
+    useState(true);
+  const [localShowDividerBeforeSacrament, setLocalShowDividerBeforeSacrament] =
+    useState(true);
+  const [localShowDividerBeforeProgram, setLocalShowDividerBeforeProgram] =
+    useState(true);
+  const [localShowDividerBeforeClosing, setLocalShowDividerBeforeClosing] =
+    useState(true);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   // Load settings from database on mount
@@ -49,7 +71,38 @@ const Settings = () => {
     setLocalWardName(wardName);
     setLocalUshersText(ushersText);
     setLocalRootFontSize(rootFontSize || "small");
-  }, [greeting, wardName, ushersText, rootFontSize]);
+    setLocalShowDividerAfterInvocation(
+      showDividerAfterInvocation !== undefined
+        ? showDividerAfterInvocation
+        : true,
+    );
+    setLocalShowDividerBeforeBusiness(
+      showDividerBeforeBusiness !== undefined
+        ? showDividerBeforeBusiness
+        : true,
+    );
+    setLocalShowDividerBeforeSacrament(
+      showDividerBeforeSacrament !== undefined
+        ? showDividerBeforeSacrament
+        : true,
+    );
+    setLocalShowDividerBeforeProgram(
+      showDividerBeforeProgram !== undefined ? showDividerBeforeProgram : true,
+    );
+    setLocalShowDividerBeforeClosing(
+      showDividerBeforeClosing !== undefined ? showDividerBeforeClosing : true,
+    );
+  }, [
+    greeting,
+    wardName,
+    ushersText,
+    rootFontSize,
+    showDividerAfterInvocation,
+    showDividerBeforeBusiness,
+    showDividerBeforeSacrament,
+    showDividerBeforeProgram,
+    showDividerBeforeClosing,
+  ]);
 
   // Save meeting time to database when it changes
   const handleMeetingTimeChange = (event) => {
@@ -103,6 +156,11 @@ const Settings = () => {
         setWardName(localWardName),
         setUshersText(localUshersText),
         setRootFontSize(localRootFontSize),
+        setShowDividerAfterInvocation(localShowDividerAfterInvocation),
+        setShowDividerBeforeBusiness(localShowDividerBeforeBusiness),
+        setShowDividerBeforeSacrament(localShowDividerBeforeSacrament),
+        setShowDividerBeforeProgram(localShowDividerBeforeProgram),
+        setShowDividerBeforeClosing(localShowDividerBeforeClosing),
       ]);
       setShowSuccessToast(true);
     } catch (error) {
@@ -198,6 +256,62 @@ const Settings = () => {
           variant="subtitle2"
           color="text.secondary"
           sx={{ mb: 2, textTransform: "uppercase", fontWeight: 600 }}
+        >
+          Program Dividers
+        </Typography>
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={localShowDividerAfterInvocation}
+              onChange={(e) =>
+                setLocalShowDividerAfterInvocation(e.target.checked)
+              }
+            />
+          }
+          label="After invocation"
+        />
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={localShowDividerBeforeSacrament}
+              onChange={(e) =>
+                setLocalShowDividerBeforeSacrament(e.target.checked)
+              }
+            />
+          }
+          label="Before sacrament"
+        />
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={localShowDividerBeforeProgram}
+              onChange={(e) =>
+                setLocalShowDividerBeforeProgram(e.target.checked)
+              }
+            />
+          }
+          label="Before program"
+        />
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={localShowDividerBeforeClosing}
+              onChange={(e) =>
+                setLocalShowDividerBeforeClosing(e.target.checked)
+              }
+            />
+          }
+          label="Before closing"
+        />
+
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          sx={{ mb: 2, mt: 4, textTransform: "uppercase", fontWeight: 600 }}
         >
           Program Greeting
         </Typography>

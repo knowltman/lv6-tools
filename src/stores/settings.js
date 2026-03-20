@@ -19,6 +19,13 @@ export const settingsStore = create((set) => ({
   rootFontSize: DEFAULT_ROOT_FONT_SIZE,
   loading: true,
 
+  showDividers: true,
+  showDividerAfterInvocation: true,
+  showDividerBeforeBusiness: true,
+  showDividerBeforeSacrament: true,
+  showDividerBeforeProgram: true,
+  showDividerBeforeClosing: true,
+
   fetchSettings: async () => {
     try {
       const response = await axios.get("/api/settings");
@@ -32,6 +39,36 @@ export const settingsStore = create((set) => ({
           : DEFAULT_USHERS_TEXT;
       const loadedRootFontSize =
         response.data.rootFontSize ?? DEFAULT_ROOT_FONT_SIZE;
+      const loadedShowDividers =
+        response.data.showDividers !== undefined
+          ? response.data.showDividers === "true" ||
+            response.data.showDividers === true
+          : true;
+      const loadedShowDividerAfterInvocation =
+        response.data.showDividerAfterInvocation !== undefined
+          ? response.data.showDividerAfterInvocation === "true" ||
+            response.data.showDividerAfterInvocation === true
+          : true;
+      const loadedShowDividerBeforeBusiness =
+        response.data.showDividerBeforeBusiness !== undefined
+          ? response.data.showDividerBeforeBusiness === "true" ||
+            response.data.showDividerBeforeBusiness === true
+          : true;
+      const loadedShowDividerBeforeSacrament =
+        response.data.showDividerBeforeSacrament !== undefined
+          ? response.data.showDividerBeforeSacrament === "true" ||
+            response.data.showDividerBeforeSacrament === true
+          : true;
+      const loadedShowDividerBeforeProgram =
+        response.data.showDividerBeforeProgram !== undefined
+          ? response.data.showDividerBeforeProgram === "true" ||
+            response.data.showDividerBeforeProgram === true
+          : true;
+      const loadedShowDividerBeforeClosing =
+        response.data.showDividerBeforeClosing !== undefined
+          ? response.data.showDividerBeforeClosing === "true" ||
+            response.data.showDividerBeforeClosing === true
+          : true;
 
       set({
         meetingTime: loadedMeetingTime,
@@ -39,6 +76,12 @@ export const settingsStore = create((set) => ({
         wardName: loadedWardName,
         ushersText: loadedUshersText,
         rootFontSize: loadedRootFontSize,
+        showDividers: loadedShowDividers,
+        showDividerAfterInvocation: loadedShowDividerAfterInvocation,
+        showDividerBeforeBusiness: loadedShowDividerBeforeBusiness,
+        showDividerBeforeSacrament: loadedShowDividerBeforeSacrament,
+        showDividerBeforeProgram: loadedShowDividerBeforeProgram,
+        showDividerBeforeClosing: loadedShowDividerBeforeClosing,
         loading: false,
       });
     } catch (error) {
@@ -108,6 +151,84 @@ export const settingsStore = create((set) => ({
       set({ wardName: newWardName });
     } catch (error) {
       console.error("Error saving ward name:", error);
+      throw error;
+    }
+  },
+
+  setShowDividers: async (show) => {
+    try {
+      await axios.post("/api/settings", {
+        setting_key: "showDividers",
+        setting_value: show ? "true" : "false",
+      });
+      set({ showDividers: !!show });
+    } catch (error) {
+      console.error("Error saving showDividers:", error);
+      throw error;
+    }
+  },
+
+  setShowDividerAfterInvocation: async (show) => {
+    try {
+      await axios.post("/api/settings", {
+        setting_key: "showDividerAfterInvocation",
+        setting_value: show ? "true" : "false",
+      });
+      set({ showDividerAfterInvocation: !!show });
+    } catch (error) {
+      console.error("Error saving showDividerAfterInvocation:", error);
+      throw error;
+    }
+  },
+
+  setShowDividerBeforeBusiness: async (show) => {
+    try {
+      await axios.post("/api/settings", {
+        setting_key: "showDividerBeforeBusiness",
+        setting_value: show ? "true" : "false",
+      });
+      set({ showDividerBeforeBusiness: !!show });
+    } catch (error) {
+      console.error("Error saving showDividerBeforeBusiness:", error);
+      throw error;
+    }
+  },
+
+  setShowDividerBeforeSacrament: async (show) => {
+    try {
+      await axios.post("/api/settings", {
+        setting_key: "showDividerBeforeSacrament",
+        setting_value: show ? "true" : "false",
+      });
+      set({ showDividerBeforeSacrament: !!show });
+    } catch (error) {
+      console.error("Error saving showDividerBeforeSacrament:", error);
+      throw error;
+    }
+  },
+
+  setShowDividerBeforeProgram: async (show) => {
+    try {
+      await axios.post("/api/settings", {
+        setting_key: "showDividerBeforeProgram",
+        setting_value: show ? "true" : "false",
+      });
+      set({ showDividerBeforeProgram: !!show });
+    } catch (error) {
+      console.error("Error saving showDividerBeforeProgram:", error);
+      throw error;
+    }
+  },
+
+  setShowDividerBeforeClosing: async (show) => {
+    try {
+      await axios.post("/api/settings", {
+        setting_key: "showDividerBeforeClosing",
+        setting_value: show ? "true" : "false",
+      });
+      set({ showDividerBeforeClosing: !!show });
+    } catch (error) {
+      console.error("Error saving showDividerBeforeClosing:", error);
       throw error;
     }
   },

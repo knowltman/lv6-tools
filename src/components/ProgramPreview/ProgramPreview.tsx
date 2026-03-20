@@ -28,7 +28,15 @@ const ProgramPreview = (props: any) => {
     specialSundaysSpeakers,
   } = props;
 
-  const { wardName } = settingsStore();
+  const {
+    wardName,
+    showDividers,
+    showDividerAfterInvocation,
+    showDividerBeforeBusiness,
+    showDividerBeforeSacrament,
+    showDividerBeforeProgram,
+    showDividerBeforeClosing,
+  } = settingsStore();
 
   const BasicStrings = {
     opening: `Good morning and thank you for joining us for the ${wardName} Sacrament Meeting. If we have any visitors or those who may be joining us for the first time, we hope all will feel welcome today.`,
@@ -237,11 +245,13 @@ const ProgramPreview = (props: any) => {
             : "Select an invocation"
         } ${formValues.invocation.last_name}</b></p>`}
         />
-        {haveNewMembers ||
-        haveReleases ||
-        haveCallings ||
-        haveOtherWardBusiness ||
-        haveStakeBusiness ? (
+        {showDividers &&
+        showDividerAfterInvocation &&
+        (haveNewMembers ||
+          haveReleases ||
+          haveCallings ||
+          haveOtherWardBusiness ||
+          haveStakeBusiness) ? (
           <SectionSeparator title="" />
         ) : null}
         {haveNewMembers ? (
@@ -274,7 +284,9 @@ const ProgramPreview = (props: any) => {
         {haveStakeBusiness ? (
           <BusinessItem title="Stake" value={formValues.stake_business} />
         ) : null}
-        <SectionSeparator title="" />
+        {showDividers && showDividerBeforeSacrament && (
+          <SectionSeparator title="" />
+        )}
         <InfoBlock
           title="Sacrament"
           value={`${BasicStrings.sacramentIntro} <b class=${
@@ -289,12 +301,16 @@ const ProgramPreview = (props: any) => {
           } 
         </b><p>${BasicStrings.afterWhich}</p>`}
         />
-        <SectionSeparator title="" />
+        {showDividers && showDividerBeforeProgram && (
+          <SectionSeparator title="" />
+        )}
         <InfoBlock
           title="Program"
           value={`${BasicStrings.thanksForReverence}${getProgram()}`}
         />
-        <SectionSeparator title="" />
+        {showDividers && showDividerBeforeClosing && (
+          <SectionSeparator title="" />
+        )}
         <InfoBlock
           title="Closing"
           value={`${
