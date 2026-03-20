@@ -305,15 +305,6 @@ const ProgramPreviewSimple = (props) => {
           value={`<p><b>${programData.speaker_1?.subject}</b></p><p>${BasicStrings.babyBlessingClosing}`}
         />
       ) : null}
-      {haveNewMembers ||
-      haveReleases ||
-      haveCallings ||
-      haveOtherWardBusiness ||
-      haveStakeBusiness ? (
-        showDividers && showDividerBeforeBusiness ? (
-          <SectionSeparator title="" />
-        ) : null
-      ) : null}
       {haveNewMembers ? (
         <BusinessItem
           title="New Members"
