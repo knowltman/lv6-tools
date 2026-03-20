@@ -1474,6 +1474,22 @@ router.post("/sunday", async (req, res) => {
   }
 });
 
+router.delete("/sunday", async (req, res) => {
+  const { date } = req.query;
+
+  if (!date) {
+    return res.status(400).json({ message: "Missing date" });
+  }
+
+  try {
+    await db.promise().query("DELETE FROM sunday_dates WHERE date = ?", [date]);
+    res.status(200).json({ message: "Special Sunday deleted" });
+  } catch (error) {
+    console.error("Error deleting sunday date:", error);
+    res.status(500).json({ message: "Failed to delete sunday date" });
+  }
+});
+
 router.get("/sunday-history", (req, res) => {
   console.log("FETCHING SUNDAY HISTORY");
   db.query(

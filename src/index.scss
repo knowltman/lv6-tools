@@ -623,6 +623,7 @@ button:hover {
     flex-direction: column;
 
     .special-sunday-type {
+      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -632,6 +633,23 @@ button:hover {
       background-color: #f6f6f6;
       padding: 2rem;
       text-align: center;
+    }
+
+    .special-sunday-type .delete-special {
+      position: absolute;
+      top: 0.4rem;
+      right: 0.4rem;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #555;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .special-sunday-type .delete-special:hover {
+      color: #000;
     }
 
     .special-sunday {

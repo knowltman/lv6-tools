@@ -132,7 +132,9 @@ function App() {
         axios.get(`/api/sunday-history`),
       ]);
 
-      const sundaySpeakersHistory = sundaysSpeakersResponse.data;
+      const sundaySpeakersHistory = Array.isArray(sundaysSpeakersResponse.data)
+        ? sundaysSpeakersResponse.data
+        : [];
       setSpecialSundays(sundaySpeakersHistory);
 
       setIsLoading(false);

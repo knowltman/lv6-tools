@@ -214,8 +214,11 @@ export default function Speakers() {
 
   const handleSaveSpecial = async () => {
     if (specialSunday) {
+      const existingSpecials = Array.isArray(specialSundays)
+        ? specialSundays
+        : [];
       const updatedState = [
-        ...specialSundays,
+        ...existingSpecials,
         {
           date: specialSunday.date,
           type: specialSunday.type,
@@ -277,6 +280,15 @@ export default function Speakers() {
       await axios.delete(`/api/delete-speaker/${speaker.id}`);
       getSpeakerHistory2();
     } catch (error) {}
+  };
+
+  const handleDeleteSpecial = async (date) => {
+    try {
+      await axios.delete(`/api/sunday`, { params: { date } });
+      setSpecialSundays((prev) => prev.filter((s) => s.date !== date));
+    } catch (error) {
+      console.error("Failed to delete special sunday", error);
+    }
   };
 
   const handleAddSpecial = (date) => {
@@ -550,6 +562,7 @@ export default function Speakers() {
                       handleAddSpecial={handleAddSpecial}
                       handleAddSpeaker={handleAddSpeaker}
                       handleAddEvent={handleAddEvent}
+                      handleDeleteSpecial={handleDeleteSpecial}
                       setSelectedMember={setSelectedMember}
                       setScheduledSpeaker={setScheduledSpeaker}
                       selectedMember={selectedMember}

@@ -11,13 +11,17 @@ export default function SundayContainer_Speaker({
   handleAddSpeaker,
   handleAddSpecial,
   handleAddEvent,
+  handleDeleteSpecial,
   speakers = [],
   specialSundays = [],
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: date });
 
-  const hasSpeakers = speakers.length > 0;
-  const specialSunday = specialSundays?.find((s) => s.date === date);
+  const hasSpeakers = Array.isArray(speakers) ? speakers.length > 0 : false;
+  const specialSundaysArray = Array.isArray(specialSundays)
+    ? specialSundays
+    : [];
+  const specialSunday = specialSundaysArray.find((s) => s.date === date);
   const parsedDate = parseISO(date);
   const isFirstSunday = getDate(parsedDate) <= 7 && parsedDate.getDay() === 0;
 
@@ -46,9 +50,19 @@ export default function SundayContainer_Speaker({
           isFirstSunday || specialSunday ? "special-sunday" : ""
         }`}
       >
-        {specialSunday && specialSunday.type !== "Ward Conference" ? (
+        {specialSunday ? (
           <div className="special-sunday-type">
             {specialSunday.description || specialSunday.type}
+            {handleDeleteSpecial ? (
+              <button
+                className="delete-special"
+                type="button"
+                onClick={() => handleDeleteSpecial(date)}
+                title="Delete special Sunday"
+              >
+                ×
+              </button>
+            ) : null}
           </div>
         ) : isConferenceSunday ? (
           <div className="special-sunday-type">General Conference</div>
