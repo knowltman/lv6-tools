@@ -357,9 +357,15 @@ const ProgramPreviewSimple = (props) => {
           value={programData.stake_business}
         />
       ) : null}
-      {showDividers && showDividerBeforeSacrament && (
+      {(haveNewMembers ||
+        haveReleases ||
+        haveCallings ||
+        haveOtherWardBusiness ||
+        haveStakeBusiness) &&
+      showDividers &&
+      showDividerBeforeSacrament ? (
         <SectionSeparator title="" />
-      )}
+      ) : null}
       <InfoBlock
         title="Sacrament"
         isLoading={isLoading}
@@ -403,8 +409,8 @@ const ProgramPreviewSimple = (props) => {
           closingLine?.trim()
             ? closingLine
             : haveSpeakers || isSpecialSunday
-            ? BasicStrings.regularClose
-            : BasicStrings.fastSundayClose
+              ? BasicStrings.regularClose
+              : BasicStrings.fastSundayClose
         } <p><b class=${programData.closing_hymn.name ? "" : "error-text"}>${
           programData.closing_hymn.name
             ? "#" +
