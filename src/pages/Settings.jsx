@@ -312,22 +312,6 @@ const Settings = () => {
           }
           label="Before closing"
         />
-        <Typography
-          variant="subtitle2"
-          color="text.secondary"
-          sx={{ mb: 2, mt: 4, textTransform: "uppercase", fontWeight: 600 }}
-        >
-          Closing Line
-        </Typography>
-        <TextField
-          fullWidth
-          multiline
-          rows={2}
-          label="Closing line"
-          value={localClosingLine}
-          onChange={(e) => setLocalClosingLine(e.target.value)}
-          sx={{ mt: 2 }}
-        />
 
         <Typography
           variant="subtitle2"
@@ -361,6 +345,22 @@ const Settings = () => {
           value={localUshersText}
           onChange={(e) => setLocalUshersText(e.target.value)}
           sx={{ mb: 4 }}
+        />
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          sx={{ textTransform: "uppercase", fontWeight: 600 }}
+        >
+          Closing Line
+        </Typography>
+        <TextField
+          fullWidth
+          multiline
+          rows={2}
+          label="Closing line"
+          value={localClosingLine}
+          onChange={(e) => setLocalClosingLine(e.target.value)}
+          sx={{ mt: 2 }}
         />
       </Box>
       <Box
