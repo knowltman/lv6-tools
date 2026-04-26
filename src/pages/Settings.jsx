@@ -29,6 +29,7 @@ const Settings = () => {
     showDividerBeforeSacrament,
     showDividerBeforeProgram,
     showDividerBeforeClosing,
+    showSacramentPrayers,
     loading,
     fetchSettings,
     setMeetingTime,
@@ -42,6 +43,7 @@ const Settings = () => {
     setShowDividerBeforeSacrament,
     setShowDividerBeforeProgram,
     setShowDividerBeforeClosing,
+    setShowSacramentPrayers,
   } = settingsStore();
 
   // Local state for editing greeting
@@ -61,6 +63,7 @@ const Settings = () => {
   const [localShowDividerBeforeClosing, setLocalShowDividerBeforeClosing] =
     useState(true);
   const [localClosingLine, setLocalClosingLine] = useState("");
+  const [localShowSacramentPrayers, setLocalShowSacramentPrayers] = useState(true);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   // Load settings from database on mount
@@ -96,6 +99,9 @@ const Settings = () => {
     setLocalShowDividerBeforeClosing(
       showDividerBeforeClosing !== undefined ? showDividerBeforeClosing : true,
     );
+    setLocalShowSacramentPrayers(
+      showSacramentPrayers !== undefined ? showSacramentPrayers : true,
+    );
   }, [
     greeting,
     wardName,
@@ -107,6 +113,7 @@ const Settings = () => {
     showDividerBeforeSacrament,
     showDividerBeforeProgram,
     showDividerBeforeClosing,
+    showSacramentPrayers,
   ]);
 
   // Save meeting time to database when it changes
@@ -167,6 +174,7 @@ const Settings = () => {
         setShowDividerBeforeSacrament(localShowDividerBeforeSacrament),
         setShowDividerBeforeProgram(localShowDividerBeforeProgram),
         setShowDividerBeforeClosing(localShowDividerBeforeClosing),
+        setShowSacramentPrayers(localShowSacramentPrayers),
       ]);
       setShowSuccessToast(true);
     } catch (error) {
@@ -311,6 +319,26 @@ const Settings = () => {
             />
           }
           label="Before closing"
+        />
+
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          sx={{ mb: 2, mt: 4, textTransform: "uppercase", fontWeight: 600 }}
+        >
+          Print Options
+        </Typography>
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={localShowSacramentPrayers}
+              onChange={(e) =>
+                setLocalShowSacramentPrayers(e.target.checked)
+              }
+            />
+          }
+          label="Show sacrament prayers"
         />
 
         <Typography

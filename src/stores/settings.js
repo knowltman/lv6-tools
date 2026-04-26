@@ -28,6 +28,7 @@ export const settingsStore = create((set) => ({
   showDividerBeforeSacrament: true,
   showDividerBeforeProgram: true,
   showDividerBeforeClosing: true,
+  showSacramentPrayers: true,
 
   fetchSettings: async () => {
     try {
@@ -72,6 +73,11 @@ export const settingsStore = create((set) => ({
           ? response.data.showDividerBeforeClosing === "true" ||
             response.data.showDividerBeforeClosing === true
           : true;
+      const loadedShowSacramentPrayers =
+        response.data.showSacramentPrayers !== undefined
+          ? response.data.showSacramentPrayers === "true" ||
+            response.data.showSacramentPrayers === true
+          : true;
       const loadedClosingLine =
         response.data.closingLine !== undefined
           ? response.data.closingLine
@@ -90,6 +96,7 @@ export const settingsStore = create((set) => ({
         showDividerBeforeSacrament: loadedShowDividerBeforeSacrament,
         showDividerBeforeProgram: loadedShowDividerBeforeProgram,
         showDividerBeforeClosing: loadedShowDividerBeforeClosing,
+        showSacramentPrayers: loadedShowSacramentPrayers,
         loading: false,
       });
     } catch (error) {
@@ -250,6 +257,19 @@ export const settingsStore = create((set) => ({
       set({ showDividerBeforeClosing: !!show });
     } catch (error) {
       console.error("Error saving showDividerBeforeClosing:", error);
+      throw error;
+    }
+  },
+
+  setShowSacramentPrayers: async (show) => {
+    try {
+      await axios.post("/api/settings", {
+        setting_key: "showSacramentPrayers",
+        setting_value: show ? "true" : "false",
+      });
+      set({ showSacramentPrayers: !!show });
+    } catch (error) {
+      console.error("Error saving showSacramentPrayers:", error);
       throw error;
     }
   },

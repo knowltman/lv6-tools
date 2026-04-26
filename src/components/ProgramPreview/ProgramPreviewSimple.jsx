@@ -18,7 +18,7 @@ const BasicStrings = {
   forLeading: "for leading our music today, and",
   accompanying: "for accompanying us on the organ",
   broadcast:
-    "We would also like to thank our Young Women ushers ____________________________________________, and our reverence examples ____________________________________________ we'll excuse them to sit with their families",
+    "We would also like to thank our Young Women ushers ______________________________________, and our reverence examples ______________________________________ we'll excuse them to sit with their families",
   invocation: "Following the singing, our invocation will be offered by...",
   newMembers:
     "We've received membership records for the following Individuals. Please stand as your name is read.",
@@ -235,7 +235,7 @@ const ProgramPreviewSimple = (props) => {
           ) : null}
           {wardName}
         </div>
-        <div>{format(parseISO(selectedProgramDate), "MMMM, d, yyyy")}</div>
+        <div>{format(parseISO(selectedProgramDate), "MMMM d, yyyy")}</div>
       </div>
       <InfoBlock title="Welcome" isLoading={isLoading} value={getGreeting()} />
       <InfoBlock

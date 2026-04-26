@@ -318,8 +318,8 @@ const ProgramPreview = (props: any) => {
             closingLine?.trim()
               ? closingLine
               : haveSpeakers
-              ? BasicStrings.regularClose
-              : BasicStrings.fastSundayClose
+                ? BasicStrings.regularClose
+                : BasicStrings.fastSundayClose
           } <b class=${formValues.closing_hymn.name ? "" : "error-text"}>${
             formValues.closing_hymn.name
               ? "#" +

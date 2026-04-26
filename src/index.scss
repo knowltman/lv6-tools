@@ -184,7 +184,7 @@ button:hover {
 
 .section-separator {
   background-color: #000;
-  height: 8px;
+  height: 6px;
   margin-top: 0.2rem;
 }
 .section-title {
@@ -591,6 +591,19 @@ button:hover {
   .printable {
     padding: 0.75rem !important;
     position: static !important;
+  }
+
+  .sacrament-prayers {
+    display: block !important;
+    page-break-before: always;
+    page-break-inside: avoid;
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .sacrament-prayers h2 {
+    page-break-before: auto;
   }
 
   @page {
