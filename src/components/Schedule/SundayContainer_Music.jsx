@@ -47,15 +47,13 @@ const SundayContainer_Music = ({
 
   const getName = (id) => {
     const name = members.find((member) => member.id === id);
-    // console.log({
-    //   member: name,
-    //   fullName: `${name.first_name} ${name.last_name}`,
-    // });
+    if (!name) return { member: undefined, fullName: "" };
     return { member: name, fullName: `${name.first_name} ${name.last_name}` };
   };
 
   const getInitials = (id) => {
     const name = getName(id);
+    if (!name.member) return "?";
     return `${name.member.first_name?.[0] ?? ""}${
       name.member.last_name?.[0] ?? ""
     }`.toUpperCase();
